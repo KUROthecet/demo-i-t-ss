@@ -1,1 +1,0 @@
-function e(r){return r.category==="Book"}function o(r){return r.category==="CD"}function t(r){return r.category==="DVD"}function n(r){return r.category==="Newspaper"}export{e as a,o as b,t as c,n as d};

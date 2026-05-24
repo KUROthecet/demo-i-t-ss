@@ -1,9 +1,8 @@
 <div class="search-page">
   <main class="search-page__main">
     <div class="search-page__layout">
-
-            <aside class="filters">
-                <div class="filters__header">
+      <aside class="filters">
+        <div class="filters__header">
           <div class="filters__header-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
@@ -180,11 +179,18 @@
               Results for <span class="results__query">"{{ query || 'all' }}"</span>
             </h1>
             <div class="results__meta">
-              <span class="results__count">
-                Showing
-                <span class="results__count-num">{{ results.length }}</span>
-                result{{ results.length !== 1 ? 's' : '' }}
-              </span>
+                <span class="results__count">
+                  Showing
+                  <span class="results__count-num">
+                    {{ results.length > 0 ? (currentPage * pageSize) + 1 : 0 }} 
+                    - 
+                    {{ (currentPage * pageSize) + results.length }}
+                  </span>
+                  @if (totalFilteredElements > 0) {
+                    of <span class="results__count-num">{{ totalFilteredElements }}</span>
+                  }
+                  result{{ totalFilteredElements !== 1 ? 's' : '' }}
+                </span>
 
               @for (cat of selectedCategories; track cat) {
                 <button class="results__active-filter" (click)="toggleCategory(cat)">
@@ -236,32 +242,14 @@
             @for (result of results; track result.id; let i = $index) {
               <div class="result-card" [style.animation-delay]="i * 50 + 'ms'" [routerLink]="['/product', result.id]">
                                 <div class="result-card__icon-wrap">
-                  <div class="result-card__icon" [class]="'result-card__icon--' + result.category.toLowerCase()">
-                                        @if (result.category === 'Book') {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                      </svg>
-                    }
-                    @if (result.category === 'CD') {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-                        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
-                      </svg>
-                    }
-                    @if (result.category === 'DVD') {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-                        <rect x="2" y="2" width="20" height="20" rx="2.18"/>
-                        <line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/>
-                        <line x1="2" y1="12" x2="22" y2="12"/>
-                      </svg>
-                    }
-                    @if (result.category === 'Newspaper') {
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-                        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
-                        <path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>
-                      </svg>
-                    }
-                  </div>
+                  <img
+                    class="result-card__img"
+                    [src]="result.imageUrl"
+                    [alt]="result.title"
+                    (error)="result.imageUrl = getFallbackImage(result.category)"
+                    loading="lazy"
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;"
+                  />
                   <div class="result-card__hover-glow"></div>
 
                   @if (!result.quantityInStock) {
@@ -309,9 +297,31 @@
               </div>
             }
           </div>
-        }
+            }
 
-                @if (!loading && results.length === 0 && searched) {
+          @if (!loading && totalPages > 1) {
+            <div class="pagination">
+              <button 
+                class="btn btn--secondary pagination__btn" 
+                [disabled]="currentPage === 0"
+                (click)="changePage(currentPage - 1)">
+                Previous
+              </button>
+              
+              <span class="pagination__info">
+                Page {{ currentPage + 1 }} of {{ totalPages }}
+              </span>
+
+              <button 
+                class="btn btn--secondary pagination__btn" 
+                [disabled]="currentPage >= totalPages - 1"
+                (click)="changePage(currentPage + 1)">
+                Next
+              </button>
+            </div>
+          }
+  
+          @if (!loading && results.length === 0 && searched) {
           <div class="results__empty">
             <div class="results__empty-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">

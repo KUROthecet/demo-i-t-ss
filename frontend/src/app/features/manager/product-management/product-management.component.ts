@@ -7,6 +7,14 @@ import { Media } from '../../../core/models/media.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 
+/**
+ * ProductManagementComponent — manager view for browsing, selecting, and deleting products.
+ *
+ * OOP Design:
+ * - SRP: handles only product list display and batch deletion.
+ * - Encapsulation: state fields are `protected`.
+ * - DRY: delegates currency formatting to {@link VndCurrencyPipe}.
+ */
 @Component({
   selector: 'app-product-management',
   standalone: true,
@@ -40,8 +48,8 @@ export class ProductManagementComponent implements OnInit {
 
   protected loadProducts(): void {
     this.loading = true;
-    this.api.searchProducts(this.searchQuery, 0, 2147483647, 10_000).subscribe({
-      next:  (data) => { this.products = data; this.loading = false; },
+    this.api.searchProducts(this.searchQuery, 0, 9999999).subscribe({
+      next:  (data) => { this.products = data.content; this.loading = false; },
       error: ()     => { this.loading = false; }
     });
   }

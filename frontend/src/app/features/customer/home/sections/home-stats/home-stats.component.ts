@@ -1,7 +1,8 @@
-import { Component, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, NgZone, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ApiService } from '../../../../../core/services/api.service';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +19,7 @@ export interface StatItem {
   templateUrl: './home-stats.component.html',
   styleUrl: './home-stats.component.scss'
 })
-export class HomeStatsComponent implements AfterViewInit, OnDestroy {
+export class HomeStatsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private gsapCtx: gsap.Context | undefined;
 
@@ -26,14 +27,37 @@ export class HomeStatsComponent implements AfterViewInit, OnDestroy {
   readonly paraWords: string[] =
     'Our handpicked collection spans every genre, artist, and era — curated just for you.'.split(' ');
 
-  readonly stats: StatItem[] = [
-    { label: 'Books',      value: '10,000', unit: '+' },
-    { label: 'CDs',        value: '2,500',  unit: '+' },
-    { label: 'DVDs',       value: '3,000',  unit: '+' },
-    { label: 'Newspapers', value: '500',    unit: '+' }
+  stats: StatItem[] = [
+    { label: 'Books',      value: '0', unit: '+' },
+    { label: 'CDs',        value: '0', unit: '+' },
+    { label: 'DVDs',       value: '0', unit: '+' },
+    { label: 'Newspapers', value: '0', unit: '+' }
   ];
 
-  constructor(private ngZone: NgZone) {}
+  constructor(private ngZone: NgZone, private apiService: ApiService) {}
+
+  ngOnInit(): void {
+    this.apiService.getCatalogStats().subscribe({
+      next: (data: Record<string, number>) => {
+        this.stats = [
+          { label: 'Books',      value: this.formatNumber(data['Book'] || 0), unit: '+' },
+          { label: 'CDs',        value: this.formatNumber(data['CD'] || 0),  unit: '+' },
+          { label: 'DVDs',       value: this.formatNumber(data['DVD'] || 0),  unit: '+' },
+          { label: 'Newspapers', value: this.formatNumber(data['Newspaper'] || 0), unit: '+' }
+        ];
+      },
+      error: (err: any) => console.error('Failed to load stats', err)
+    });
+  }
+
+  private formatNumber(num: number): string {
+    if (num <= 10) return num.toString();
+    // Round to nicest whole numbers (e.g. 4891 -> 4,800, 150 -> 100, 12000 -> 12,000)
+    let magnitude = Math.pow(10, Math.floor(Math.log10(num)) - 1);
+    if (magnitude < 10) magnitude = 10;
+    const rounded = Math.floor(num / magnitude) * magnitude;
+    return new Intl.NumberFormat('en-US').format(rounded);
+  }
 
   ngAfterViewInit(): void {
     this.ngZone.runOutsideAngular(() => {

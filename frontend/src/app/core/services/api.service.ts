@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Media } from '../models/media.model';
+import { Media, PaginatedResponse } from '../models/media.model';
 import { Order, OrderRequest, ShippingRequest, ShippingResponse } from '../models/order.model';
 import { User, LoginRequest, LoginResponse, UserCreateRequest } from '../models/user.model';
 
@@ -24,19 +24,18 @@ export class ApiService {
   getProduct(id: number): Observable<Media> {
     return this.http.get<Media>(`${this.baseUrl}/products/${id}`);
   }
-  searchProducts(query: string, minPrice = 0, maxPrice = 2147483647, limit = 200): Observable<Media[]> {
+  searchProducts(query: string, minPrice = 0, maxPrice = 2147483647, page = 0, size = 20): Observable<PaginatedResponse<Media>> {
     const params = new HttpParams()
-      .set('query',    query)
+      .set('query', query)
       .set('minPrice', minPrice)
       .set('maxPrice', maxPrice)
-      .set('limit',    limit);
-    return this.http.get<Media[]>(`${this.baseUrl}/products/search`, { params });
+      .set('page', page)
+      .set('size', size);
+    return this.http.get<PaginatedResponse<Media>>(`${this.baseUrl}/products/search`, { params });
   }
 
-  getCatalogStats(): Observable<{ categoryCounts: Record<string, number>; maxPrice: number }> {
-    return this.http.get<{ categoryCounts: Record<string, number>; maxPrice: number }>(
-      `${this.baseUrl}/products/catalog-stats`
-    );
+  getCatalogStats(): Observable<Record<string, number>> {
+    return this.http.get<Record<string, number>>(`${this.baseUrl}/products/stats`);
   }
   addMedia(media: Partial<Media>): Observable<Media> {
     return this.http.post<Media>(`${this.baseUrl}/products`, media);

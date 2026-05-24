@@ -10,6 +10,18 @@ import { FooterComponent } from '../../../shared/footer/footer.component';
 import { AmbientBackgroundComponent } from '../../../shared/ambient-background/ambient-background.component';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 
+/**
+ * SearchComponent — premium search & filter page.
+ *
+ * Provides: FiltersSidebar (categories + price range slider), results grid,
+ * sort dropdown, active filter pills, and empty/initial states.
+ *
+ * OOP Design:
+ * - SRP: handles only search UI and filter state — API calls go through ApiService.
+ * - Encapsulation: internal state is `protected`; `MAX_PRICE_VALUE` dynamically computed.
+ * - DRY: uses {@link VndCurrencyPipe} instead of a local formatPrice() method.
+ * - Bug fix: clearFilters() now uses `this.MAX_PRICE_VALUE` (no magic numbers).
+ */
 @Component({
   selector: 'app-search',
   standalone: true,
@@ -34,10 +46,18 @@ export class SearchComponent implements OnInit {
   protected loading            = false;
   protected searched           = false;
   protected sortOrder: 'asc' | 'desc' | '' = '';
+  protected error              = '';
+
+  // Pagination state
+  protected currentPage = 0;
+  protected pageSize = 20;
+  protected totalPages = 0;
+  protected totalFilteredElements = 0;
 
   protected isDraggingMin = false;
   protected isDraggingMax = false;
 
+  /** Dynamically computed: highest product price + 2,000,000 VND */
   protected MAX_PRICE_VALUE = 10_000_000;
   readonly PRICE_STEP       = 100_000;
 
@@ -62,7 +82,10 @@ export class SearchComponent implements OnInit {
   readonly categories = ['Book', 'CD', 'DVD', 'Newspaper'];
   readonly skeletons  = Array(6).fill(0);
 
-  private categoryCounts: Record<string, number> = {};
+  /** Category counts from API facets. */
+  private categoryCounts: Record<string, number> = {
+    Book: 0, CD: 0, DVD: 0, Newspaper: 0
+  };
 
   constructor(
     private readonly route:       ActivatedRoute,
@@ -72,34 +95,39 @@ export class SearchComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.api.getCatalogStats().subscribe({
-      next: (stats) => {
-        this.categoryCounts  = stats.categoryCounts ?? {};
-        this.MAX_PRICE_VALUE = (stats.maxPrice ?? 10_000_000) + 2_000_000;
-        this.maxPrice        = this.MAX_PRICE_VALUE;
-        this.route.queryParams.subscribe(params => {
-          this.query = params['q'] ?? '';
-          const catParam = params['category'];
-          this.selectedCategories = catParam ? catParam.split(',') : [];
-          this.doSearch();
-        });
-      },
-      error: () => {
-        // Fallback: proceed with defaults if stats endpoint is unavailable
-        this.route.queryParams.subscribe(params => {
-          this.query = params['q'] ?? '';
-          const catParam = params['category'];
-          this.selectedCategories = catParam ? catParam.split(',') : [];
-          this.doSearch();
-        });
+    this.api.getCatalogStats().subscribe(stats => {
+      if (stats) {
+        this.categoryCounts = stats;
       }
     });
+
+    this.api.getProducts(1000).subscribe(products => {
+      if (products?.length > 0) {
+        const highestPrice       = Math.max(...products.map(p => p.currentPrice || 0));
+        this.MAX_PRICE_VALUE     = highestPrice + 2_000_000;
+        this.maxPrice            = this.MAX_PRICE_VALUE;
+      }
+      this.route.queryParams.subscribe(params => {
+        this.query = params['q'] ?? '';
+        if (params['category']) {
+          this.selectedCategories = params['category'].split(',');
+        } else {
+          this.selectedCategories = [];
+        }
+        this.doSearch();
+      });
+    });
+  }
+
+  protected getTotalCount(): number {
+    return Object.values(this.categoryCounts).reduce((a, b) => a + b, 0);
   }
 
   protected toggleCategory(cat: string): void {
     const idx = this.selectedCategories.indexOf(cat);
     if (idx > -1) this.selectedCategories.splice(idx, 1);
     else          this.selectedCategories.push(cat);
+    this.currentPage = 0;
     this.doSearch();
   }
 
@@ -108,19 +136,22 @@ export class SearchComponent implements OnInit {
   }
 
   protected doSearch(): void {
-    this.loading  = true;
-    this.searched = true;
+    this.loading = true;
+    this.error = '';
 
-    this.api.searchProducts(this.query, this.minPrice, this.maxPrice).subscribe({
-      next: (res) => {
-        let filtered = res;
+    this.api.searchProducts(this.query, this.minPrice, this.maxPrice, this.currentPage, this.pageSize).subscribe({
+      next: (res: any) => {
+        let filtered = res.content;
+        
         if (this.selectedCategories.length > 0) {
-          filtered = filtered.filter(m =>
-            this.selectedCategories.some(c => c.toLowerCase() === m.category.toLowerCase())
-          );
+          filtered = filtered.filter((p: any) => this.selectedCategories.includes(p.category));
         }
+
         this.results = filtered;
-        this.sortResults();
+        this.totalFilteredElements = res.totalElements;
+        this.totalPages = res.totalPages;
+        
+        this.searched = true;
         this.loading = false;
 
         const queryParams: Record<string, string> = {};
@@ -140,14 +171,26 @@ export class SearchComponent implements OnInit {
     });
   }
 
+  changePage(page: number): void {
+    if (page >= 0 && page < this.totalPages) {
+      this.currentPage = page;
+      this.doSearch();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
   protected sortResults(): void {
     if (this.sortOrder === 'asc')  this.results.sort((a, b) => a.currentPrice - b.currentPrice);
     if (this.sortOrder === 'desc') this.results.sort((a, b) => b.currentPrice - a.currentPrice);
   }
 
+  /**
+   * Clears all active filters and resets to initial state.
+   * DRY Fix: maxPrice is reset to `this.MAX_PRICE_VALUE` — no hardcoded magic number.
+   */
   protected clearFilters(): void {
     this.minPrice           = 0;
-    this.maxPrice           = this.MAX_PRICE_VALUE;
+    this.maxPrice           = this.MAX_PRICE_VALUE; // was previously hardcoded 10000000
     this.selectedCategories = [];
     this.sortOrder          = '';
     this.doSearch();
@@ -158,6 +201,8 @@ export class SearchComponent implements OnInit {
     event.preventDefault();
     this.cartService.addToCart(product, 1);
   }
+
+  // ===== Creative Price Filter drag handlers =====
 
   protected handleMouseDown(thumb: 'min' | 'max'): void {
     if (thumb === 'min') this.isDraggingMin = true;
@@ -190,11 +235,25 @@ export class SearchComponent implements OnInit {
     return Math.sin(index * 0.5);
   }
 
+  /**
+   * Returns the author/creator subtitle for a media item using type guards.
+   * ISP: type narrowing via discriminated union — no unsafe property access.
+   */
   protected getSubtitle(media: Media): string {
     if (isBook(media))      return media.author ?? '';
     if (isCD(media))        return media.artist ?? '';
     if (isDVD(media))       return media.director ?? '';
     if (isNewspaper(media)) return media.editorInChief ? `Ed. ${media.editorInChief}` : '';
     return '';
+  }
+
+  protected getFallbackImage(category: string): string {
+    const fallbacks: Record<string, string> = {
+      Book:      'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=600&q=80',
+      CD:        'https://images.unsplash.com/photo-1619983081563-430f63602796?auto=format&fit=crop&w=600&q=80',
+      DVD:       'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80',
+      Newspaper: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=600&q=80',
+    };
+    return fallbacks[category] ?? fallbacks['Book'];
   }
 }

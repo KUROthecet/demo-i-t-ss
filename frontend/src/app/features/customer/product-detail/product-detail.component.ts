@@ -9,6 +9,15 @@ import { FooterComponent } from '../../../shared/footer/footer.component';
 import { AmbientBackgroundComponent } from '../../../shared/ambient-background/ambient-background.component';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 
+/**
+ * ProductDetailComponent — premium product detail page.
+ * Features: 3D parallax image card, spec table, VAT calculation, quantity stepper, highlights.
+ *
+ * OOP Design:
+ * - SRP: business logic delegated to services.
+ * - Encapsulation: mutable state is `protected`.
+ * - DRY: uses {@link VndCurrencyPipe} for currency display.
+ */
 @Component({
   selector: 'app-product-detail',
   standalone: true,
@@ -24,8 +33,10 @@ export class ProductDetailComponent implements OnInit {
   isWishlisted = false;
   error = '';
 
+  /** 3D parallax transform for the image card */
   imageTransform = '';
 
+  /** Feature highlights */
   readonly highlights = [
     { icon: 'book',     title: 'Premium Quality',         desc: 'Carefully selected titles from top publishers and distributors worldwide.' },
     { icon: 'sparkles', title: 'Curated Collection',      desc: 'Every item in our store is reviewed and approved by our editorial team.' },
@@ -68,11 +79,26 @@ export class ProductDetailComponent implements OnInit {
     this.router.navigate(['/cart']);
   }
 
+  goBack(): void {
+    this.router.navigate(['/']);
+  }
+
+  protected getFallbackImage(category: string): string {
+    const fallbacks: Record<string, string> = {
+      Book:      'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=600&q=80',
+      CD:        'https://images.unsplash.com/photo-1619983081563-430f63602796?auto=format&fit=crop&w=600&q=80',
+      DVD:       'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80',
+      Newspaper: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=600&q=80',
+    };
+    return fallbacks[category] ?? fallbacks['Book'];
+  }
+
   changeQty(delta: number): void {
     const max = this.product?.quantityInStock ?? 99;
     this.quantity = Math.max(1, Math.min(this.quantity + delta, max));
   }
 
+  /** 3D parallax effect on mouse move over image card */
   onMouseMove(event: MouseEvent): void {
     const el = event.currentTarget as HTMLElement;
     const rect = el.getBoundingClientRect();
@@ -90,6 +116,8 @@ export class ProductDetailComponent implements OnInit {
   protected formatNumber(n: number): string {
     return n.toLocaleString('en-US').replace(/,/g, '.');
   }
+
+  // ===== ISP Type Guard Accessors =====
 
   protected getSubtitle(): string {
     if (!this.product) return '';

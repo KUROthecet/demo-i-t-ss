@@ -1,4 +1,7 @@
-﻿
+﻿/* ============================================================
+   Search Page â€” matching reference SearchPage.tsx + FiltersSidebar + ResultCard
+   ============================================================ */
+
 .search-page {
   min-height: 100vh;
   display: flex;
@@ -1041,3 +1044,6 @@
   0%   { background-position: -200% center; }
   100% { background-position:  200% center; }
 }
+.pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+
+

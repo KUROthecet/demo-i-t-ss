@@ -1,1 +1,0 @@
-import{u as e}from"./chunk-MU6Z2EFH.js";var n=class r{static{this.FORMATTER=new Intl.NumberFormat("vi-VN",{style:"currency",currency:"VND"})}transform(t){return t==null?"0 \u20AB":r.FORMATTER.format(t)}static{this.\u0275fac=function(i){return new(i||r)}}static{this.\u0275pipe=e({name:"vndCurrency",type:r,pure:!0,standalone:!0})}};export{n as a};
