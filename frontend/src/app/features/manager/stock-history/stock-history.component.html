@@ -1,0 +1,129 @@
+<div class="page-content">
+    <div class="admin-main__header">
+    <div>
+      <h1 class="admin-main__title">Stock History</h1>
+      <p class="admin-main__subtitle">{{ history.length }} adjustment records</p>
+    </div>
+    <button class="btn btn--primary btn--sheen" (click)="showAdjustModal = true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Adjust Stock
+    </button>
+  </div>
+
+    @if (error) {
+      <div class="admin-alert admin-alert--error">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ error }}
+      </div>
+    }
+    @if (successMsg) {
+      <div class="admin-alert admin-alert--success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        {{ successMsg }}
+      </div>
+    }
+
+    @if (loading) {
+      <div class="table-skeleton">
+        @for (s of skeletons; track $index) {
+          <div class="table-skeleton__row skeleton"></div>
+        }
+      </div>
+    } @else {
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Product</th><th>Action</th><th>Delta</th><th>Reason</th><th>By</th><th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of history; track entry.id) {
+              <tr>
+                <td>{{ entry.media?.title || 'ID: ' + entry.media?.id }}</td>
+                <td>
+                  <span class="action-badge"
+                        [class.action-badge--add]="entry.actionType?.includes('ADD')"
+                        [class.action-badge--delete]="!entry.actionType?.includes('ADD')">
+                    {{ entry.actionType }}
+                  </span>
+                </td>
+                <td>
+                  <span class="stock-delta"
+                        [class.stock-delta--pos]="entry.quantityDelta > 0"
+                        [class.stock-delta--neg]="entry.quantityDelta < 0">
+                    {{ entry.quantityDelta > 0 ? '+' : '' }}{{ entry.quantityDelta }}
+                  </span>
+                </td>
+                <td class="admin-table__muted">{{ entry.reason }}</td>
+                <td class="admin-table__mono">{{ entry.performedBy }}</td>
+                <td class="admin-table__muted">{{ formatDate(entry.createdAt) }}</td>
+              </tr>
+            }
+            @if (history.length === 0) {
+              <tr><td colspan="6" class="admin-table__empty">No stock adjustments recorded yet.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+</div>
+
+@if (showAdjustModal) {
+  <div class="modal-overlay" (click)="showAdjustModal = false">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div class="modal__icon" style="background:rgba(29,185,84,0.15);border-color:rgba(29,185,84,0.25);color:#1DB954">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <h2 class="modal__title">Manual Stock Adjustment</h2>
+        <button class="modal__close" (click)="showAdjustModal = false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <div class="checkout-form-grid">
+          <div class="form-group">
+            <label class="form-group__label">Product ID <span class="text-danger">*</span></label>
+            <input class="form-group__input" type="number" [(ngModel)]="adjustForm.mediaId"
+                   placeholder="Enter product ID" min="1" />
+          </div>
+          <div class="form-group">
+            <label class="form-group__label">Quantity Delta <span class="text-danger">*</span></label>
+            <input class="form-group__input" type="number" [(ngModel)]="adjustForm.quantityDelta"
+                   placeholder="+50 to add, -10 to reduce" />
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 16px;">
+          <label class="form-group__label">Reason <span class="text-danger">*</span></label>
+          <textarea class="form-group__textarea" [(ngModel)]="adjustForm.reason" rows="3"
+                    placeholder="e.g. Stock received from supplier, damaged goods write-off..."></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" (click)="showAdjustModal = false">Cancel</button>
+        <button class="btn btn--primary"
+                style="background:#1DB954;color:#000;"
+                (click)="submitAdjustment()" [disabled]="adjusting">
+          @if (adjusting) {
+            <span class="checkout-summary__spinner"></span>
+            Saving...
+          } @else {
+            Submit Adjustment
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+

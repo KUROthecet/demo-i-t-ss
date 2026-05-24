@@ -1,0 +1,70 @@
+<section class="home-categories" #categoriesSection>
+
+  <div class="home-categories__scroll-inner" #scrollInner>
+
+    <div class="home-categories__title-col">
+
+      <div class="home-categories__title-block">
+
+        <div class="home-categories__title-line home-categories__title-line--first">
+          <div class="home-categories__title-overflow">
+            <h2 class="home-categories__title-h">
+              @for (char of titleLine1Chars; track $index) {
+                <span class="home-categories__char home-categories__char--line1">{{ char === ' ' ? ' ' : char }}</span>
+              }
+            </h2>
+          </div>
+        </div>
+
+        <div class="home-categories__title-clip">
+          <div class="home-categories__title-clip-inner">
+            <h2 class="home-categories__title-clip-text">4 Amazing</h2>
+          </div>
+        </div>
+
+        <div class="home-categories__title-line home-categories__title-line--second">
+          <div class="home-categories__title-overflow">
+            <h2 class="home-categories__title-h">
+              @for (char of titleLine2Chars; track $index) {
+                <span class="home-categories__char home-categories__char--line2">{{ char }}</span>
+              }
+            </h2>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="home-categories__slider" #sliderCards>
+      @for (card of cards; track card.id) {
+        <a
+          class="home-categories__card"
+          [routerLink]="['/search']"
+          [queryParams]="{ q: card.category }"
+          [style.--card-bg]="card.bgColor"
+          [style.--card-accent]="card.accentColor"
+          [style.--card-rotation]="card.rotation">
+
+          <div class="home-categories__card-bg"></div>
+
+          <img
+            class="home-categories__card-fg-img"
+            [src]="card.imageUrl"
+            [alt]="card.label"
+            loading="lazy" />
+
+          <div class="home-categories__card-glow"></div>
+
+          <h3 class="home-categories__card-label">{{ card.label }}</h3>
+
+        </a>
+      }
+    </div>
+
+  </div>
+
+  <div class="home-categories__cta-wrap">
+    <a class="home-categories__cta" routerLink="/search">Shop All</a>
+  </div>
+
+</section>

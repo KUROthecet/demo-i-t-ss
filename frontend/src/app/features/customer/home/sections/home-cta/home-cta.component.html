@@ -1,0 +1,36 @@
+<section class="home-cta">
+
+  <div class="home-cta__dip"></div>
+
+  <div class="home-cta__bg-mark" aria-hidden="true">AIMS</div>
+
+  <div class="home-cta__content">
+
+    <div class="home-cta__heading-block">
+
+      <div class="home-cta__title-overflow">
+        <h2 class="home-cta__title">
+          @for (char of titleChars; track $index) {
+            <span class="home-cta__char">{{ char === ' ' ? ' ' : char }}</span>
+          }
+        </h2>
+      </div>
+
+      <div class="home-cta__clip">
+        <div class="home-cta__clip-inner">
+          <h3 class="home-cta__clip-text">Great Read</h3>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="home-cta__body">
+      <p class="home-cta__desc">
+        Discover books, CDs, DVDs &amp; newspapers — curated titles delivered straight to your door.
+      </p>
+      <a class="home-cta__btn" routerLink="/search">SHOP NOW</a>
+    </div>
+
+  </div>
+
+</section>

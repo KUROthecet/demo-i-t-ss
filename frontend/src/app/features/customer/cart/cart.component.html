@@ -1,0 +1,138 @@
+<div class="cart-page">
+  <main class="cart-page__main">
+
+    <div class="cart-page__header">
+      <h1 class="cart-page__title">Your Cart</h1>
+      @if (count() > 0) {
+        <span class="cart-page__count">{{ count() }} item{{ count() !== 1 ? 's' : '' }}</span>
+      }
+    </div>
+
+        @if (count() === 0) {
+      <div class="cart-empty">
+        <div class="cart-empty__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </div>
+        <h2 class="cart-empty__title">Your cart is empty</h2>
+        <p class="cart-empty__desc">Browse our collection and add items to get started.</p>
+        <a class="btn btn--primary btn--lg btn--liquid" routerLink="/search">Browse Products</a>
+      </div>
+    }
+
+        @if (count() > 0) {
+      <div class="cart-layout">
+
+                <div class="cart-items">
+          @for (item of items(); track item.id; let i = $index) {
+            <div class="cart-item" [style.animation-delay]="(i * 0.07) + 's'">
+                            <div class="cart-item__icon" [class]="'cart-item__icon--' + item.category.toLowerCase()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  @if (item.category === 'Book') {
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                  }
+                  @if (item.category === 'CD') {
+                    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
+                  }
+                  @if (item.category === 'DVD') {
+                    <rect x="2" y="2" width="20" height="20" rx="2.18"/>
+                    <line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                  }
+                  @if (item.category === 'Newspaper') {
+                    <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Z"/>
+                  }
+                </svg>
+              </div>
+
+                            <div class="cart-item__info">
+                <h3 class="cart-item__title">
+                  <a [routerLink]="['/product', item.id]">{{ item.title }}</a>
+                </h3>
+                <p class="cart-item__meta">{{ item.category }}</p>
+                <p class="cart-item__unit-price">{{ item.currentPrice | vndCurrency }} each</p>
+                @if (item.cartQty > item.quantityInStock) {
+                  <p class="cart-item__stock-error" style="color: #ef4444; font-size: 12px; margin-top: 4px; font-weight: 600;">
+                    Only {{ item.quantityInStock }} available. Missing: {{ item.cartQty - item.quantityInStock }}
+                  </p>
+                }
+              </div>
+
+                            <div class="cart-item__qty">
+                <button class="cart-item__qty-btn"
+                        (click)="updateQty(item.id, item.cartQty - 1)"
+                        [disabled]="item.cartQty <= 1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                </button>
+                <span class="cart-item__qty-val">{{ item.cartQty }}</span>
+                <button class="cart-item__qty-btn" (click)="updateQty(item.id, item.cartQty + 1)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                </button>
+              </div>
+
+                            <div class="cart-item__total">{{ item.currentPrice * item.cartQty | vndCurrency }}</div>
+
+                            <button class="cart-item__remove" (click)="remove(item.id)" title="Remove item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+          }
+
+                    <button class="cart-items__clear" (click)="clear()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m5-3h4m-4 0a1 1 0 0 0-1 1v1h6V4a1 1 0 0 0-1-1m0 0h-4"/>
+            </svg>
+            Clear cart
+          </button>
+        </div>
+
+                <aside class="cart-summary">
+          <h2 class="cart-summary__title">Order Summary</h2>
+
+          <div class="cart-summary__rows">
+            <div class="cart-summary__row">
+              <span>Subtotal</span>
+              <span>{{ subtotal() | vndCurrency }}</span>
+            </div>
+            <div class="cart-summary__row">
+              <span>VAT (10%)</span>
+              <span>{{ vat() | vndCurrency }}</span>
+            </div>
+            <div class="cart-summary__row">
+              <span>Shipping</span>
+              <span class="cart-summary__ship-note">Calculated at checkout</span>
+            </div>
+          </div>
+
+          <div class="cart-summary__divider"></div>
+
+          <div class="cart-summary__total">
+            <span>Total</span>
+            <span class="cart-summary__total-amount">{{ total() | vndCurrency }}</span>
+          </div>
+
+          <button class="btn btn--primary btn--lg btn--full btn--liquid" (click)="checkout()" [disabled]="hasStockError()">
+            <span>Proceed to Checkout</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+            </button>
+
+          <a class="cart-summary__continue" routerLink="/search">← Continue Shopping</a>
+        </aside>
+      </div>
+    }
+  </main>
+</div>
+

@@ -1,0 +1,152 @@
+﻿
+.home-cta {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 80% 50%, rgba(29, 185, 84, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 15% 80%, rgba(255, 215, 0, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 10%, rgba(29, 185, 84, 0.08) 0%, transparent 45%),
+    linear-gradient(160deg, #080e08 0%, #0a0a0a 50%, #0c0a06 100%);
+  min-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+
+    &__dip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: radial-gradient(
+      ellipse 60% 100% at 50% 0%,
+      rgba(29, 185, 84, 0.08) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+    &__bg-mark {
+    position: absolute;
+    right: -2%;
+    bottom: -5%;
+    font-size: clamp(8rem, 25vw, 22rem);
+    font-weight: 900;
+    letter-spacing: -0.06em;
+    color: rgba(255, 255, 255, 0.025);
+    text-transform: uppercase;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+  }
+
+    &__content {
+    position: relative;
+    z-index: 10;
+    width: clamp(22rem, 55%, 42rem);
+    padding: 0 2rem 0 2rem;
+
+    @media (min-width: 768px)  { padding: 0 0 0 5rem; }
+    @media (min-width: 1024px) { padding: 0 0 0 5rem; }
+  }
+
+    &__heading-block {
+    font-size: clamp(2.5rem, 8vw, 8.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.04em;
+    line-height: 0.88;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1.5rem, 3.5vw, 6rem);
+  }
+
+  &__title-overflow {
+    overflow: hidden;
+    padding: 0.1em 0;
+  }
+
+  &__title {
+    font-size: inherit;
+    font-weight: 900;
+    color: #ffffff;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  &__char {
+    display: inline-block;
+    white-space: pre;
+    will-change: transform, opacity;
+  }
+
+  /* Clip-path "Great Read" box — starts closed, opened via GSAP */
+  &__clip {
+    clip-path: polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%);
+    transform: rotate(3deg);
+    opacity: 0;
+    margin-top: clamp(-3.5rem, -6vw, -7rem);
+    align-self: flex-start;
+    border: clamp(2px, 0.5vw, 5px) solid #0a0a0a;
+    will-change: clip-path, opacity;
+  }
+
+  &__clip-inner {
+    background: #ffd700;
+    padding: 0.35rem 1rem 0.6rem;
+    @media (min-width: 768px) { padding: 0.5rem 1.5rem 0.75rem; }
+  }
+
+  &__clip-text {
+    font-size: clamp(2.5rem, 8vw, 8.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.04em;
+    color: #050505;
+    white-space: nowrap;
+    line-height: 0.88;
+  }
+
+    &__body {
+    margin-top: clamp(2.5rem, 4vw, 5rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.75rem, 3vw, 3.5rem);
+  }
+
+  &__desc {
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.65;
+    max-width: 24rem;
+  }
+
+  &__btn {
+    display: inline-block;
+    padding: 1rem 2.75rem;
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    color: #050505;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(29, 185, 84, 0.30);
+    transition:
+      background var(--transition-base),
+      transform var(--transition-spring),
+      box-shadow var(--transition-base);
+
+    &:hover {
+      background: var(--color-accent-hover);
+      transform: scale(1.05) translateY(-2px);
+      box-shadow: 0 16px 48px rgba(29, 185, 84, 0.5);
+    }
+
+    &:active { transform: scale(0.97); }
+  }
+}

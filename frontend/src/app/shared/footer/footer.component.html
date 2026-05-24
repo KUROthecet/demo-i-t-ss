@@ -1,0 +1,93 @@
+<footer class="footer">
+  <div class="footer__container">
+
+        <div class="footer__grid">
+
+            <div class="footer__brand-col">
+                <a class="footer__logo" routerLink="/home">
+          <div class="footer__logo-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                    stroke="#1DB954" stroke-width="1.5"/>
+              <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12"
+                    stroke="#1DB954" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12"
+                    stroke="#1DB954" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="footer__logo-text">AIMS<span class="footer__logo-dot">.</span></span>
+        </a>
+
+        <p class="footer__tagline">
+          Your premium destination for physical media. Books, CDs, DVDs, and magazines delivered with care.
+        </p>
+
+                <div class="footer__social">
+                    <a class="footer__social-btn" href="#" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
+            </svg>
+          </a>
+                    <a class="footer__social-btn" href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+          </a>
+                    <a class="footer__social-btn" href="#" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+            <div class="footer__links-col">
+        <h3 class="footer__col-title">Customer Service</h3>
+        <ul class="footer__links">
+          <li><a class="footer__link" href="#">Contact Us</a></li>
+          <li><a class="footer__link" href="#">Shipping &amp; Delivery</a></li>
+          <li><a class="footer__link" href="#">Returns &amp; Refunds</a></li>
+          <li><a class="footer__link" href="#">FAQ</a></li>
+        </ul>
+      </div>
+
+            <div class="footer__links-col">
+        <h3 class="footer__col-title">About Us</h3>
+        <ul class="footer__links">
+          <li><a class="footer__link" routerLink="/home">Our Story</a></li>
+          <li><a class="footer__link" href="#">Careers</a></li>
+          <li><a class="footer__link" href="#">Terms of Service</a></li>
+          <li><a class="footer__link" href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+            <div class="footer__newsletter-col">
+        <h3 class="footer__col-title">Newsletter</h3>
+        <p class="footer__newsletter-desc">Subscribe to get 10% off your first order.</p>
+        <form class="footer__newsletter-form" (submit)="$event.preventDefault()">
+          <input
+            class="footer__newsletter-input"
+            type="email"
+            placeholder="Email address"
+            autocomplete="email"
+          />
+          <button class="btn btn--primary btn--sheen" type="submit">
+            <span class="footer__newsletter-btn-text">Join Newsletter</span>
+            </button>
+        </form>
+      </div>
+    </div>
+
+        <div class="footer__bottom">
+      <p class="footer__copyright">© 2025 AIMS Media Store. All rights reserved.</p>
+      <div class="footer__bottom-links">
+        <a class="footer__bottom-link" href="#">Privacy Policy</a>
+        <a class="footer__bottom-link" href="#">Terms of Service</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
+

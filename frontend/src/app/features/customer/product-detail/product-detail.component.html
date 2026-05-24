@@ -1,0 +1,301 @@
+<div class="detail-page">
+
+    @if (loading) {
+    <div class="detail-page__loading">
+      <div class="detail-skeleton">
+        <div class="detail-skeleton__image skeleton"></div>
+        <div class="detail-skeleton__info">
+          <div class="skeleton skeleton--text" style="width:30%"></div>
+          <div class="skeleton skeleton--text" style="width:80%; height:48px"></div>
+          <div class="skeleton skeleton--text" style="width:50%"></div>
+          <div class="skeleton skeleton--text" style="width:40%; height:36px"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+    @if (!loading && error) {
+    <div class="detail-page__error">
+      <div class="error-state">
+        <div class="error-state__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <h2 class="error-state__title">Product not found</h2>
+        <p class="error-state__desc">{{ error }}</p>
+        <a class="error-state__back" routerLink="/search">Browse Products</a>
+      </div>
+    </div>
+  }
+
+    @if (!loading && product) {
+    <main class="detail-page__main">
+
+            <div class="detail-page__top-glow"></div>
+
+            <nav class="breadcrumb">
+        <a class="breadcrumb__link" routerLink="/home">Home</a>
+        <svg class="breadcrumb__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+        <a class="breadcrumb__link" routerLink="/search" [queryParams]="{q: product.category}">
+          {{ product.category }}
+        </a>
+        <svg class="breadcrumb__sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+        <span class="breadcrumb__current">{{ product.title }}</span>
+      </nav>
+
+            <div class="detail-hero">
+
+                <div class="detail-hero__image-col">
+                    <div class="detail-hero__blob detail-hero__blob--green"></div>
+          <div class="detail-hero__blob detail-hero__blob--blue"></div>
+
+          <div class="detail-hero__image-card"
+               (mousemove)="onMouseMove($event)"
+               (mouseleave)="onMouseLeave()"
+               [style.transform]="imageTransform">
+
+                        <div class="detail-hero__dot-grid"></div>
+
+                        <div class="detail-hero__ring"></div>
+
+                        <div class="detail-hero__illustration">
+              <div class="book-stack" [class.book-stack--floating]="true">
+                                <div class="book-stack__book book-stack__book--back"></div>
+                                <div class="book-stack__book book-stack__book--mid"></div>
+                                <div class="book-stack__book book-stack__book--front">
+                  <div class="book-stack__book-inner"></div>
+                </div>
+              </div>
+            </div>
+
+                        <div class="detail-hero__image-caption">
+              {{ product.category }} Preview
+            </div>
+
+                        <div class="detail-hero__image-actions">
+              <button
+                class="btn btn--icon btn--secondary"
+                [class.detail-hero__action-btn--active]="isWishlisted"
+                (click)="isWishlisted = !isWishlisted"
+                title="Wishlist">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                        [attr.fill]="isWishlisted ? '#1DB954' : 'none'"
+                        [attr.stroke]="isWishlisted ? '#1DB954' : 'currentColor'"/>
+                </svg>
+              </button>
+              <button class="btn btn--icon btn--secondary" title="Share">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+                <div class="detail-hero__info-col">
+                    <div class="detail-hero__pills">
+            <span class="detail-hero__pill detail-hero__pill--category">
+              {{ product.category | uppercase }}
+            </span>
+            <span class="detail-hero__pill detail-hero__pill--stock">
+              <span class="detail-hero__stock-dot"></span>
+              @if (product.quantityInStock > 0) {
+                In Stock: {{ product.quantityInStock }}
+              } @else {
+                Out of Stock
+              }
+            </span>
+          </div>
+
+                    <h1 class="detail-hero__title">{{ product.title }}</h1>
+          <p class="detail-hero__author">{{ getSubtitle() }}</p>
+
+          <div class="detail-hero__divider"></div>
+
+                    <div class="detail-hero__price-block">
+            <span class="detail-hero__price">{{ formatNumber(product.currentPrice) }}</span>
+            <span class="detail-hero__currency">VND</span>
+          </div>
+          <p class="detail-hero__vat-note">
+            Excludes 10% VAT ({{ formatNumber(vatAmount) }} VND).
+            Total: <strong>{{ formatNumber(totalAmount) }} VND</strong>
+          </p>
+
+          <div class="detail-hero__divider"></div>
+
+                    <div class="detail-hero__actions">
+                        <div class="qty-stepper">
+              <button
+                class="qty-stepper__btn"
+                (click)="changeQty(-1)"
+                [disabled]="quantity <= 1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+              <span class="qty-stepper__value">{{ quantity }}</span>
+              <button
+                class="qty-stepper__btn"
+                (click)="changeQty(1)"
+                [disabled]="quantity >= (product.quantityInStock || 99)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </button>
+            </div>
+
+                        @if (product.quantityInStock > 0) {
+              <button
+                class="btn btn--lg btn--sheen"
+                [class.btn--success]="addedToCart" [class.btn--primary]="!addedToCart"
+                (click)="addToCart()">
+                @if (addedToCart) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span>Added to Cart!</span>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                  </svg>
+                  <span>Add to Cart</span>
+                }
+                </button>
+            } @else {
+              <button class="btn btn--primary btn--lg btn--disabled" disabled>
+                Out of Stock
+              </button>
+            }
+          </div>
+
+                    @if (product.quantityInStock > 0) {
+            <button class="detail-hero__buy-now" (click)="buyNow()">Buy Now →</button>
+          }
+        </div>
+      </div>
+
+            <div class="detail-specs">
+        <div class="detail-specs__col">
+          <h2 class="detail-specs__title">Specifications</h2>
+          <div class="detail-specs__grid">
+            <div class="spec-row">
+              <span class="spec-row__label">Barcode</span>
+              <span class="spec-row__value">{{ product.barcode || '—' }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-row__label">Category</span>
+              <span class="spec-row__value">{{ product.category }}</span>
+            </div>
+            @if (getAuthor()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Author</span>
+                <span class="spec-row__value">{{ getAuthor() }}</span>
+              </div>
+            }
+            @if (getPublisher()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Publisher</span>
+                <span class="spec-row__value">{{ getPublisher() }}</span>
+              </div>
+            }
+            @if (getArtist()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Artist</span>
+                <span class="spec-row__value">{{ getArtist() }}</span>
+              </div>
+            }
+            @if (getDirector()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Director</span>
+                <span class="spec-row__value">{{ getDirector() }}</span>
+              </div>
+            }
+            @if (getLanguage()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Language</span>
+                <span class="spec-row__value">{{ getLanguage() }}</span>
+              </div>
+            }
+            @if (getNumberOfPages()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Pages</span>
+                <span class="spec-row__value">{{ getNumberOfPages() }}</span>
+              </div>
+            }
+            @if (getRuntimeMinutes()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Runtime</span>
+                <span class="spec-row__value">{{ getRuntimeMinutes() }} min</span>
+              </div>
+            }
+            <div class="spec-row">
+              <span class="spec-row__label">Weight</span>
+              <span class="spec-row__value">{{ product.weight ? product.weight + ' kg' : '—' }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-row__label">Dimensions</span>
+              <span class="spec-row__value">{{ product.dimensions || '—' }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-row__label">Rush Delivery</span>
+              <span class="spec-row__value spec-row__value--badge"
+                    [class.spec-row__value--yes]="product.supportRushDelivery">
+                {{ product.supportRushDelivery ? '⚡ Available' : 'Not available' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+                <div class="detail-specs__col">
+          <h2 class="detail-specs__title">About this {{ product.category }}</h2>
+          <div class="detail-desc">
+            <p class="detail-desc__text">
+              <span class="detail-desc__dropcap">{{ (product.generalDescription || product.title).charAt(0) }}</span>
+              {{ (product.generalDescription || product.title + ' is a premium item in our curated collection. Explore this title and discover why it\'s beloved by our customers.').slice(1) }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+            <div class="detail-highlights">
+        @for (highlight of highlights; track highlight.title) {
+          <div class="highlight-card">
+            <div class="highlight-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <ng-container [ngSwitch]="highlight.icon">
+                  <ng-container *ngSwitchCase="'book'">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'sparkles'">
+                    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    <circle cx="12" cy="8" r="6"/>
+                    <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+                  </ng-container>
+                </ng-container>
+              </svg>
+            </div>
+            <h3 class="highlight-card__title">{{ highlight.title }}</h3>
+            <p class="highlight-card__desc">{{ highlight.desc }}</p>
+          </div>
+        }
+      </div>
+
+    </main>
+  }
+</div>
+

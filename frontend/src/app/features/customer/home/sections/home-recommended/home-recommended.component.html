@@ -1,0 +1,45 @@
+<section class="home-recommended">
+  <div class="home-recommended__container">
+
+    <div class="home-recommended__header">
+      <div>
+        <h2 class="home-recommended__title">Recommended for You</h2>
+        <p class="home-recommended__subtitle">Explore our curated collection</p>
+      </div>
+      <a class="home-recommended__view-all" routerLink="/search">
+        View All
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </a>
+    </div>
+
+    @if (loading) {
+      <div class="home-recommended__grid">
+        @for (s of skeletons; track $index) {
+          <div class="home-rec-skeleton">
+            <div class="home-rec-skeleton__image home-rec-skeleton__shimmer"></div>
+            <div class="home-rec-skeleton__info">
+              <div class="home-rec-skeleton__shimmer home-rec-skeleton__line" style="width:60%"></div>
+              <div class="home-rec-skeleton__shimmer home-rec-skeleton__line" style="width:88%"></div>
+              <div class="home-rec-skeleton__shimmer home-rec-skeleton__line" style="width:40%"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (!loading) {
+      <div class="home-recommended__grid">
+        @for (product of products; track product.id; let i = $index) {
+          <div
+            class="home-recommended__item"
+            [style.animation-delay]="i * 70 + 'ms'">
+            <app-product-card [product]="product" />
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</section>

@@ -1,0 +1,101 @@
+<header class="navbar">
+  <div class="navbar__container">
+
+        <a class="navbar__brand" routerLink="/home">
+      <div class="navbar__logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" class="navbar__logo-svg">
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                stroke="currentColor" stroke-width="1.5"/>
+          <path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="navbar__brand-text">AIMS<span class="navbar__brand-dot">.</span></span>
+    </a>
+
+        <form class="navbar__search-form" (submit)="$event.preventDefault(); search()">
+      <div class="navbar__search-wrap">
+        <div class="navbar__search-icon-wrap">
+          <svg class="navbar__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </div>
+        <input
+          class="navbar__search-input"
+          type="text"
+          placeholder="Search books, CDs, DVDs, newspapers..."
+          [(ngModel)]="searchQuery"
+          (keydown)="onSearchKey($event)"
+          id="navbar-search"
+          name="q"
+          autocomplete="off"
+        />
+      </div>
+    </form>
+
+        <div class="navbar__actions">
+
+      <nav class="navbar__nav">
+        <a class="btn btn--ghost navbar__nav-link" [class.navbar__nav-link--active]="isActive('/home')" routerLink="/home" #navHome>
+          <span class="navbar__nav-text">Home</span>
+        </a>
+        <a class="btn btn--ghost navbar__nav-link" [class.navbar__nav-link--active]="isActive('/search')" routerLink="/search" #navBrowse>
+          <span class="navbar__nav-text">Browse</span>
+        </a>
+        <a class="btn btn--ghost navbar__nav-link" [class.navbar__nav-link--active]="isActive('/order')" routerLink="/order" #navOrders>
+          <span class="navbar__nav-text">Orders</span>
+        </a>
+        <div class="navbar__nav-indicator" [style.left.px]="indicatorLeft" [style.width.px]="indicatorWidth"></div>
+      </nav>
+
+            <a class="navbar__cart-btn" routerLink="/cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        @if (itemCount() > 0) {
+          <span class="navbar__cart-badge">{{ itemCount() }}</span>
+        }
+      </a>
+
+            @if (currentUser()) {
+        <div class="navbar__user" (click)="showUserMenu = !showUserMenu" (clickOutside)="showUserMenu = false">
+          <div class="navbar__avatar">
+            {{ (currentUser()!.fullName || 'U').charAt(0).toUpperCase() }}
+          </div>
+
+          @if (showUserMenu) {
+            <div class="navbar__dropdown">
+              <div class="navbar__dropdown-header">
+                <span class="navbar__dropdown-name">{{ currentUser()!.fullName }}</span>
+                <span class="navbar__dropdown-role">{{ currentUser()!.role }}</span>
+              </div>
+              <div class="navbar__dropdown-divider"></div>
+              <button class="navbar__dropdown-item" (click)="goToDashboard()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                  <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                Dashboard
+              </button>
+              <button class="navbar__dropdown-item navbar__dropdown-item--danger" (click)="logout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Logout
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <a class="btn btn--primary btn--liquid" routerLink="/login">Staff Login</a>
+      }
+    </div>
+  </div>
+</header>
+

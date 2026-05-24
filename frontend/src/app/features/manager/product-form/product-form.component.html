@@ -1,0 +1,329 @@
+<div class="mgr-form-page">
+
+            <nav class="breadcrumb">
+        <a class="breadcrumb__home" routerLink="/manager/dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </a>
+        <span class="breadcrumb__sep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+        <div class="breadcrumb__item">
+          <span class="breadcrumb__current">{{ isEdit ? 'Edit Product' : 'Add New Product' }}</span>
+        </div>
+      </nav>
+
+            @if (!successMsg) {
+        <div class="step-wizard">
+          <div class="step-wizard__header">
+            <h1 class="step-wizard__title">{{ isEdit ? 'Edit Product' : 'Add New Product' }}</h1>
+            <span class="step-wizard__counter">Step {{ step }} of 3</span>
+          </div>
+          <div class="step-wizard__progress">
+            @for (s of [1,2,3]; track s) {
+              <button
+                class="step-wizard__step-btn"
+                [disabled]="s >= step"
+                (click)="goToStep(s)"
+                [attr.aria-label]="'Go to step ' + s">
+                <div class="step-wizard__step-fill" [class.step-wizard__step-fill--active]="s <= step"></div>
+                @if (s === step) {
+                  <div class="step-wizard__step-pulse"></div>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+            @if (successMsg) {
+        <div class="pf-success">
+          <div class="pf-success__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2 class="pf-success__title">{{ successMsg }}</h2>
+          <p class="pf-success__desc">Redirecting to product list...</p>
+          <div class="pf-success__bar"></div>
+        </div>
+      }
+
+            @if (error) {
+        <div class="pf-error-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{ error }}
+        </div>
+      }
+
+            @if (!successMsg) {
+
+                @if (step === 1) {
+          <div class="step-wizard__panel">
+            <p class="pf-step-label">Select Product Category</p>
+            <div class="category-picker">
+              @for (cat of categories; track cat.id) {
+                <button
+                  type="button"
+                  class="category-picker__card"
+                  [class.category-picker__card--selected]="form.category === cat.id"
+                  [style.box-shadow]="form.category === cat.id ? cat.glow : 'none'"
+                  (click)="selectCategory(cat.id)">
+                  <div class="category-picker__icon" [style.background]="cat.bg" [style.color]="cat.color">
+                    @if (cat.icon === 'book') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    }
+                    @if (cat.icon === 'disc') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+                    }
+                    @if (cat.icon === 'film') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+                    }
+                    @if (cat.icon === 'newspaper') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+                    }
+                  </div>
+                  <span class="category-picker__name">{{ cat.label }}</span>
+                </button>
+              }
+            </div>
+            <div class="pf-step-actions">
+              <button type="button" class="btn btn--primary btn--sheen"
+                      [disabled]="!canNext()" (click)="nextStep()">
+                <span>Continue</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        }
+
+                @if (step === 2) {
+          <div class="step-wizard__panel">
+            <div class="pf-glass-section">
+              <h2 class="pf-section-title">
+                <span class="pf-section-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </span>
+                General Information
+              </h2>
+
+              <div class="form-grid form-grid--2col">
+                <div class="form-group form-group--full">
+                  <label class="form-group__label">Product Title *</label>
+                  <input class="form-group__input" type="text" [(ngModel)]="form.title" placeholder="Enter product title" />
+                </div>
+                <div class="form-group">
+                  <label class="form-group__label">Original Price (VND) *</label>
+                  <input class="form-group__input" type="number" [(ngModel)]="form.originalPrice" placeholder="0" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-group__label">Current Price (VND)</label>
+                  <input class="form-group__input" type="number" [(ngModel)]="form.currentPrice" placeholder="Leave 0 for same as original" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-group__label">Initial Quantity *</label>
+                  <input class="form-group__input" type="number" [(ngModel)]="form.quantityInStock" placeholder="0" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-group__label">Barcode *</label>
+                  <input class="form-group__input" type="text" [(ngModel)]="form.barcode" placeholder="Scan or enter barcode" />
+                </div>
+                <div class="form-group">
+                  <label class="form-group__label">Weight (kg)</label>
+                  <input class="form-group__input" type="number" [(ngModel)]="form.weight" placeholder="0.0" step="0.1" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-group__label">Dimensions</label>
+                  <input class="form-group__input" type="text" [(ngModel)]="form.dimensions" placeholder="e.g. 21x14x2 cm" />
+                </div>
+                <div class="form-group form-group--full">
+                  <label class="form-group__label">Cover Image URL</label>
+                  <input class="form-group__input" type="url" [(ngModel)]="form.imageUrl" placeholder="https://example.com/cover.jpg" />
+                </div>
+                <div class="form-group form-group--full">
+                  <label class="form-group__label">General Description</label>
+                  <textarea class="form-group__textarea" [(ngModel)]="form.generalDescription" rows="3" placeholder="Brief product description..."></textarea>
+                </div>
+                <div class="form-group form-group--full">
+                  <label class="pf-checkbox-label">
+                    <input type="checkbox" [(ngModel)]="form.supportRushDelivery" class="pf-checkbox" />
+                    <span class="pf-checkbox-text">Supports Rush Delivery</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="pf-step-actions pf-step-actions--between">
+                <button type="button" class="btn btn--ghost" (click)="prevStep()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg>
+                  Back
+                </button>
+                <button type="button" class="btn btn--primary btn--sheen"
+                        [disabled]="!canNext()" (click)="nextStep()">
+                  <span>Continue</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+                @if (step === 3) {
+          <div class="step-wizard__panel">
+            <div class="pf-glass-section">
+              <h2 class="pf-section-title">
+                <span class="pf-section-icon" [style.color]="getCategoryDef().color" [style.background]="getCategoryDef().bg">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                </span>
+                {{ form.category }} Details
+              </h2>
+
+              <div class="form-grid form-grid--2col">
+                                @if (form.category === 'Book') {
+                  <div class="form-group form-group--full">
+                    <label class="form-group__label">Author(s) *</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.author" placeholder="e.g. J.K. Rowling" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Publisher</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.publisher" placeholder="Publisher name" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Cover Type</label>
+                    <select class="form-group__select" [(ngModel)]="form.coverType">
+                      <option value="Paperback">Paperback</option>
+                      <option value="Hardcover">Hardcover</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Publication Date</label>
+                    <input class="form-group__input" type="date" [(ngModel)]="form.publicationDate" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Number of Pages</label>
+                    <input class="form-group__input" type="number" [(ngModel)]="form.numberOfPages" placeholder="0" min="1" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Genre</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.genre" placeholder="e.g. Fiction, Science" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Language</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.language" placeholder="e.g. English, Vietnamese" />
+                  </div>
+                }
+
+                                @if (form.category === 'CD') {
+                  <div class="form-group form-group--full">
+                    <label class="form-group__label">Artist *</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.artist" placeholder="e.g. The Beatles" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Record Label</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.recordLabel" placeholder="Record label" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Release Date</label>
+                    <input class="form-group__input" type="date" [(ngModel)]="form.releaseDate" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Genre</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.genre" placeholder="e.g. Rock, Pop, Jazz" />
+                  </div>
+                  <div class="form-group form-group--full">
+                    <label class="form-group__label">Track List (comma separated)</label>
+                    <textarea class="form-group__textarea" [(ngModel)]="form.trackList" rows="3" placeholder="Track 1, Track 2, Track 3..."></textarea>
+                  </div>
+                }
+
+                                @if (form.category === 'DVD') {
+                  <div class="form-group form-group--full">
+                    <label class="form-group__label">Director *</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.director" placeholder="Director name" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Studio</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.studio" placeholder="Production studio" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Disc Type</label>
+                    <select class="form-group__select" [(ngModel)]="form.discType">
+                      <option value="Blu-ray">Blu-ray</option>
+                      <option value="HD-DVD">HD-DVD</option>
+                      <option value="Standard">Standard DVD</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Runtime (minutes)</label>
+                    <input class="form-group__input" type="number" [(ngModel)]="form.runtimeMinutes" placeholder="0" min="1" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Genre</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.genre" placeholder="e.g. Action, Drama" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Language</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.language" placeholder="e.g. English" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Subtitles</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.subtitles" placeholder="e.g. English, Vietnamese" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Release Date</label>
+                    <input class="form-group__input" type="date" [(ngModel)]="form.releaseDate" />
+                  </div>
+                }
+
+                                @if (form.category === 'Newspaper') {
+                  <div class="form-group">
+                    <label class="form-group__label">Publisher *</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.publisher" placeholder="Publisher name" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Editor in Chief</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.editorInChief" placeholder="Editor name" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Publication Date</label>
+                    <input class="form-group__input" type="date" [(ngModel)]="form.publicationDate" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">ISSN</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.issn" placeholder="ISSN number" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Issue Number</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.issueNumber" placeholder="Issue #" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Language</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.language" placeholder="e.g. Vietnamese" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-group__label">Publication Frequency</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.publicationFrequency" placeholder="e.g. Daily, Weekly" />
+                  </div>
+                  <div class="form-group form-group--full">
+                    <label class="form-group__label">Sections</label>
+                    <input class="form-group__input" type="text" [(ngModel)]="form.sections" placeholder="e.g. News, Sports, Business" />
+                  </div>
+                }
+              </div>
+
+              <div class="pf-step-actions pf-step-actions--between">
+                <button type="button" class="btn btn--ghost" (click)="prevStep()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg>
+                  Back
+                </button>
+                <button type="button" class="btn btn--primary btn--sheen"
+                        [disabled]="saving" (click)="save()">
+                  @if (saving) {
+                    <span class="spinner spinner--dark spinner--sm"></span>
+                    <span>Saving...</span>
+                  } @else {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>{{ isEdit ? 'Update Product' : 'Save Product' }}</span>
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      }
+  </div>
+

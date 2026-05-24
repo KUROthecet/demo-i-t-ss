@@ -1,0 +1,177 @@
+<div class="page-content">
+      <div class="admin-main__header">
+      <div>
+        <h1 class="admin-main__title">Order Processing</h1>
+        <p class="admin-main__subtitle">{{ orders.length }} orders in current view</p>
+      </div>
+    </div>
+
+        @if (error) {
+      <div class="admin-alert admin-alert--error">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ error }}
+      </div>
+    }
+
+        <div class="order-filters">
+      @for (f of filterOptions; track f.value) {
+        <button
+          class="order-filter-pill"
+          [class.order-filter-pill--active]="filter === f.value"
+          (click)="setFilter(f.value)">
+          {{ f.label }}
+        </button>
+      }
+    </div>
+
+        @if (loading) {
+      <div class="table-skeleton">
+        @for (s of skeletons; track $index) {
+          <div class="table-skeleton__row skeleton"></div>
+        }
+      </div>
+    } @else {
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Order Code</th>
+              <th>Customer</th>
+              <th>Province</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (order of orders; track order.id) {
+              <tr>
+                <td class="admin-table__mono">{{ order.orderCode }}</td>
+                <td>
+                  <div class="order-customer">
+                    <strong>{{ order.customerName }}</strong>
+                    <span class="order-customer__email">{{ order.customerEmail }}</span>
+                  </div>
+                </td>
+                <td class="admin-table__muted">{{ order.province }}</td>
+                <td class="admin-table__price">{{ order.totalAmount | vndCurrency }}</td>
+                <td>
+                  <span class="action-badge action-badge--update">{{ order.paymentMethod }}</span>
+                </td>
+                <td class="admin-table__muted">{{ formatDate(order.orderDate) }}</td>
+                <td>
+                  <span class="order-status-pill"
+                        [class.order-status-pill--pending]="order.status === 'PENDING_PROCESSING'"
+                        [class.order-status-pill--approved]="order.status === 'APPROVED'"
+                        [class.order-status-pill--rejected]="order.status === 'REJECTED'"
+                        [class.order-status-pill--cancelled]="order.status === 'CANCELLED'">
+                    {{ order.status.replace('_', ' ') }}
+                  </span>
+                </td>
+                <td>
+                  <div class="order-actions">
+                    @if (order.status === 'PENDING_PROCESSING') {
+                      <button
+                        class="order-action-btn order-action-btn--approve"
+                        [id]="'approve-btn-' + order.id"
+                        (click)="approve(order.id)"
+                        [disabled]="processing">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Approve
+                      </button>
+                      <button
+                        class="order-action-btn order-action-btn--reject"
+                        [id]="'reject-btn-' + order.id"
+                        (click)="openRejectModal(order.id)"
+                        [disabled]="processing">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                        Reject
+                      </button>
+                    }
+                    <a class="order-action-btn order-action-btn--view" [routerLink]="['/order', order.id]">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      View
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (orders.length === 0) {
+              <tr>
+                <td colspan="8" class="admin-table__empty">No orders found for this filter.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+</div>
+
+@if (showRejectModal) {
+  <div class="modal-overlay" (click)="showRejectModal = false">
+    <div class="modal" (click)="$event.stopPropagation()">
+            <div class="modal__header">
+        <div class="modal__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </div>
+        <h2 class="modal__title">Reject Order</h2>
+        <button class="modal__close" (click)="showRejectModal = false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+            <div class="modal__body">
+        <p class="modal__desc">
+          Provide a rejection reason. The customer will be notified by email and a refund (if applicable) will be processed.
+        </p>
+        <div class="form-group" style="margin-top: 16px;">
+          <label class="form-group__label" for="reject-reason">
+            Rejection Reason <span class="text-danger">*</span>
+          </label>
+          <textarea
+            id="reject-reason"
+            class="form-group__textarea"
+            [(ngModel)]="rejectionReason"
+            rows="4"
+            placeholder="e.g. Item out of stock, payment verification failed..."></textarea>
+        </div>
+      </div>
+
+            <div class="modal__footer">
+        <button class="btn btn--ghost" (click)="showRejectModal = false">Cancel</button>
+        <button
+          id="confirm-reject-btn"
+          class="btn btn--primary"
+          (click)="confirmReject()"
+          [disabled]="processing">
+          @if (processing) {
+            <span class="checkout-summary__spinner"></span>
+            Processing...
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            Confirm Rejection
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+

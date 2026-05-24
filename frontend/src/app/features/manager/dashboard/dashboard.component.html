@@ -1,0 +1,155 @@
+<div class="mgr-page">
+    <div class="mgr-page-heading">
+    <div>
+      <h1 class="mgr-page-heading__title">PM Dashboard</h1>
+      <p class="mgr-page-heading__subtitle">Inventory and order management — Welcome, <strong>{{ user?.fullName }}</strong></p>
+    </div>
+    <a class="mgr-add-btn" routerLink="/manager/product-form">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Product
+    </a>
+  </div>
+
+    <div class="kpi-grid-4" style="margin-bottom: 32px;">
+    <div class="kpi-card" style="--delay: 0.06s">
+      <div class="kpi-card__header">
+        <div class="kpi-card__icon" style="background:rgba(96,165,250,0.12);color:#60a5fa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+      </div>
+      <div class="kpi-card__label">Total Products</div>
+      <div class="kpi-card__value tabular-nums">{{ totalProducts }}</div>
+    </div>
+
+    <div class="kpi-card" style="--delay: 0.12s" [style.borderColor]="pendingCount > 0 ? 'rgba(245,158,11,0.5)' : ''">
+      <div class="kpi-card__header">
+        <div class="kpi-card__icon" style="background:rgba(245,158,11,0.12);color:#f59e0b">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        @if (pendingCount > 0) {
+          <div class="kpi-card__change kpi-card__change--negative">{{ pendingCount }} pending</div>
+        }
+      </div>
+      <div class="kpi-card__label">Pending Orders</div>
+      <div class="kpi-card__value tabular-nums">{{ pendingCount }}</div>
+    </div>
+
+    <div class="kpi-card" style="--delay: 0.18s">
+      <div class="kpi-card__header">
+        <div class="kpi-card__icon" style="background:rgba(29,185,84,0.12);color:#1DB954">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+      </div>
+      <div class="kpi-card__label">Total Orders</div>
+      <div class="kpi-card__value tabular-nums">{{ totalOrders }}</div>
+    </div>
+
+    <div class="kpi-card" style="--delay: 0.24s" [style.borderColor]="dailyDeleteUsed >= 15 ? 'rgba(239,68,68,0.5)' : ''">
+      <div class="kpi-card__header">
+        <div class="kpi-card__icon" [style.background]="dailyDeleteUsed >= 15 ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.06)'" [style.color]="dailyDeleteUsed >= 15 ? '#f87171' : 'rgba(255,255,255,0.6)'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        </div>
+      </div>
+      <div class="kpi-card__label">Deletions Today</div>
+      <div class="kpi-card__value tabular-nums">{{ dailyDeleteUsed }}<span style="font-size:16px;font-weight:500;color:rgba(255,255,255,0.35)">/20</span></div>
+      <div class="mgr-delete-bar">
+        <div class="mgr-delete-bar__fill" [style.width.%]="(dailyDeleteUsed / 20) * 100" [class.mgr-delete-bar__fill--warn]="dailyDeleteUsed >= 15"></div>
+      </div>
+    </div>
+  </div>
+
+    <div class="mgr-bottom-grid">
+        <div class="panel" style="animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) 0.2s both">
+      <div class="panel__header">
+        <h2 class="panel__title">Quick Actions</h2>
+      </div>
+      <div class="mgr-quick-actions">
+        <a class="action-card mgr-action-card" routerLink="/manager/products" (mousemove)="onMouseMove($event)">
+          <div class="action-icon" style="border-radius:10px;width:36px;height:36px;flex-shrink:0;background:rgba(96,165,250,0.12);color:#60a5fa">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="mgr-action-text">
+            <span class="action-title" style="font-size:14px;font-weight:700;display:block">All Products</span>
+            <span style="font-size:12px;color:rgba(255,255,255,0.45)">Browse catalog</span>
+          </div>
+          <svg class="action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a class="action-card mgr-action-card" routerLink="/manager/product-form" (mousemove)="onMouseMove($event)">
+          <div class="action-icon" style="border-radius:10px;width:36px;height:36px;flex-shrink:0;background:rgba(29,185,84,0.12);color:#1DB954">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div class="mgr-action-text">
+            <span class="action-title" style="font-size:14px;font-weight:700;display:block">Add Product</span>
+            <span style="font-size:12px;color:rgba(255,255,255,0.45)">New item wizard</span>
+          </div>
+          <svg class="action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a class="action-card mgr-action-card" routerLink="/manager/orders" (mousemove)="onMouseMove($event)">
+          <div class="action-icon" style="border-radius:10px;width:36px;height:36px;flex-shrink:0;background:rgba(245,158,11,0.12);color:#f59e0b">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div class="mgr-action-text">
+            <span class="action-title" style="font-size:14px;font-weight:700;display:block">Process Orders</span>
+            <span style="font-size:12px;color:rgba(255,255,255,0.45)">{{ pendingCount }} pending</span>
+          </div>
+          <svg class="action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a class="action-card mgr-action-card" routerLink="/manager/stock-history" (mousemove)="onMouseMove($event)">
+          <div class="action-icon" style="border-radius:10px;width:36px;height:36px;flex-shrink:0;background:rgba(168,85,247,0.12);color:#c084fc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="mgr-action-text">
+            <span class="action-title" style="font-size:14px;font-weight:700;display:block">Stock History</span>
+            <span style="font-size:12px;color:rgba(255,255,255,0.45)">Inventory logs</span>
+          </div>
+          <svg class="action-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+
+        <div class="panel" style="animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) 0.28s both">
+      <div class="panel__header">
+        <h2 class="panel__title">Recent Operations</h2>
+        <a class="panel__action" routerLink="/manager/stock-history">View All →</a>
+      </div>
+
+      @if (loading) {
+        <div class="mgr-skeleton-list">
+          @for (s of skeletons; track $index) {
+            <div class="mgr-skeleton-row skeleton-shimmer"></div>
+          }
+        </div>
+      } @else if (historyLogs.length === 0) {
+        <div class="mgr-empty-state">
+          <div class="mgr-empty-state__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <p class="mgr-empty-state__text">No operations recorded yet.</p>
+        </div>
+      } @else {
+        <div class="mgr-ops-list">
+          @for (log of historyLogs; track log.id; let i = $index) {
+            <div class="row-card mgr-op-item" [style.--i]="i">
+              <div class="mgr-op-item__icon" [style.background]="getActionBg(log.actionType)" [style.color]="getActionColor(log.actionType)">
+                @if (log.actionType?.includes('ADD')) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                }
+                @if (log.actionType?.includes('UPDATE')) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                }
+                @if (log.actionType?.includes('DELETE') || log.actionType?.includes('DEACTIVATE')) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                }
+              </div>
+              <div class="mgr-op-item__info">
+                <span class="mgr-op-item__type" [style.color]="getActionColor(log.actionType)">{{ log.actionType }}</span>
+                <span class="mgr-op-item__detail">{{ log.productBarcode || log.details || '—' }}</span>
+              </div>
+              <span class="mgr-op-item__time">{{ formatDate(log.createdAt) }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

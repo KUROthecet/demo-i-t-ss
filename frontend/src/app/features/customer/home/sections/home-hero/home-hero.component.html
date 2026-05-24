@@ -1,0 +1,49 @@
+<section class="home-hero">
+  <div class="home-hero__container">
+
+    <div class="home-hero__bg">
+      <img
+        class="home-hero__bg-img"
+        [src]="heroImageUrl"
+        alt="Library filled with books, music and film"
+        loading="eager" />
+    </div>
+
+    <div class="home-hero__overlay"></div>
+
+    <div class="home-hero__content">
+
+      <span class="home-hero__tag">AIMS MEDIA STORE</span>
+
+      <div class="home-hero__title-wrapper">
+        <h1 class="home-hero__title">
+          <span class="home-hero__title-line">
+            @for (char of titleLine1Chars; track $index) {
+              <span class="home-hero__char">{{ char }}</span>
+            }
+          </span>
+          <span class="home-hero__title-line">
+            @for (char of titleLine2Chars; track $index) {
+              <span class="home-hero__char">{{ char }}</span>
+            }
+          </span>
+        </h1>
+      </div>
+
+      <div class="home-hero__subtitle-clip">
+        <div class="home-hero__subtitle-box">
+          <span class="home-hero__subtitle-text">Read · Listen · Watch</span>
+        </div>
+      </div>
+
+      <p class="home-hero__desc">
+        Books, CDs, DVDs &amp; Newspapers — every story, every genre, all in one place.
+      </p>
+
+      <a class="home-hero__cta" routerLink="/search">
+        Browse Collection
+      </a>
+
+    </div>
+  </div>
+</section>

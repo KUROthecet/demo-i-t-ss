@@ -1,0 +1,342 @@
+<div class="search-page">
+  <main class="search-page__main">
+    <div class="search-page__layout">
+
+            <aside class="filters">
+                <div class="filters__header">
+          <div class="filters__header-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+            </svg>
+          </div>
+          <h2 class="filters__title">Filters</h2>
+        </div>
+
+                <div class="filters__section">
+          <h3 class="filters__section-title">Categories</h3>
+          <ul class="filters__list">
+            @for (cat of categories; track cat) {
+              <li>
+                <button
+                  class="filters__checkbox-btn group"
+                  (click)="toggleCategory(cat)"
+                >
+                  <div
+                    class="filters__checkbox"
+                    [class.filters__checkbox--checked]="selectedCategories.includes(cat)"
+                  >
+                    @if (selectedCategories.includes(cat)) {
+                      <svg viewBox="0 0 14 14" fill="none" class="w-full h-full text-black">
+                        <path d="M3 7.5L5.5 10L11 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    }
+                  </div>
+                  <span class="filters__cat-name">{{ cat }}</span>
+                  <span class="filters__cat-count" [class.filters__cat-count--active]="selectedCategories.includes(cat)">
+                    {{ getCategoryCount(cat) }}
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+
+                <div class="creative-filter">
+                    <div class="creative-filter__glow"></div>
+
+                    <div class="creative-filter__header">
+            <div class="creative-filter__header-left">
+              <div class="creative-filter__header-line"></div>
+              <h3 class="creative-filter__title">Price Range</h3>
+            </div>
+                        <div class="creative-filter__indicator">
+              <span class="creative-filter__indicator-text">Active</span>
+            </div>
+          </div>
+
+                    <div class="creative-filter__vu-meter">
+            @for (bar of vuBars; track bar.index) {
+              <div
+                class="creative-filter__vu-bar"
+                [class.creative-filter__vu-bar--active]="bar.isActive"
+                [class.creative-filter__vu-bar--green]="bar.index < 14"
+                [class.creative-filter__vu-bar--yellow]="bar.index >= 14 && bar.index < 17"
+                [class.creative-filter__vu-bar--red]="bar.index >= 17"
+                [style.height]="(20 + getSinValue(bar.index) * 15) + '%'"
+              ></div>
+            }
+          </div>
+
+                    <div class="creative-filter__slider-wrap">
+                        <div class="creative-filter__track">
+                            <div class="creative-filter__track-shadow"></div>
+
+                            <div
+                class="creative-filter__track-active"
+                [style.left]="minPercent + '%'"
+                [style.right]="(100 - maxPercent) + '%'"
+              ></div>
+
+                            <div class="creative-filter__track-pattern">
+                <svg width="100%" height="100%">
+                  <pattern id="waveform" x="0" y="0" width="20" height="12" patternUnits="userSpaceOnUse">
+                    <path d="M0,6 Q5,2 10,6 T20,6" stroke="white" stroke-width="0.5" fill="none" opacity="0.3" />
+                  </pattern>
+                  <rect width="100%" height="100%" fill="url(#waveform)" />
+                </svg>
+              </div>
+            </div>
+
+                        <div class="creative-filter__interactive" #sliderRef>
+                            <div
+                class="creative-filter__thumb"
+                [class.creative-filter__thumb--dragging]="isDraggingMin"
+                [style.left]="minPercent + '%'"
+                (mousedown)="handleMouseDown('min')"
+              >
+                <div class="creative-filter__thumb-outer"></div>
+                <div class="creative-filter__thumb-inner"></div>
+                <div class="creative-filter__thumb-center">
+                  <div class="creative-filter__thumb-indicator" style="transform: rotate(-135deg)"></div>
+                </div>
+                <div class="creative-filter__thumb-ring"></div>
+              </div>
+
+                            <div
+                class="creative-filter__thumb"
+                [class.creative-filter__thumb--dragging]="isDraggingMax"
+                [style.left]="maxPercent + '%'"
+                (mousedown)="handleMouseDown('max')"
+              >
+                <div class="creative-filter__thumb-outer"></div>
+                <div class="creative-filter__thumb-inner"></div>
+                <div class="creative-filter__thumb-center">
+                  <div class="creative-filter__thumb-indicator" style="transform: rotate(135deg)"></div>
+                </div>
+                <div class="creative-filter__thumb-ring creative-filter__thumb-ring--reverse"></div>
+              </div>
+            </div>
+          </div>
+
+                    <div class="creative-filter__displays">
+                        <div class="creative-filter__display-box group">
+              <div class="creative-filter__display-glow"></div>
+              <div class="creative-filter__display-content">
+                <div class="creative-filter__display-header">
+                  <span>Min</span>
+                </div>
+                <div class="creative-filter__display-value">
+                  <span class="creative-filter__price-text">{{ minPrice | vndCurrency }}</span>
+                  <span class="creative-filter__price-unit">VND</span>
+                </div>
+              </div>
+            </div>
+
+                        <div class="creative-filter__display-box group">
+              <div class="creative-filter__display-glow"></div>
+              <div class="creative-filter__display-content">
+                <div class="creative-filter__display-header">
+                  <span>Max</span>
+                </div>
+                <div class="creative-filter__display-value">
+                  <span class="creative-filter__price-text">{{ maxPrice | vndCurrency }}</span>
+                  <span class="creative-filter__price-unit">VND</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+                    <button class="creative-filter__apply-btn" (click)="doSearch()">
+            <div class="creative-filter__apply-glow"></div>
+            <div class="creative-filter__apply-inner">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Apply Filter</span>
+            </div>
+          </button>
+
+          @if (selectedCategories.length > 0 || minPrice > 0 || maxPrice < MAX_PRICE_VALUE) {
+            <button class="creative-filter__clear-btn" (click)="clearFilters()">
+              <div class="creative-filter__clear-glow"></div>
+              <div class="creative-filter__clear-inner">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span>Clear All</span>
+              </div>
+            </button>
+          }
+
+                    <div class="creative-filter__bg-pattern"></div>
+        </div>
+      </aside>
+
+            <div class="results">
+
+                <div class="results__header">
+          <div>
+            <h1 class="results__title">
+              Results for <span class="results__query">"{{ query || 'all' }}"</span>
+            </h1>
+            <div class="results__meta">
+              <span class="results__count">
+                Showing
+                <span class="results__count-num">{{ results.length }}</span>
+                result{{ results.length !== 1 ? 's' : '' }}
+              </span>
+
+              @for (cat of selectedCategories; track cat) {
+                <button class="results__active-filter" (click)="toggleCategory(cat)">
+                  {{ cat }}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              }
+            </div>
+          </div>
+
+                    <div class="results__sort">
+            <span class="results__sort-label">Sort by</span>
+            <div class="results__sort-wrap">
+              <select
+                class="results__sort-select"
+                [(ngModel)]="sortOrder"
+                (ngModelChange)="doSearch()">
+                <option value="">Relevance</option>
+                <option value="asc">Price: Low to High</option>
+                <option value="desc">Price: High to Low</option>
+              </select>
+              <svg class="results__sort-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+                @if (loading) {
+          <div class="results__grid">
+            @for (s of skeletons; track $index) {
+              <div class="result-skeleton">
+                <div class="result-skeleton__image skeleton"></div>
+                <div class="result-skeleton__body">
+                  <div class="skeleton skeleton--text" style="width:40%"></div>
+                  <div class="skeleton skeleton--text" style="width:90%"></div>
+                  <div class="skeleton skeleton--text" style="width:65%"></div>
+                  <div class="skeleton skeleton--text" style="width:35%"></div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+                @if (!loading && results.length > 0) {
+          <div class="results__grid">
+            @for (result of results; track result.id; let i = $index) {
+              <div class="result-card" [style.animation-delay]="i * 50 + 'ms'" [routerLink]="['/product', result.id]">
+                                <div class="result-card__icon-wrap">
+                  <div class="result-card__icon" [class]="'result-card__icon--' + result.category.toLowerCase()">
+                                        @if (result.category === 'Book') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                      </svg>
+                    }
+                    @if (result.category === 'CD') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
+                      </svg>
+                    }
+                    @if (result.category === 'DVD') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <rect x="2" y="2" width="20" height="20" rx="2.18"/>
+                        <line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                      </svg>
+                    }
+                    @if (result.category === 'Newspaper') {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+                        <path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>
+                      </svg>
+                    }
+                  </div>
+                  <div class="result-card__hover-glow"></div>
+
+                  @if (!result.quantityInStock) {
+                    <span class="result-card__sold-out">SOLD OUT</span>
+                  }
+                </div>
+
+                                <div class="result-card__body">
+                  <span class="result-card__type-pill">{{ result.category }}</span>
+
+                  <div class="result-card__info">
+                    <h3 class="result-card__title">{{ result.title }}</h3>
+                    <p class="result-card__subtitle">{{ getSubtitle(result) }}</p>
+                  </div>
+
+                  <div class="result-card__price-row">
+                    <span class="result-card__price">{{ result.currentPrice | vndCurrency }}</span>
+                    <span class="result-card__currency">VND</span>
+                  </div>
+
+                  <div class="result-card__actions">
+                    @if (!result.quantityInStock) {
+                      <button class="result-card__btn result-card__btn--disabled" disabled>Unavailable</button>
+                    } @else {
+                      <button class="result-card__btn result-card__btn--view"
+                              (click)="$event.stopPropagation()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        View
+                      </button>
+                      <button class="result-card__btn result-card__btn--add"
+                              (click)="addToCart($event, result)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                          <line x1="3" y1="6" x2="21" y2="6"/>
+                          <path d="M16 10a4 4 0 0 1-8 0"/>
+                        </svg>
+                        Add
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+                @if (!loading && results.length === 0 && searched) {
+          <div class="results__empty">
+            <div class="results__empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+            </div>
+            <h3 class="results__empty-title">No results found</h3>
+            <p class="results__empty-desc">Try adjusting your filters or searching for something else.</p>
+            <button class="results__empty-btn" (click)="clearFilters()">Clear filters</button>
+          </div>
+        }
+
+                @if (!searched && !loading) {
+          <div class="results__empty">
+            <div class="results__empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+            </div>
+            <h3 class="results__empty-title">Search for products</h3>
+            <p class="results__empty-desc">Enter a keyword or select a category to get started.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </main>
+</div>
+

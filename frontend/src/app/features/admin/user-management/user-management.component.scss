@@ -1,0 +1,39 @@
+.page-content {
+  animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.role-pill {
+  display: inline-block; padding: 3px 10px; border-radius: 9999px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.65);
+  &--admin { background: rgba(96,165,250,0.15); color: #60a5fa; }
+}
+
+.status-pill {
+  display: inline-block; padding: 3px 10px; border-radius: 9999px;
+  font-size: 11px; font-weight: 600;
+  &--active   { background: rgba(29,185,84,0.15);  color: #1DB954; }
+  &--inactive { background: rgba(239,68,68,0.12); color: #f87171; }
+}
+
+.user-cell { display: flex; align-items: center; gap: 10px; }
+.user-cell__info { display: flex; flex-direction: column; gap: 2px; }
+.user-cell__name { font-size: 13px; font-weight: 600; color: white; }
+.user-cell__username { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+.user-status { display: flex; align-items: center; gap: 8px; }
+.user-status__reason { color: rgba(245,158,11,0.8); cursor: help; svg { width: 14px; height: 14px; display: block; } }
+
+.user-self-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 9999px;
+  font-size: 11px; font-weight: 600;
+  background: rgba(29,185,84,0.12); color: #1DB954;
+}
+
+.user-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+

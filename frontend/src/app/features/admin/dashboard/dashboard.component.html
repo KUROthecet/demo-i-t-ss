@@ -1,0 +1,141 @@
+<div class="page-content">
+    <div class="admin-page-heading">
+    <div>
+      <h1 class="admin-page-heading__title">Admin Overview</h1>
+      <p class="admin-page-heading__subtitle">System status and user metrics</p>
+    </div>
+  </div>
+
+    <div class="kpi-grid-4" style="margin-bottom: 32px;">
+    <div class="kpi-card" style="--delay: 0.06s">
+      <div class="kpi-card__header">
+        <div class="kpi-card__icon" style="background:rgba(96,165,250,0.12);color:#60a5fa">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="kpi-card__change kpi-card__change--positive">+12%</div>
+      </div>
+      <div class="kpi-card__label">Total Users</div>
+      <div class="kpi-card__value tabular-nums">{{ totalUsers > 0 ? totalUsers : 0 }}</div>
+    </div>
+
+    <div class="kpi-card" style="--delay: 0.12s">
+      <div class="kpi-card__header">
+        <div class="kpi-card__icon" style="background:rgba(29,185,84,0.12);color:#1DB954">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="kpi-card__change kpi-card__change--positive">Active</div>
+      </div>
+      <div class="kpi-card__label">Active Users</div>
+      <div class="kpi-card__value tabular-nums">{{ activeUsers > 0 ? activeUsers : 0 }}</div>
+    </div>
+
+    <div class="kpi-card" style="--delay: 0.18s">
+      <div class="kpi-card__header">
+        <div class="kpi-card__icon" style="background:rgba(239,68,68,0.12);color:#f87171">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+          </svg>
+        </div>
+        <div class="kpi-card__change kpi-card__change--negative">Blocked</div>
+      </div>
+      <div class="kpi-card__label">Blocked</div>
+      <div class="kpi-card__value tabular-nums">{{ blockedUsers > 0 ? blockedUsers : 0 }}</div>
+    </div>
+
+    <div class="kpi-card" style="--delay: 0.24s">
+      <div class="kpi-card__header">
+        <div class="kpi-card__icon" style="background:rgba(192,132,252,0.12);color:#c084fc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+      </div>
+      <div class="kpi-card__label">System Load</div>
+      <div class="kpi-card__value tabular-nums">24%</div>
+    </div>
+  </div>
+
+    <div class="admin-bottom-grid">
+        <div class="panel" style="animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) 0.2s both">
+      <div class="panel__header">
+        <h2 class="panel__title">Recent Staff</h2>
+        <a class="panel__action" routerLink="/admin/users">View All →</a>
+      </div>
+
+      @if (loading) {
+        <div class="admin-skeleton-list">
+          @for (s of skeletons; track $index) {
+            <div class="admin-skeleton-row skeleton-shimmer"></div>
+          }
+        </div>
+      } @else {
+        <div class="admin-recent-list">
+          @for (u of recentUsers.slice(0, 5); track u.id) {
+            <div class="row-card admin-recent-item">
+              <div class="admin-recent-item__left">
+                <div class="user-cell__avatar" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">
+                  {{ (u.fullName || u.username).charAt(0).toUpperCase() }}
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <span style="font-weight:600;font-size:14px">{{ u.fullName || u.username }}</span>
+                  <span style="font-size:11px;color:rgba(255,255,255,0.4)">{{ u.role }}</span>
+                </div>
+              </div>
+              <span class="status-pill"
+                    [class.status-pill--active]="u.status === 'ACTIVE'"
+                    [class.status-pill--inactive]="u.status !== 'ACTIVE'">
+                {{ u.status }}
+              </span>
+            </div>
+          }
+          @if (recentUsers.length === 0) {
+            <p style="color:rgba(255,255,255,0.3);font-size:14px;padding:24px 0;text-align:center">No staff accounts yet.</p>
+          }
+        </div>
+      }
+    </div>
+
+        <div class="panel" style="animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) 0.28s both">
+      <div class="panel__header">
+        <h2 class="panel__title">Quick Actions</h2>
+      </div>
+
+      <div class="admin-quick-actions">
+        <a class="action-card" routerLink="/admin/users" (mousemove)="onMouseMove($event)">
+          <div class="action-icon" style="border-radius:10px;width:36px;height:36px;flex-shrink:0;background:rgba(96,165,250,0.12);color:#60a5fa">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <span style="font-size:14px;font-weight:700;display:block">Manage Users</span>
+            <span style="font-size:12px;color:rgba(255,255,255,0.45)">Staff &amp; accounts</span>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0;color:rgba(255,255,255,0.3)"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+
+        <a class="action-card" routerLink="/admin/users" (mousemove)="onMouseMove($event)" [queryParams]="{create: 1}">
+          <div class="action-icon" style="border-radius:10px;width:36px;height:36px;flex-shrink:0;background:rgba(29,185,84,0.12);color:#1DB954">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <line x1="12" y1="3" x2="12" y2="9"/><line x1="9" y1="6" x2="15" y2="6"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <span style="font-size:14px;font-weight:700;display:block">Create Account</span>
+            <span style="font-size:12px;color:rgba(255,255,255,0.45)">New staff member</span>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0;color:rgba(255,255,255,0.3)"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

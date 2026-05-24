@@ -1,0 +1,261 @@
+<div class="page-content">
+  <div class="admin-main__header">
+      <div>
+        <h1 class="admin-main__title">User Management</h1>
+        <p class="admin-main__subtitle">{{ users.length }} staff accounts</p>
+      </div>
+      <button id="create-user-btn" class="btn btn--primary btn--liquid" (click)="showCreateModal = true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Create User
+      </button>
+  </div>
+
+    @if (error) {
+      <div class="admin-alert admin-alert--error">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ error }}
+      </div>
+    }
+    @if (successMsg) {
+      <div class="admin-alert admin-alert--success">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        {{ successMsg }}
+      </div>
+    }
+
+    @if (loading) {
+      <div class="table-skeleton">
+        @for (s of skeletons; track $index) {
+          <div class="table-skeleton__row skeleton"></div>
+        }
+      </div>
+    } @else {
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>User</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of users; track user.id) {
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <div class="user-cell__avatar">{{ (user.fullName || user.username).charAt(0).toUpperCase() }}</div>
+                    <div class="user-cell__info">
+                      <span class="user-cell__name">{{ user.fullName }}</span>
+                      <span class="user-cell__username">{{ user.username }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="admin-table__muted">{{ user.email }}</td>
+                <td class="admin-table__muted">{{ user.phone || '—' }}</td>
+                <td>
+                  <span class="role-pill" [class.role-pill--admin]="user.role === 'ADMIN'">{{ user.role }}</span>
+                </td>
+                <td>
+                  <div class="user-status">
+                    <span class="status-pill"
+                          [class.status-pill--active]="user.status === 'ACTIVE'"
+                          [class.status-pill--inactive]="user.status !== 'ACTIVE'">
+                      {{ user.status }}
+                    </span>
+                    @if (user.blockReason) {
+                      <span class="user-status__reason" [title]="user.blockReason">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"/>
+                          <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td>
+                  @if (!isSelf(user.id)) {
+                    <div class="order-actions">
+                      @if (user.status === 'ACTIVE') {
+                        <button class="order-action-btn order-action-btn--reject" (click)="openBlockModal(user.id)">Block</button>
+                      }
+                      @if (user.status === 'BLOCKED') {
+                        <button class="order-action-btn order-action-btn--approve" (click)="unblock(user.id)">Unblock</button>
+                      }
+                      @if (user.status !== 'DEACTIVATED') {
+                        <button class="order-action-btn order-action-btn--view" (click)="resetPassword(user.id)">Reset PW</button>
+                        <button class="order-action-btn order-action-btn--view" (click)="openRoleModal(user)">Change Role</button>
+                        <button class="order-action-btn order-action-btn--reject" (click)="deactivate(user.id)">Deactivate</button>
+                      }
+                    </div>
+                  } @else {
+                    <span class="user-self-badge">You</span>
+                  }
+                </td>
+              </tr>
+            }
+            @if (users.length === 0) {
+              <tr><td colspan="6" class="admin-table__empty">No users found.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+</div>
+
+@if (showCreateModal) {
+  <div class="modal-overlay" (click)="showCreateModal = false">
+    <div class="modal modal--lg" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div class="modal__icon" style="background:rgba(29,185,84,0.15);border-color:rgba(29,185,84,0.25);color:#1DB954">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <line x1="12" y1="3" x2="12" y2="9"/><line x1="9" y1="6" x2="15" y2="6"/>
+          </svg>
+        </div>
+        <h2 class="modal__title">Create Staff Account</h2>
+        <button class="modal__close" (click)="showCreateModal = false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <div class="user-form-grid">
+          <div class="form-group">
+            <label class="form-group__label">Username <span class="text-danger">*</span></label>
+            <input class="form-group__input" type="text" [(ngModel)]="createForm.username" placeholder="john_doe" />
+          </div>
+          <div class="form-group">
+            <label class="form-group__label">Password <span class="text-danger">*</span></label>
+            <input class="form-group__input" type="password" [(ngModel)]="createForm.password" placeholder="••••••••" />
+          </div>
+          <div class="form-group">
+            <label class="form-group__label">Full Name <span class="text-danger">*</span></label>
+            <input class="form-group__input" type="text" [(ngModel)]="createForm.fullName" placeholder="John Doe" />
+          </div>
+          <div class="form-group">
+            <label class="form-group__label">Email <span class="text-danger">*</span></label>
+            <input class="form-group__input" type="email" [(ngModel)]="createForm.email" placeholder="john@aims.vn" />
+          </div>
+          <div class="form-group">
+            <label class="form-group__label">Phone</label>
+            <input class="form-group__input" type="tel" [(ngModel)]="createForm.phone" placeholder="0901 234 567" />
+          </div>
+          <div class="form-group">
+            <label class="form-group__label">Role <span class="text-danger">*</span></label>
+            <div class="form-group">
+              <select class="form-group__select" [(ngModel)]="createForm.role">
+                <option value="PRODUCT_MANAGER">Product Manager</option>
+                <option value="ADMIN">Admin</option>
+              </select>
+              <svg class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" (click)="showCreateModal = false">Cancel</button>
+        <button id="confirm-create-user-btn" class="btn btn--primary"
+                style="background:#1DB954;color:#000;"
+                (click)="createUser()" [disabled]="creating">
+          @if (creating) {
+            <span class="modal-spinner"></span>
+            Creating...
+          } @else {
+            Create User
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showBlockModal) {
+  <div class="modal-overlay" (click)="showBlockModal = false">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div class="modal__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+          </svg>
+        </div>
+        <h2 class="modal__title">Block User</h2>
+        <button class="modal__close" (click)="showBlockModal = false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <p class="modal__desc">Blocking prevents this user from logging in until unblocked.</p>
+        <div class="form-group" style="margin-top:16px">
+          <label class="form-group__label">Block Reason <span class="text-danger">*</span></label>
+          <textarea class="form-group__textarea" [(ngModel)]="blockReason" rows="3"
+                    placeholder="e.g. Suspicious activity, policy violation..."></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" (click)="showBlockModal = false">Cancel</button>
+        <button id="confirm-block-btn" class="btn btn--primary" (click)="confirmBlock()" [disabled]="blocking">
+          @if (blocking) {
+            <span class="modal-spinner"></span>
+            Blocking...
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            Block User
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showRoleModal) {
+  <div class="modal-overlay" (click)="showRoleModal = false">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div class="modal__icon" style="background:rgba(96,165,250,0.15);border-color:rgba(96,165,250,0.25);color:#60A5FA">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+        </div>
+        <h2 class="modal__title">Change Role</h2>
+        <button class="modal__close" (click)="showRoleModal = false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label class="form-group__label">New Role</label>
+          <div class="form-group">
+            <select class="form-group__select" [(ngModel)]="newRole">
+              <option value="PRODUCT_MANAGER">Product Manager</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+            <svg class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" (click)="showRoleModal = false">Cancel</button>
+        <button class="btn btn--primary" style="background:#60A5FA;color:#000;" (click)="confirmChangeRole()">Update Role</button>
+      </div>
+    </div>
+  </div>
+}
+

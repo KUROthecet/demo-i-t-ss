@@ -1,0 +1,112 @@
+<div class="page-wrapper">
+  <main class="track-page">
+    <div class="track-page__container">
+
+      <div class="track-header">
+        <div class="track-header__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </div>
+        <h1 class="track-header__title">Track Your Orders</h1>
+        <p class="track-header__desc">
+          Enter the email address used at checkout to view your order history.
+        </p>
+      </div>
+
+      <div class="track-search">
+        <div class="track-search__inner">
+          <div class="track-search__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <input
+            class="track-search__input"
+            type="email"
+            [(ngModel)]="email"
+            placeholder="your@email.com"
+            (keydown.enter)="trackOrders()"
+          />
+          <button
+            class="track-search__btn"
+            (click)="trackOrders()"
+            [disabled]="loading || !email.trim()"
+          >
+            @if (loading) {
+              <span class="track-search__spinner"></span>
+            } @else {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            }
+            <span>{{ loading ? 'Searching…' : 'Track' }}</span>
+          </button>
+        </div>
+        @if (error) {
+          <p class="track-search__error">{{ error }}</p>
+        }
+      </div>
+
+      @if (searched) {
+
+        @if (orders.length === 0) {
+          <div class="track-empty">
+            <div class="track-empty__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </div>
+            <h3 class="track-empty__title">No orders found</h3>
+            <p class="track-empty__desc">We couldn't find any orders for <strong>{{ email }}</strong>.</p>
+          </div>
+        } @else {
+          <div class="track-results">
+            <div class="track-results__meta">
+              <span class="track-results__count">
+                <span class="track-results__count-num">{{ orders.length }}</span>
+                order{{ orders.length !== 1 ? 's' : '' }} found
+              </span>
+            </div>
+
+            <div class="track-cards">
+              @for (order of orders; track order.id; let i = $index) {
+                <div class="order-row" [style.animation-delay]="i * 60 + 'ms'">
+
+                  <div class="order-row__left">
+                    <div class="order-row__code">{{ order.orderCode }}</div>
+                    <div class="order-row__meta">
+                      <span class="order-row__date">{{ formatDate(order.orderDate) }}</span>
+                      <span class="order-row__sep">·</span>
+                      <span class="order-row__items">{{ (order.orderLines?.length ?? 0) }} item{{ (order.orderLines?.length ?? 0) !== 1 ? 's' : '' }}</span>
+                    </div>
+                  </div>
+
+                  <div class="order-row__right">
+                    <span class="badge" [ngClass]="getStatusBadge(order.status)">
+                      {{ order.status.replace('_', ' ') }}
+                    </span>
+                    <span class="order-row__total">{{ order.totalAmount | vndCurrency }}</span>
+                    <a class="order-row__btn" [routerLink]="['/order', order.id]">
+                      Details
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="9 18 15 12 9 6"/>
+                      </svg>
+                    </a>
+                  </div>
+
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+      }
+
+    </div>
+  </main>
+</div>

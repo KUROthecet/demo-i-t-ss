@@ -1,0 +1,84 @@
+<a class="product-card"
+   [routerLink]="['/product', product.id]"
+   (click)="productClick.emit(product)"
+   (mouseenter)="isHovered = true"
+   (mouseleave)="isHovered = false"
+   [class.product-card--hovered]="isHovered">
+
+    <div class="product-card__image-wrap">
+    <img
+      class="product-card__img"
+      [src]="getImageUrl()"
+      [alt]="product.title"
+      loading="lazy"
+    />
+
+        <div class="product-card__hover-glow"></div>
+
+        @if (!product.quantityInStock) {
+      <div class="product-card__sold-out">SOLD OUT</div>
+    }
+
+        @if (product.supportRushDelivery && product.quantityInStock > 0) {
+      <div class="product-card__tag product-card__tag--new">⚡ RUSH</div>
+    }
+
+        @if (product.quantityInStock > 0) {
+      <div class="product-card__tag product-card__tag--category">
+        {{ product.category | uppercase }}
+      </div>
+    }
+
+        @if (showAddToCart && product.quantityInStock > 0) {
+      <button
+        class="product-card__cart-btn"
+        [class.product-card__cart-btn--added]="added"
+        (click)="onAddToCart($event)"
+        [title]="added ? 'Added!' : 'Add to cart'"
+        aria-label="Add to cart">
+        @if (added) {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20,6 9,17 4,12"/>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        }
+                @if (added) {
+          <span class="product-card__cart-pulse"></span>
+        }
+      </button>
+    }
+  </div>
+
+    <div class="product-card__info">
+        <div class="product-card__stars">
+      @for (star of starsArray; track $index) {
+        <svg class="product-card__star"
+             [class.product-card__star--filled]="$index < 4"
+             viewBox="0 0 24 24">
+          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+        </svg>
+      }
+      <span class="product-card__reviews">({{ reviewCount }})</span>
+    </div>
+
+        <h3 class="product-card__title">{{ product.title }}</h3>
+
+        <p class="product-card__subtitle">{{ getSubtitle() }}</p>
+
+        <div class="product-card__price-row">
+      <span class="product-card__price">{{ product.currentPrice | vndCurrency }}</span>
+      @if (product.originalPrice && product.originalPrice > product.currentPrice) {
+        <span class="product-card__original-price">{{ product.originalPrice | vndCurrency }}</span>
+      }
+    </div>
+
+        @if (product.quantityInStock > 0 && product.quantityInStock <= 5) {
+      <span class="product-card__stock-low">Only {{ product.quantityInStock }} left!</span>
+    }
+  </div>
+</a>
