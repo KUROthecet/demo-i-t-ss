@@ -35,10 +35,12 @@ public interface MediaRepository extends JpaRepository<Media, Long> {
     @Query("SELECT m FROM Media m WHERE m.status = com.aims.enums.MediaStatus.ACTIVE AND " +
            "(LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
            " LOWER(m.category) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
+           "(:categories IS NULL OR m.category IN :categories) AND " +
            "m.currentPrice BETWEEN :minPrice AND :maxPrice " +
            "ORDER BY m.title ASC")
     org.springframework.data.domain.Page<Media> searchByTitleOrCategory(
             @Param("query") String query,
+            @Param("categories") List<String> categories,
             @Param("minPrice") int minPrice,
             @Param("maxPrice") int maxPrice,
             org.springframework.data.domain.Pageable pageable

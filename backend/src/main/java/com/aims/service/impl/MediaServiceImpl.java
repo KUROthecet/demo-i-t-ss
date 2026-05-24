@@ -84,9 +84,10 @@ public class MediaServiceImpl implements MediaService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<Media> searchMedia(String query, int minPrice, int maxPrice, Pageable pageable) {
-        log.debug("Searching media: query={}, minPrice={}, maxPrice={}, pageable={}", query, minPrice, maxPrice, pageable);
-        return mediaRepository.searchByTitleOrCategory(query, minPrice, maxPrice, pageable);
+    public Page<Media> searchMedia(String query, List<String> categories, int minPrice, int maxPrice, Pageable pageable) {
+        log.debug("Searching media: query={}, categories={}, minPrice={}, maxPrice={}, pageable={}", query, categories, minPrice, maxPrice, pageable);
+        List<String> validCategories = (categories == null || categories.isEmpty()) ? null : categories;
+        return mediaRepository.searchByTitleOrCategory(query, validCategories, minPrice, maxPrice, pageable);
     }
 
     @Override

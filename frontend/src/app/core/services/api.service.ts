@@ -24,13 +24,17 @@ export class ApiService {
   getProduct(id: number): Observable<Media> {
     return this.http.get<Media>(`${this.baseUrl}/products/${id}`);
   }
-  searchProducts(query: string, minPrice = 0, maxPrice = 2147483647, page = 0, size = 20): Observable<PaginatedResponse<Media>> {
-    const params = new HttpParams()
+  searchProducts(query: string, categories: string[], minPrice = 0, maxPrice = 2147483647, page = 0, size = 20): Observable<PaginatedResponse<Media>> {
+    let params = new HttpParams()
       .set('query', query)
       .set('minPrice', minPrice)
       .set('maxPrice', maxPrice)
       .set('page', page)
       .set('size', size);
+    
+    if (categories && categories.length > 0) {
+      params = params.set('category', categories.join(','));
+    }
     return this.http.get<PaginatedResponse<Media>>(`${this.baseUrl}/products/search`, { params });
   }
 

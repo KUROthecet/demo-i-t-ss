@@ -48,11 +48,12 @@ public class MediaController {
     @GetMapping("/api/products/search")
     public ResponseEntity<Page<Media>> searchProducts(
             @RequestParam(defaultValue = "") String query,
+            @RequestParam(required = false) List<String> category,
             @RequestParam(defaultValue = "0") int minPrice,
             @RequestParam(defaultValue = "2147483647") int maxPrice,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return ResponseEntity.ok(mediaService.searchMedia(query, minPrice, maxPrice, PageRequest.of(page, size)));
+        return ResponseEntity.ok(mediaService.searchMedia(query, category, minPrice, maxPrice, PageRequest.of(page, size)));
     }
 
     @GetMapping("/api/products/stats")

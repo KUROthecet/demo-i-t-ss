@@ -139,15 +139,9 @@ export class SearchComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.api.searchProducts(this.query, this.minPrice, this.maxPrice, this.currentPage, this.pageSize).subscribe({
+    this.api.searchProducts(this.query, this.selectedCategories, this.minPrice, this.maxPrice, this.currentPage, this.pageSize).subscribe({
       next: (res: any) => {
-        let filtered = res.content;
-        
-        if (this.selectedCategories.length > 0) {
-          filtered = filtered.filter((p: any) => this.selectedCategories.includes(p.category));
-        }
-
-        this.results = filtered;
+        this.results = res.content;
         this.totalFilteredElements = res.totalElements;
         this.totalPages = res.totalPages;
         

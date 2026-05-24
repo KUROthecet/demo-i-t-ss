@@ -45,7 +45,7 @@ public interface MediaService {
      * @param pageable pagination parameters
      * @return a page of matching media items
      */
-    Page<Media> searchMedia(String query, int minPrice, int maxPrice, Pageable pageable);
+    Page<Media> searchMedia(String query, List<String> categories, int minPrice, int maxPrice, Pageable pageable);
 
     Map<String, Long> getCatalogStats();
 
