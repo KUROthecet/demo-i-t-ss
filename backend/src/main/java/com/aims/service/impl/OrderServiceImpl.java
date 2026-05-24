@@ -1,10 +1,23 @@
 package com.aims.service.impl;
 
-import com.aims.adapter.PaymentResult;
+import java.math.BigDecimal;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.aims.adapter.RefundResult;
 import com.aims.dto.request.OrderLineRequestDto;
 import com.aims.dto.request.OrderRequestDto;
-import com.aims.entity.*;
+import com.aims.dto.request.PaymentRequestDto;
+import com.aims.dto.response.PaymentResponseDto;
+import com.aims.entity.HistoryLog;
+import com.aims.entity.Media;
+import com.aims.entity.Order;
+import com.aims.entity.OrderLine;
 import com.aims.enums.OrderStatus;
 import com.aims.enums.PaymentMethod;
 import com.aims.enums.PaymentStatus;
@@ -17,16 +30,9 @@ import com.aims.service.EmailService;
 import com.aims.service.OrderService;
 import com.aims.service.PaymentService;
 import com.aims.service.ShippingCalculatorService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder(OrderRequestDto dto) {
         log.info("Creating order for customer: {}", dto.getCustomerEmail());
 
-        Order           order      = new Order();
+        Order order      = new Order();
         List<OrderLine> orderLines = new ArrayList<>();
         int    subtotal     = 0;
         double totalWeight  = 0.0;
@@ -114,15 +120,21 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderCode("ORD-" + Year.now().getValue() + "-" +
                 UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase());
 
-        PaymentResult paymentResult = paymentService.processPayment(
-                dto.getPaymentMethod().name(), order.getOrderCode(), total,
-                "AIMS Order Payment - " + order.getOrderCode());
+     // 1. Create the request object
+        PaymentRequestDto paymentRequest = new PaymentRequestDto();
+        paymentRequest.setOrderId(order.getId());
+        paymentRequest.setAmount(BigDecimal.valueOf(total)); // Assuming total is a double
+        paymentRequest.setPaymentMethod(dto.getPaymentMethod().name());
+        paymentRequest.setOrderInfo("AIMS Order Payment - " + order.getOrderCode());
 
-        if (!paymentResult.success()) {
-            throw new BusinessException("Payment failed: " + paymentResult.message());
+        // 2. Pass it to the service
+        PaymentResponseDto paymentResult = paymentService.processPayment(paymentRequest);
+
+        if (paymentResult.getMessage() == "Failed") {
+            throw new BusinessException("Payment failed: " + paymentResult.getMessage());
         }
 
-        order.markAsPaid(paymentResult.transactionId());
+        order.markAsPaid();
         Order savedOrder = orderRepository.save(order);
 
         emailService.sendOrderConfirmation(dto.getCustomerEmail(), dto.getCustomerName(), order.getOrderCode(), total);

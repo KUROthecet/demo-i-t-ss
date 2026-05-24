@@ -113,9 +113,8 @@ public class Order {
         this.status = OrderStatus.CANCELLED;
     }
 
-    public void markAsPaid(String transactionId) {
+    public void markAsPaid() {
         this.paymentStatus        = PaymentStatus.PAID;
-        this.paymentTransactionId = transactionId;
     }
 
     public void markAsRefunded() {
