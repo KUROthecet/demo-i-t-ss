@@ -48,7 +48,7 @@ export class ProductManagementComponent implements OnInit {
 
   protected loadProducts(): void {
     this.loading = true;
-    this.api.searchProducts(this.searchQuery, 0, 9999999).subscribe({
+    this.api.searchProducts(this.searchQuery, [], 0, 9999999).subscribe({
       next:  (data) => { this.products = data.content; this.loading = false; },
       error: ()     => { this.loading = false; }
     });
