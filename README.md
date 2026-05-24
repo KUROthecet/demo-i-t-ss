@@ -52,7 +52,7 @@ Engineered with **SOLID** principles and classic **Gang of Four (GoF) Design Pat
 
 ## 🚀 Getting Started
 
-Follow these steps to get a local copy up and running.
+Follow these steps to get a local copy up and running in less than a minute.
 
 ### 1. Prerequisites
 
@@ -61,44 +61,27 @@ Before you begin, ensure you have the following installed:
 * **Java JDK** (17+)
 * **Node.js** (v18+) & **NPM** (v9+)
 
-### 2. Infrastructure Setup (Docker)
+### 2. One-Click Fast Startup (Recommended)
 
-Spin up the required database and cache containers:
+To make launching the project as effortless as possible, we have provided an automated startup script.
 
-```bash
-# From the root directory of the project
-docker-compose up -d
+```cmd
+# Navigate to the project root directory and run:
+start_aims.bat
 ```
-*This exposes PostgreSQL on port `5435` and Redis on port `6379`.*
+*(Alternatively, you can just double-click `start_aims.bat` in Windows File Explorer).*
 
-### 3. Backend Setup
+**What this script does automatically:**
+1. Spins up the **PostgreSQL** and **Redis** Docker containers via `docker-compose`.
+2. Opens a new terminal and boots up the **Spring Boot Backend** (`mvnw spring-boot:run`). The backend will automatically seed the database on its first run with over 14,000+ realistic product records.
+3. Opens a new terminal, installs Node dependencies (`npm install`), and boots up the **Angular Frontend** (`npm start`).
 
-The backend will automatically seed the database on its first run with over 14,000+ realistic product records and default admin/manager accounts.
+### 3. Application URLs
 
-```bash
-# Navigate to the backend directory
-cd backend
-
-# Run the Spring Boot application (Windows)
-.\mvnw.cmd spring-boot:run
-
-# Or run via your preferred IDE (IntelliJ / Eclipse)
-```
-*The backend API will be available at `http://localhost:8080/api`*
-
-### 4. Frontend Setup
-
-```bash
-# Navigate to the frontend directory
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start the development server
-npm start
-```
-*The frontend application will be available at `http://localhost:4200`*
+Once the script completes, the services will be available at:
+* **Frontend:** `http://localhost:4200`
+* **Backend API:** `http://localhost:8080/api`
+* **Database:** `localhost:5435`
 
 ---
 
@@ -124,50 +107,36 @@ AIMS Shop is heavily influenced by clean architecture and object-oriented design
 - **Factory Method (`PaymentGatewayFactory`):** Centralizes the creation logic for payment processors, decoupling the checkout flow from specific payment implementations.
 - **Inheritance & Polymorphism:** The abstract `Media` entity acts as a base class for `Book`, `CD`, `DVD`, and `Newspaper`, allowing the repository and service layers to process all items polymorphically.
 
-### Directory Structure
+### Detailed Directory Structure
 
 ```text
 .
 ├── backend/                  # Spring Boot 3 API
 │   ├── src/main/java/com/aims/
-│   │   ├── adapter/          # Payment Gateways (Adapter Pattern)
-│   │   ├── config/           # Security, CORS, and Data Seeding
-│   │   ├── controller/       # REST API Endpoints
-│   │   ├── dto/              # Data Transfer Objects
-│   │   ├── entity/           # JPA Domain Models
-│   │   ├── repository/       # Spring Data Repositories
-│   │   ├── security/         # JWT Filters & Providers
-│   │   ├── service/          # Business Logic Layer
-│   │   └── strategy/         # Shipping Logic (Strategy Pattern)
+│   │   ├── adapter/          # Payment Gateways implementation (Adapter Pattern)
+│   │   ├── config/           # Security, CORS, and Data Seeding (DataInitializer)
+│   │   ├── controller/       # REST API Endpoints (Auth, Media, Order, Shipping, User)
+│   │   ├── dto/              # Data Transfer Objects (request/ and response/)
+│   │   ├── entity/           # JPA Domain Models (Media, Book, CD, Order, User...)
+│   │   ├── enums/            # Enums (MediaStatus, OrderStatus, PaymentMethod...)
+│   │   ├── exception/        # Global Exception Handler and custom exceptions
+│   │   ├── repository/       # Spring Data JPA interfaces for database queries
+│   │   ├── security/         # JWT Token Provider, JWT Filter, UserDetailsService
+│   │   ├── service/          # Business logic interfaces and implementations
+│   │   └── strategy/         # Shipping Logic (Standard vs Rush - Strategy Pattern)
+│   └── src/main/resources/   # Application properties (application.yml) & SQL scripts
 │
 ├── frontend/                 # Angular 17 Client
 │   ├── src/app/
-│   │   ├── core/             # Singletons, Models, Interceptors, Guards
-│   │   ├── features/         # Feature Modules (Customer, Manager, Admin)
-│   │   └── shared/           # Reusable UI Components & Pipes
+│   │   ├── core/             # Singletons: Models, Services (API, Auth, Cart), Guards, Interceptors
+│   │   ├── features/         # Feature Modules:
+│   │   │   ├── admin/        # Admin panel (Dashboard, User Management)
+│   │   │   ├── customer/     # Customer storefront (Home, Search, Cart, Checkout, Orders...)
+│   │   │   └── manager/      # Product Manager panel (Dashboard, Product Form, Stock History)
+│   │   └── shared/           # Reusable UI Components (Navbar, Footer, Product Cards) & Pipes
 │
-└── docker-compose.yml        # Infrastructure Definition
+├── start_aims.bat            # One-click startup script (Automates DB, Backend, and Frontend)
+└── docker-compose.yml        # Infrastructure Definition (PostgreSQL, Redis)
 ```
 
----
 
-## 🤝 Contributing
-
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📝 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-<br />
-<div align="center">
-  <sub>Built with ❤️ by the AIMS Engineering Team.</sub>
-</div>
