@@ -26,17 +26,18 @@ export class ManagerDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     Promise.all([
-      this.api.getPendingOrders().toPromise(),
-      this.api.getOrders().toPromise(),
-      this.api.getDailyDeleteCount().toPromise(),
-      this.api.getHistoryLogs().toPromise(),
-      this.api.getProducts().toPromise()
+      this.api.getPendingOrders(),
+      this.api.getOrders(),
+      this.api.getDailyDeleteCount(),
+      this.api.getHistoryLogs(),
+      this.api.getProducts()
     ]).then(([pending, all, delCount, logs, products]) => {
-      this.pendingCount    = pending?.length || 0;
-      this.totalOrders     = all?.length || 0;
-      this.dailyDeleteUsed = delCount?.count || 0;
-      this.historyLogs     = (logs || []).slice(0, 8);
-      this.totalProducts   = products?.length || 0;
+      pending.subscribe(res => this.pendingCount = res?.length || 0);
+      all.subscribe(res => this.totalOrders = res?.length || 0);
+      delCount.subscribe(res => this.dailyDeleteUsed = res?.count || 0);
+      logs.subscribe(res => this.historyLogs = (res || []).slice(0, 8));
+      products.subscribe(res => this.totalProducts = res?.length || 0);
+
       this.loading = false;
     }).catch(() => { this.loading = false; });
   }
