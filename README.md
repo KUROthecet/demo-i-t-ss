@@ -1,141 +1,173 @@
-# AIMS Shop — Quick Start Guide
+<div align="center">
+  <br />
+  <h1>🛒 AIMS Shop</h1>
+  <p>
+    <strong>A Modern, High-Performance E-Commerce Platform</strong>
+  </p>
+  <p>
+    <img src="https://img.shields.io/badge/Angular-17-DD0031?style=for-the-badge&logo=angular" alt="Angular" />
+    <img src="https://img.shields.io/badge/Spring_Boot-3.2-6DB33F?style=for-the-badge&logo=spring-boot" alt="Spring Boot" />
+    <img src="https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker" alt="Docker" />
+  </p>
+</div>
 
-## Prerequisites
-| Tool | Version | Notes |
-|------|---------|-------|
-| Docker Desktop | 4.x+ | For PostgreSQL + Redis |
-| Java JDK | 17+ | For Spring Boot backend |
-| Maven | 3.9+ | IntelliJ bundled or system |
-| Node.js | 18+ | For Angular frontend |
-| npm | 9+ | Comes with Node.js |
+<br />
+
+## 📖 About The Project
+
+**AIMS Shop** (A Store Management System) is an enterprise-grade e-commerce application designed with a robust **micro-architecture** approach. It bridges a lightning-fast, reactive frontend with a secure, highly-scalable backend. 
+
+Engineered with **SOLID** principles and classic **Gang of Four (GoF) Design Patterns**, AIMS Shop guarantees maintainability, testability, and enterprise-level reliability.
+
+### ✨ Key Highlights
+- **Stunning UI/UX:** Built with modern CSS architectures (BEM), fluid typography, and glassmorphism components.
+- **Lightning Fast Search:** Server-side pagination mapping natively to dynamic Angular 17 views.
+- **Enterprise Security:** JWT-based authentication with Role-Based Access Control (Admin, Manager, Customer).
+- **Pattern-Driven Backend:** Extensive use of Strategy, Factory, and Adapter patterns to handle Payments and Shipping.
 
 ---
 
-## Step 1 — Start Infrastructure (Docker)
-```powershell
-# From AIMS shop NEW folder:
+## 🛠 Built With
+
+### Frontend (Client-Side)
+- **Framework:** Angular 17 (Standalone Components, Signals)
+- **Styling:** Vanilla SCSS (BEM Methodology, CSS Variables, Responsive Design)
+- **Animation:** GSAP (GreenSock) for high-performance scroll triggers and micro-interactions
+- **Tooling:** Node.js v18+, NPM v9+
+
+### Backend (Server-Side)
+- **Framework:** Spring Boot 3.2.5
+- **Language:** Java 17
+- **Persistence:** Spring Data JPA / Hibernate
+- **Security:** Spring Security (JWT Tokens)
+- **Build Tool:** Maven
+
+### Infrastructure & DevOps
+- **Database:** PostgreSQL 15 (Dockerized)
+- **Caching:** Redis 7 (Dockerized)
+- **Containerization:** Docker & Docker Compose
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to get a local copy up and running.
+
+### 1. Prerequisites
+
+Before you begin, ensure you have the following installed:
+* **Docker Desktop** (v4.x+)
+* **Java JDK** (17+)
+* **Node.js** (v18+) & **NPM** (v9+)
+
+### 2. Infrastructure Setup (Docker)
+
+Spin up the required database and cache containers:
+
+```bash
+# From the root directory of the project
 docker-compose up -d
 ```
-This starts:
-- **PostgreSQL 15** on port `5435` (DB: `aims_db`, user: `aims_user`, pass: `aims_password`)
-- **Redis 7** on port `6379`
+*This exposes PostgreSQL on port `5435` and Redis on port `6379`.*
 
-Wait ~10 seconds for DB to be healthy.
+### 3. Backend Setup
+
+The backend will automatically seed the database on its first run with over 14,000+ realistic product records and default admin/manager accounts.
+
+```bash
+# Navigate to the backend directory
+cd backend
+
+# Run the Spring Boot application (Windows)
+.\mvnw.cmd spring-boot:run
+
+# Or run via your preferred IDE (IntelliJ / Eclipse)
+```
+*The backend API will be available at `http://localhost:8080/api`*
+
+### 4. Frontend Setup
+
+```bash
+# Navigate to the frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm start
+```
+*The frontend application will be available at `http://localhost:4200`*
 
 ---
 
-## Step 2 — Start Backend (Spring Boot)
-```powershell
-# From aims-backend folder:
-cd aims-backend
+## 🔐 Default Credentials
 
-# Using IntelliJ bundled Maven:
-& "C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2024.3.3\plugins\maven\lib\maven3\bin\mvn.cmd" spring-boot:run
+Upon first initialization, the database is seeded with the following roles:
 
-# OR open in IntelliJ and run AimsBackendApplication.java directly
+| Role | Username | Password | Access Level |
+|------|----------|----------|--------------|
+| **Admin** | `admin` | `admin123` | User Management, System Overview |
+| **Manager** | `manager` | `manager123` | Product Catalog, Order Processing, Stock History |
+| **Customer** | *Self-Register* | *Custom* | Browsing, Cart, Checkout, Order Tracking |
+
+---
+
+## 📐 Architecture & Design Patterns
+
+AIMS Shop is heavily influenced by clean architecture and object-oriented design principles. 
+
+### Core Design Patterns Implemented
+- **Strategy Pattern (`RushShippingStrategy`, `StandardShippingStrategy`):** Encapsulates diverse shipping calculation algorithms, allowing the system to switch shipping logic at runtime without modifying the context.
+- **Adapter Pattern (`PayPalAdapter`, `VietQRAdapter`):** Normalizes disparate external payment gateways into a single, unified `PaymentGateway` interface.
+- **Factory Method (`PaymentGatewayFactory`):** Centralizes the creation logic for payment processors, decoupling the checkout flow from specific payment implementations.
+- **Inheritance & Polymorphism:** The abstract `Media` entity acts as a base class for `Book`, `CD`, `DVD`, and `Newspaper`, allowing the repository and service layers to process all items polymorphically.
+
+### Directory Structure
+
+```text
+.
+├── backend/                  # Spring Boot 3 API
+│   ├── src/main/java/com/aims/
+│   │   ├── adapter/          # Payment Gateways (Adapter Pattern)
+│   │   ├── config/           # Security, CORS, and Data Seeding
+│   │   ├── controller/       # REST API Endpoints
+│   │   ├── dto/              # Data Transfer Objects
+│   │   ├── entity/           # JPA Domain Models
+│   │   ├── repository/       # Spring Data Repositories
+│   │   ├── security/         # JWT Filters & Providers
+│   │   ├── service/          # Business Logic Layer
+│   │   └── strategy/         # Shipping Logic (Strategy Pattern)
+│
+├── frontend/                 # Angular 17 Client
+│   ├── src/app/
+│   │   ├── core/             # Singletons, Models, Interceptors, Guards
+│   │   ├── features/         # Feature Modules (Customer, Manager, Admin)
+│   │   └── shared/           # Reusable UI Components & Pipes
+│
+└── docker-compose.yml        # Infrastructure Definition
 ```
 
-The backend starts on **http://localhost:8080**
+---
 
-On first run, `DataInitializer` automatically seeds:
-- **5 Books** (To Kill a Mockingbird, Great Gatsby, 1984, The Alchemist, Don Quixote)
-- **3 CDs** (Thriller, Millennium, Back in Black)
-- **3 DVDs** (Inception, Interstellar, The Godfather)
-- **3 Newspapers** (Tuổi Trẻ, Thanh Niên, The Economist)
-- **Admin account**: `admin` / `admin123`
-- **Manager account**: `manager` / `manager123`
+## 🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
-## Step 3 — Start Frontend (Angular 17)
-```powershell
-# From aims-frontend folder:
-cd aims-frontend
-npm install        # first time only
-npm start          # → http://localhost:4200
-```
+## 📝 License
 
----
+Distributed under the MIT License. See `LICENSE` for more information.
 
-## Application URLs
-| Service | URL | Notes |
-|---------|-----|-------|
-| Frontend | http://localhost:4200 | Customer-facing shop |
-| Backend API | http://localhost:8080/api | REST API |
-| Admin Login | http://localhost:4200/login | `admin` / `admin123` |
-| Manager Login | http://localhost:4200/login | `manager` / `manager123` |
-
----
-
-## Feature Map
-
-### Customer Features
-| Feature | Route | AIMS Spec |
-|---------|-------|-----------|
-| Home / Browse | `/home` | UC001 — View home page |
-| Search Products | `/search` | UC008 — Search products |
-| Product Detail | `/product/:id` | UC002 — View product details |
-| Cart | `/cart` | UC003 — Manage cart |
-| Checkout | `/checkout` | UC006-007 — Place order |
-| Payment | `/payment` | UC007 — VietQR / PayPal mock |
-| Track Orders | `/order` | UC011 — View orders by email |
-| Order Detail | `/order/:id` | UC011 — View order details + cancel |
-
-### Manager Features (login: manager/manager123)
-| Feature | Route | AIMS Spec |
-|---------|-------|-----------|
-| Dashboard | `/manager/dashboard` | Overview + KPIs |
-| Product List | `/manager/products` | UC004 — List products |
-| Add Product | `/manager/product-form` | UC004 — Add product |
-| Edit Product | `/manager/product-form/:id` | UC005 — Edit product |
-| Order Processing | `/manager/orders` | UC009/010 — Approve/Reject |
-| Stock History | `/manager/stock-history` | Manual adjustments |
-
-### Admin Features (login: admin/admin123)
-| Feature | Route | AIMS Spec |
-|---------|-------|-----------|
-| Admin Dashboard | `/admin/dashboard` | System overview |
-| User Management | `/admin/users` | UC012-015 — CRUD staff |
-
----
-
-## Architecture
-
-```
-aims-frontend/          ← Angular 17 (Standalone Components, Signals)
-├── core/
-│   ├── models/         ← TypeScript interfaces (Media, Order, User)
-│   ├── services/       ← ApiService, AuthService, CartService
-│   ├── interceptors/   ← JWT auth + error interceptors
-│   └── guards/         ← managerGuard, adminGuard
-├── shared/             ← Navbar, Footer, ProductCard (BEM SCSS)
-└── features/
-    ├── auth/login/
-    ├── customer/       ← home, search, product-detail, cart, checkout, payment, orders
-    ├── manager/        ← dashboard, product-management, product-form, order-processing, stock-history
-    └── admin/          ← dashboard, user-management
-
-aims-backend/           ← Spring Boot 3.2.5 + JPA + Security
-├── entity/             ← Media (abstract), Book, CD, DVD, Newspaper, Order, User, ...
-├── repository/         ← Spring Data JPA
-├── service/            ← Interfaces + Implementations
-├── controller/         ← REST API (Auth, Media, Order, Shipping, Stock, User)
-├── security/           ← JWT filter + UserDetailsService
-├── strategy/           ← Shipping (Standard + Rush)
-├── adapter/            ← PayPal + VietQR (mock gateways)
-└── config/             ← SecurityConfig + DataInitializer
-```
-
-## OOP Design Patterns
-| Pattern | Location | Purpose |
-|---------|----------|---------|
-| **Inheritance** | `Media ← Book/CD/DVD/Newspaper` | Polymorphic media types |
-| **Strategy** | `StandardShippingStrategy`, `RushShippingStrategy` | Configurable shipping calc |
-| **Adapter** | `PayPalAdapter`, `VietQRAdapter` | Unified payment gateway interface |
-| **Factory** | `PaymentGatewayFactory` | Select gateway by payment method |
-| **Template Method** | Entity domain methods (`approve`, `reject`, `block`) | Rich domain model |
-
-## Mock Services
-- **VietQR**: Generates a fake QR display — no real bank connection
-- **PayPal**: Returns a fake transaction ID — no real payment
-- **Email**: All emails are logged to console via `[MOCK EMAIL]` prefix
+<br />
+<div align="center">
+  <sub>Built with ❤️ by the AIMS Engineering Team.</sub>
+</div>
