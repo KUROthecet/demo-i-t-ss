@@ -1,6 +1,8 @@
-// Cohesion Level: Logical Cohesion
-// Reason Why: 
-// Groups product management tasks (CRUD, stats, browsing) together under the logical category of catalog REST endpoints
+// Stamp Coupling
+// The backend API endpoints accept the entire Media entity as the request body. 
+// This full object is then passed directly from MediaController to MediaServiceImpl.addMedia() 
+// and updateMedia(). However, the service methods only use a subset of fields 
+// (title, currentPrice, originalValue, barcode, status, quantityInStock) while ignoring many others.
 
 package com.aims.controller;
 

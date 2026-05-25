@@ -1,8 +1,6 @@
-/*
-Coupling level: Control coupling
-Reason why: Passes a boolean flag (rushDelivery) to explicitly dictate the internal if/else execution path.
-*/
-
+// Functional Cohesion
+// All logic inside the method directly contributes to compute the rush shipping fee by delegating 
+// to the standard strategy and adding a fixed surcharge.
 package com.aims.strategy;
 
 import org.springframework.stereotype.Component;

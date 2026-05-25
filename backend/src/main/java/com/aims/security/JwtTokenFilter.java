@@ -1,3 +1,7 @@
+// Functional Cohesion
+// All logic inside the method directly focuses on intercepting HTTP requests, extracting 
+// and validating JWT tokens, and setting up the security context for authenticated requests.
+
 package com.aims.security;
 
 import jakarta.servlet.FilterChain;

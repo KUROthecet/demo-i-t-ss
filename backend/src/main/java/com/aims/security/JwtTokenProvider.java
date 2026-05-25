@@ -1,8 +1,6 @@
-/*
-Coupling level: Common Coupling
-Reason why: Relies on globally shared public static configuration variables.
-*/
-
+// Functional Cohesion
+// All logic inside the method directly focuses on JSON Web Token (JWT) creation, 
+// validation, and data extraction.
 package com.aims.security;
 
 import io.jsonwebtoken.*;

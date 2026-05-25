@@ -1,3 +1,7 @@
+// Data Coupling
+// Each method accepts only primitive parameters (String to, String name, String orderCode, long totalAmount,
+// boolean refundIssued, String reason, String reason, long amount, String customerName). 
+// There is no shared global state, no control flags, and no unnecessary data structures.
 package com.aims.service.impl;
 
 import com.aims.service.EmailService;

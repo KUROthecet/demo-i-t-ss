@@ -1,13 +1,7 @@
-/*
-Coupling level: Common Coupling
-Reason why: Stateful singleton relying on globally shared configurations/environment variables.
-*/
-
-/*
-Coupling level: Control Coupling
-Reason why: Passes a String flag (paymentMethod) to control which internal payment logic executes; uses a boolean (isSuccess) to branch flow. 
-*/
-
+// Stamp Coupling
+// The processPayment(PaymentRequestDto request) method accepts a full PaymentRequestDto object. 
+// However, generateVietQr() only uses request.getAmount(), request.getOrderInfo(), and request.getOrderId(), 
+// while generatePaypalUrl() only uses request.getAmount() and request.getOrderId().
 package com.aims.service;
 
 import java.time.LocalDateTime;

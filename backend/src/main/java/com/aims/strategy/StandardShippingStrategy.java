@@ -1,7 +1,8 @@
-/*
-Coupling level: Control coupling
-Reason why: Passes a boolean flag (rushDelivery) to explicitly dictate the internal if/else execution path.
-*/
+
+// Functional Cohesion
+// All logic inside the method directly contributes to compute the standard shipping fee based on weight, 
+// province, and order total.
+
 
 package com.aims.strategy;
 

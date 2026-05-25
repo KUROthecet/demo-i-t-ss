@@ -1,8 +1,5 @@
-/*
-Coupling level: Common Coupling
-Reason why: Relies on globally shared public static configuration variables.
-*/
-
+// Functional Cohesion
+// All logic inside the method directly contributes to configure the security layer of the AIMS backend. 
 package com.aims.config;
 
 import com.aims.security.JwtTokenFilter;

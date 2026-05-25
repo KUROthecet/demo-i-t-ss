@@ -1,3 +1,5 @@
+// Communication Cohesion
+// This repository is dedicated to CD type.
 package com.aims.repository;
 
 import com.aims.entity.CD;

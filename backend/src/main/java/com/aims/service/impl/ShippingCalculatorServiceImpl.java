@@ -1,7 +1,7 @@
-/*
-Coupling level: Control coupling
-Reason why: Passes a boolean flag (rushDelivery) to explicitly dictate the internal if/else execution path.
-*/
+// Data Coupling
+// All methods (calculateFee(), calculate()) accept only primitive parameters 
+// (double weightKg, String province, double orderTotal, boolean rushDelivery). 
+// No complex objects are passed between modules
 
 package com.aims.service.impl;
 

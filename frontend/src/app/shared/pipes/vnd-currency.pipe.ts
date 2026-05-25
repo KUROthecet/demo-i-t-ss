@@ -1,3 +1,6 @@
+// Functional Cohesion
+// All logic inside the method directly contributes to format a numeric value 
+// into a Vietnamese Dong (VND) currency string.
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({

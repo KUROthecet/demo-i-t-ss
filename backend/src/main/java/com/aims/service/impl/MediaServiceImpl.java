@@ -1,18 +1,3 @@
-/*
-Coupling level: Content coupling
-Reason why: Multiple services completely build the log entity using setters without the entity's control.
-*/
-
-/*
-Coupling level: Content coupling
-Reason why: Both OrderServiceImpl and MediaServiceImpl independently instantiate and assemble the internal fields of HistoryLog (actionType, details, performedBy) using setters. The log entity has no say in how it is constructed.
-*/
-
-/*
-Coupling level: Control Coupling
-Reason why: Math signs (>, <) or hardcoded Strings ("ADD", "DELETE") are used as control flags to branch logic inside the repository.
-*/
-
 package com.aims.service.impl;
 
 import com.aims.entity.HistoryLog;

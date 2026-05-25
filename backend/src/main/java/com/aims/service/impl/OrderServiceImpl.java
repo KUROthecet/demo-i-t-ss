@@ -1,14 +1,8 @@
-/*
-Coupling level: Content Coupling 
-Reason why: Service acts as an overarching class, bypassing encapsulation to directly set the entities' internal state.
-*/
+// Stamp Coupling
+// The processOrderRefund(Order order) method receives the entire Order entity object as a parameter, 
+// but internally it only accesses three fields: order.getPaymentMethod(), order.getOrderCode(), 
+// order.getTotalAmount(), and order.getCustomerName().
 
-/*
-Cohesion Level: Procedural Cohesion
-Reason Why: 
-createOrder follows a sequential pipeline where inventory checking, stock reduction, fee calculations, 
-payment processing, database saving and email delivery depend directly on the output of the preceding step
-*/
 
 package com.aims.service.impl;
 
@@ -132,12 +126,14 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderCode("ORD-" + Year.now().getValue() + "-" +
                 UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase());
 
+     // 1. Create the request object
         PaymentRequestDto paymentRequest = new PaymentRequestDto();
         paymentRequest.setOrderId(order.getId());
         paymentRequest.setAmount(BigDecimal.valueOf(total)); // Assuming total is a double
         paymentRequest.setPaymentMethod(dto.getPaymentMethod().name());
         paymentRequest.setOrderInfo("AIMS Order Payment - " + order.getOrderCode());
 
+        // 2. Pass it to the service
         PaymentResponseDto paymentResult = paymentService.processPayment(paymentRequest);
 
         if (paymentResult.getMessage() == "Failed") {

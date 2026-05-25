@@ -1,8 +1,7 @@
-/*
-Coupling level: Common Coupling
-Reason why: UI components directly access/mutate a shared global array or global localStorage.
-*/
-
+// Stamp Coupling
+// The ProductCardComponent receives the entire Media object. However, the component only uses 
+// a small subset of product.id, product.title, product.category, product.currentPrice, 
+// product.imageUrl, product.Subtitle.
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
