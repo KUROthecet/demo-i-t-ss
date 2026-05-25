@@ -1,3 +1,9 @@
+// Stamp Coupling
+// The processOrderRefund(Order order) method receives the entire Order entity object as a parameter, 
+// but internally it only accesses three fields: order.getPaymentMethod(), order.getOrderCode(), 
+// order.getTotalAmount(), and order.getCustomerName().
+
+
 package com.aims.service.impl;
 
 import java.math.BigDecimal;

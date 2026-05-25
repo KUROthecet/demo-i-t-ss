@@ -1,3 +1,8 @@
+/*
+Coupling level: Common Coupling
+Reason why: UI components directly access/mutate a shared global array or global localStorage.
+*/
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';

@@ -1,3 +1,6 @@
+// Cohesion Level: Temporal Cohesion
+// Reason Why: Bootstraps multiple independent components, configurations and contexts concurrently at system startup
+
 package com.aims.aims_backend;
 
 import org.springframework.boot.SpringApplication;

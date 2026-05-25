@@ -1,3 +1,6 @@
+// Functional Cohesion
+// All logic inside the method directly focuses on JSON Web Token (JWT) creation, 
+// validation, and data extraction.
 package com.aims.security;
 
 import io.jsonwebtoken.*;

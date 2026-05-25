@@ -1,3 +1,9 @@
+
+// Functional Cohesion
+// All logic inside the method directly contributes to compute the standard shipping fee based on weight, 
+// province, and order total.
+
+
 package com.aims.strategy;
 
 import org.springframework.stereotype.Component;

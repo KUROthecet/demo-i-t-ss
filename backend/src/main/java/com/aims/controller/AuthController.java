@@ -1,3 +1,7 @@
+// Cohesion Level: Logical Cohesion
+// Reason Why: 
+// Groups distinct login and logout authentication endpoints together because they logically represent the identity resource
+
 package com.aims.controller;
 
 import com.aims.dto.request.LoginRequestDto;

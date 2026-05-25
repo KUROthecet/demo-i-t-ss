@@ -1,3 +1,8 @@
+// Stamp Coupling
+// The backend API endpoints accept the entire Media entity as the request body. 
+// This full object is then passed directly from MediaController to MediaServiceImpl.addMedia() 
+// and updateMedia(). However, the service methods only use a subset of fields 
+// (title, currentPrice, originalValue, barcode, status, quantityInStock) while ignoring many others.
 /**
  * Media Model — ISP-compliant interface hierarchy for AIMS product catalog.
  *

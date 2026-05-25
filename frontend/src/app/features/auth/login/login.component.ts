@@ -1,3 +1,8 @@
+/*
+Coupling level: Common Coupling
+Reason why: Multiple components read/write directly to the browser's global localStorage.
+*/
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';

@@ -1,3 +1,8 @@
+/*
+Coupling level: Content Coupling
+Reason why: UserServiceImpl fully constructs the entity piece-by-piece via public setters
+*/
+
 package com.aims.service.impl;
 
 import com.aims.dto.request.UserCreateDto;

@@ -1,3 +1,8 @@
+// Cohesion Level: Logical Cohesion
+// Reason Why: 
+// Groups distinct constructors for looking up resources by ID or string fields together 
+// under the single logical category of database missing resource exceptions
+
 package com.aims.exception;
 
 public class ResourceNotFoundException extends RuntimeException {

@@ -1,3 +1,14 @@
+/*
+Coupling level: Control coupling
+Reason why: Passes a boolean flag (rushDelivery) to explicitly dictate the internal if/else execution path.
+*/
+
+/*
+Cohesion Level: Logical Cohesion
+Reason Why: 
+Centralizes shipping fee calculation requests because they logically belong to logistics routing
+*/
+
 package com.aims.controller;
 
 import com.aims.dto.request.ShippingRequestDto;

@@ -1,3 +1,5 @@
+// Communication Cohesion
+// Contain methods to find transactions by order ID or transaction ID.
 package com.aims.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;

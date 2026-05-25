@@ -1,3 +1,5 @@
+// Communication Cohesion
+// This repository is dedicated to DVD type.
 package com.aims.repository;
 
 import com.aims.entity.DVD;

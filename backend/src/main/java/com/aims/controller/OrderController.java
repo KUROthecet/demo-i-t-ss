@@ -1,3 +1,7 @@
+// Cohesion Level: Logical Cohesion
+// Reasoning: 
+// Groups distinct order state actions because they all logically represent order resource endpoints
+
 package com.aims.controller;
 
 import com.aims.dto.request.OrderRequestDto;

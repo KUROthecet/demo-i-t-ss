@@ -1,3 +1,7 @@
+// Cohesion Level: Logical Cohesion
+// Reason Why: 
+// Groups separate stock tracking and manual adjustments together under the logical category of inventory logging
+
 package com.aims.controller;
 
 import com.aims.dto.request.StockAdjustmentDto;

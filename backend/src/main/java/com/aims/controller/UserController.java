@@ -1,3 +1,7 @@
+// Cohesion Level: Logical Cohesion
+// Reason Why: 
+// Groups user resource management actions because they logically belong to account administration
+
 package com.aims.controller;
 
 import com.aims.dto.request.UserCreateDto;

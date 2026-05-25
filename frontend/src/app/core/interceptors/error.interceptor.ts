@@ -1,3 +1,8 @@
+/*
+Coupling level: Common Coupling
+Reason why: Multiple components read/write directly to the browser's global localStorage.
+*/
+
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';

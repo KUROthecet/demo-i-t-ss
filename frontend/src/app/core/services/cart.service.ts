@@ -1,3 +1,9 @@
+// Stamp Coupling
+// The addToCart method receives the entire Media object (which contains over 15 fields). 
+// However, the service only needs a small subset of id, currentPrice, title, imageUrl, weight.
+
+// Communicational Cohesion
+// All methods work together to manage the shopping cart state (add, update, remove, persist, compute totals).
 import { Injectable, computed, signal } from '@angular/core';
 import { CartItem, Media } from '../models/media.model';
 

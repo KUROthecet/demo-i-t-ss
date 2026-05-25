@@ -1,3 +1,8 @@
+/*
+Coupling level: Common Coupling
+Reason why: Multiple components read/write directly to the browser's global localStorage.
+*/
+
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginResponse } from '../models/user.model';

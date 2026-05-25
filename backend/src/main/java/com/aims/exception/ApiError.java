@@ -1,3 +1,7 @@
+// Cohesion Level: Logical Cohesion
+// Reason Why: 
+// Centralizes error mapping data fields (timestamp, status, path, message) to logically format any system error payload
+
 package com.aims.exception;
 
 import java.time.LocalDateTime;

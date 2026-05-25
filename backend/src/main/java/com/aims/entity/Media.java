@@ -1,3 +1,8 @@
+/*
+Coupling level: Content coupling
+Reason why: Entities expose all internal state via @Data; service uses blind bulk-setters (updateDetails) to copy fields.
+*/
+
 package com.aims.entity;
 
 import com.aims.enums.MediaStatus;
