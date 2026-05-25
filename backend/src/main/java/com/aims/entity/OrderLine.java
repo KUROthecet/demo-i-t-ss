@@ -1,3 +1,8 @@
+/*
+Coupling level: Content Coupling 
+Reason why: Service acts as an overarching class, bypassing encapsulation to directly set the entities' internal state.
+*/
+
 package com.aims.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

@@ -1,3 +1,8 @@
+/*
+Coupling level: Common Coupling
+Reason why: Relies on globally shared public static configuration variables.
+*/
+
 package com.aims.config;
 
 import com.aims.security.JwtTokenFilter;

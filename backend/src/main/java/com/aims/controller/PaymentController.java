@@ -1,6 +1,13 @@
-// Cohesion Level: Logical Cohesion
-// Reason Why: 
-// Groups different payment execution endpoints together because they logically handle transaction processing
+/*
+Coupling level: Control Coupling
+Reason why: Passes a String flag (paymentMethod) to control which internal payment logic executes; uses a boolean (isSuccess) to branch flow. 
+*/
+
+/* 
+Cohesion Level: Logical Cohesion
+Reason Why: 
+Groups different payment execution endpoints together because they logically handle transaction processing
+*/
 
 package com.aims.controller;
 

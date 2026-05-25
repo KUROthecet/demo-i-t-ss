@@ -1,3 +1,8 @@
+/*
+Coupling level: Common Coupling
+Reason why: UI components directly access/mutate a shared global array or global localStorage.
+*/
+
 import { Injectable, computed, signal } from '@angular/core';
 import { CartItem, Media } from '../models/media.model';
 

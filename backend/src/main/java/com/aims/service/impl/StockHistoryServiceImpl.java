@@ -1,3 +1,13 @@
+/*
+Coupling level: Content coupling
+Reason why: Service builds the entity piece-by-piece using setters instead of letting the entity manage its state.
+*/
+
+/*
+Coupling level: Control Coupling
+Reason why: Math signs (>, <) or hardcoded Strings ("ADD", "DELETE") are used as control flags to branch logic inside the repository.
+*/
+
 package com.aims.service.impl;
 
 import com.aims.dto.request.StockAdjustmentDto;

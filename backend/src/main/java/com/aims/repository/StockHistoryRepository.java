@@ -1,3 +1,8 @@
+/*
+Coupling level: Control Coupling
+Reason why: Math signs (>, <) or hardcoded Strings ("ADD", "DELETE") are used as control flags to branch logic inside the repository.
+*/
+
 package com.aims.repository;
 
 import com.aims.entity.StockHistory;

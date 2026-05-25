@@ -1,3 +1,8 @@
+/*
+Coupling level: Common Coupling
+Reason why: Multiple components read/write directly to the browser's global localStorage.
+*/
+
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';

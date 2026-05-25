@@ -1,3 +1,8 @@
+/*
+Coupling level: Control coupling
+Reason why: Passes a boolean flag (rushDelivery) to explicitly dictate the internal if/else execution path.
+*/
+
 package com.aims.service.impl;
 
 import com.aims.service.ShippingCalculatorService;

@@ -1,3 +1,13 @@
+/*
+Coupling level: Common Coupling
+Reason why: Stateful singleton relying on globally shared configurations/environment variables.
+*/
+
+/*
+Coupling level: Control Coupling
+Reason why: Passes a String flag (paymentMethod) to control which internal payment logic executes; uses a boolean (isSuccess) to branch flow. 
+*/
+
 package com.aims.service;
 
 import java.time.LocalDateTime;

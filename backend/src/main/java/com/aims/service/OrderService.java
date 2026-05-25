@@ -1,3 +1,8 @@
+/*/*
+Coupling level: Content coupling
+Reason why: Multiple services completely build the log entity using setters without the entity's control.
+*/
+
 package com.aims.service;
 
 import com.aims.dto.request.OrderRequestDto;

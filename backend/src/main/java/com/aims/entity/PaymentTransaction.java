@@ -1,6 +1,13 @@
-// Cohesion Level: Temporal Cohesion
-// Reason Why: 
-// Timestamps transaction execution and system audit metrics concurrently at the moment a database save occurs
+/*
+Coupling level: Content coupling
+Reason why: Subclass improperly shadows the parent's ID and manually extracts/sets parent fields.
+*/
+
+/*
+Cohesion Level: Temporal Cohesion
+Reason Why: 
+Timestamps transaction execution and system audit metrics concurrently at the moment a database save occurs
+*/
 
 package com.aims.entity;
 

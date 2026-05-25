@@ -1,6 +1,13 @@
-// Cohesion Level: Temporal Cohesion
-// Reason Why: 
-// Forces timestamp logging to execute in sync with the database save cycle
+/*
+Coupling level: Content coupling
+Reason why: Service builds the entity piece-by-piece using setters instead of letting the entity manage its state.
+*/
+
+/*
+Cohesion Level: Temporal Cohesion
+Reason Why: 
+Forces timestamp logging to execute in sync with the database save cycle
+*/
 
 package com.aims.entity;
 
