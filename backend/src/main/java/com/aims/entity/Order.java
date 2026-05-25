@@ -1,3 +1,8 @@
+// Cohesion Level: Temporal Cohesion
+// Reason Why: 
+// The fields orderDate and lastUpdated are grouped within lifecycle hooks
+// Since their database values must generate at the same point in time during persistence
+
 package com.aims.entity;
 
 import com.aims.enums.OrderStatus;

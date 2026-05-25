@@ -1,3 +1,7 @@
+// Cohesion Level: Temporal Cohesion
+// Reason Why: 
+// Uses lifecycle hooks to generate system logging timestamps exactly at the moment database transactions occur
+
 package com.aims.entity;
 
 import jakarta.persistence.*;

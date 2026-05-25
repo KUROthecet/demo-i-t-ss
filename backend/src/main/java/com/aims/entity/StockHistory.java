@@ -1,3 +1,7 @@
+// Cohesion Level: Temporal Cohesion
+// Reason Why: 
+// Forces timestamp logging to execute in sync with the database save cycle
+
 package com.aims.entity;
 
 import jakarta.persistence.*;

@@ -1,3 +1,7 @@
+// Cohesion Level: Temporal Cohesion
+// Reason Why: 
+// Timestamps transaction execution and system audit metrics concurrently at the moment a database save occurs
+
 package com.aims.entity;
 
 import java.time.LocalDateTime;

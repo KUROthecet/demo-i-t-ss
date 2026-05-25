@@ -1,3 +1,7 @@
+// Cohesion Level: Logical Cohesion
+// Reason Why: 
+// Groups product management tasks (CRUD, stats, browsing) together under the logical category of catalog REST endpoints
+
 package com.aims.controller;
 
 import com.aims.entity.HistoryLog;

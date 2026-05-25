@@ -1,3 +1,7 @@
+// Cohesion Level: Logical Cohesion
+// Reason Why: 
+// Groups distinct exception mapping methods because they logically belong to the category of central REST API error handling
+
 package com.aims.exception;
 
 import jakarta.servlet.http.HttpServletRequest;

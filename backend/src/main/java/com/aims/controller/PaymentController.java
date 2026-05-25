@@ -1,3 +1,7 @@
+// Cohesion Level: Logical Cohesion
+// Reason Why: 
+// Groups different payment execution endpoints together because they logically handle transaction processing
+
 package com.aims.controller;
 
 import org.springframework.http.ResponseEntity;

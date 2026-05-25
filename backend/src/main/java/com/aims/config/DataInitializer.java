@@ -1,3 +1,8 @@
+// Cohesion Level: Temporal Cohesion
+// Reason Why: 
+// Seeding user accounts and trigger loading the database catalog are grouped
+// because they must execute concurrently during the application ready startup phase
+
 package com.aims.config;
 
 import com.aims.entity.User;

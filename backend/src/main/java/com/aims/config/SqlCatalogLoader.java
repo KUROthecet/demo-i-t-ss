@@ -1,3 +1,8 @@
+// Cohesion Level: Coincidental Cohesion and Procedural Cohesion
+// Reason Why: 
+// "parseSqlFile" executes a sequential pipeline of reading, cleaning, indexing, and parsing row data step by step
+// The utility methods at the bottom are coincidentally grouped here, having no logical relation to SQL loading
+
 package com.aims.config;
 
 import lombok.RequiredArgsConstructor;
@@ -180,7 +185,6 @@ public class SqlCatalogLoader {
             int orig = price(barcode, 8_000, 50_000);
             int curr = discounted(barcode, orig);
 
-            // Newspapers are fragile — no rush delivery
             media.add(new Object[]{
                 barcode, newsTitle(pub, sections), "Newspaper", orig, curr,
                 newsDesc(pub, editor, sections, pubDate),
