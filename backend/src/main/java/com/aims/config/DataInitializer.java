@@ -1,7 +1,14 @@
-// Cohesion Level: Temporal Cohesion
-// Reason Why: 
-// Seeding user accounts and trigger loading the database catalog are grouped
-// because they must execute concurrently during the application ready startup phase
+/* Cohesion Level: Temporal Cohesion
+Reason Why: 
+Seeding user accounts and trigger loading the database catalog are grouped
+because they must execute concurrently during the application ready startup phase
+ */
+
+/*
+SOLID Violation: Single Responsibility Principle (SRP)
+Reason Why: It seeds default user accounts and triggers catalog loading, combining two unrelated initialization tasks
+Improvement: Split startup tasks into separate UserInitializer and CatalogInitializer beans
+ */
 
 package com.aims.config;
 

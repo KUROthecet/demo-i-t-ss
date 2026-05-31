@@ -9,6 +9,12 @@ Reason Why:
 Timestamps transaction execution and system audit metrics concurrently at the moment a database save occurs
 */
 
+/*
+SOLID Violation: Liskov Substitution Principle (LSP)
+Reason Why: Subclass constructors leave several parent fields uninitialized, risking unexpected runtime errors during substitution
+Improvement: Ensure constructors fully initialize all parent and subclass properties completely and safely
+ */
+
 package com.aims.entity;
 
 import java.time.LocalDateTime;

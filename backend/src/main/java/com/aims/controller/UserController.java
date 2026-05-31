@@ -1,6 +1,12 @@
-// Cohesion Level: Logical Cohesion
-// Reason Why: 
-// Groups user resource management actions because they logically belong to account administration
+/* Cohesion Level: Logical Cohesion
+Reason Why: Groups user resource management actions because they logically belong to account administration
+ */
+
+/*
+ * SOLID Violation: Single Responsibility Principle (SRP)
+ * Reason Why: Groups multiple unrelated request actions, because they all target the user resource
+ * Improvement: Split into task focused controllers such as UserRegistrationController and UserBlockController
+ */
 
 package com.aims.controller;
 

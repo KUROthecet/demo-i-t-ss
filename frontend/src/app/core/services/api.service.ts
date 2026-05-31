@@ -1,6 +1,13 @@
-// Cohesion Level: Logical Cohesion
-// Reason Why: 
-// Groups completely separate network API requests together because they fall under the logical category of API services
+/* Cohesion Level: Logical Cohesion
+Reason Why: 
+Groups completely separate network API requests together because they fall under the logical category of API services
+ */
+
+/*
+SOLID Violation: Single Responsibility Principle (SRP)
+Reason Why: Acts as a monolith service file by grouping network API paths for all distinct business domains
+Improvement: Split into specialized network services like auth.api.ts and product.api.ts
+ */
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';

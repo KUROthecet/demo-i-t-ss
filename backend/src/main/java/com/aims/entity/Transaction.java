@@ -8,6 +8,12 @@ Cohesion Level: Temporal Cohesion
 Reason Why: Groups datetime updates inside transaction lifecycle hooks to ensure time metrics sync at database execution
 */
 
+/*
+SOLID Violation: Single Responsibility Principle (SRP)
+Reason Why: Acts as both a mapped database table and a business tracking abstraction
+Improvement: Isolate business fields from database mapping configurations
+*/
+
 package com.aims.entity;
 
 import jakarta.persistence.*;

@@ -9,6 +9,12 @@ Reason Why:
 Uses lifecycle hooks to generate system logging timestamps exactly at the moment database transactions occur
 */
 
+/*
+SOLID Violation: Single Responsibility Principle (SRP)
+Reason Why: Combines database persistence metadata with system event logging parameters
+Improvement: Separate relational database structures from transient application log objects
+*/
+
 package com.aims.entity;
 
 import jakarta.persistence.*;

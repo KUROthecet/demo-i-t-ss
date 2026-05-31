@@ -1,7 +1,14 @@
-// Data Coupling
-// Each method accepts only primitive parameters (String to, String name, String orderCode, long totalAmount,
-// boolean refundIssued, String reason, String reason, long amount, String customerName). 
-// There is no shared global state, no control flags, and no unnecessary data structures.
+/* Data Coupling
+Each method accepts only primitive parameters (String to, String name, String orderCode, long totalAmount,
+boolean refundIssued, String reason, String reason, long amount, String customerName) 
+There is no shared global state, no control flags, and no unnecessary data structures
+ */
+
+/*
+SOLID Violation: Interface Segregation Principle (ISP)
+Reason Why: Combines standard customer notifications with administrator refund notifications into a single interface
+Improvement: Split into separate CustomerNotificationService and AdminAlertService interfaces
+ */
 
 package com.aims.service;
 

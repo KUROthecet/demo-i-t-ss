@@ -9,6 +9,12 @@ Reason Why:
 Forces timestamp logging to execute in sync with the database save cycle
 */
 
+/*
+SOLID Violation: Single Responsibility Principle (SRP)
+Reason Why: Couples inventory adjustment values directly to database transactional table configurations
+Improvement: Use a clean stock history domain model decoupled from physical database annotations
+*/
+
 package com.aims.entity;
 
 import jakarta.persistence.*;

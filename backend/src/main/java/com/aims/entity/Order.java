@@ -9,6 +9,12 @@ The fields orderDate and lastUpdated are grouped within lifecycle hooks
 Since their database values must generate at the same point in time during persistence
 */
 
+/*
+SOLID Violation: Single Responsibility Principle (SRP)
+Reason Why: It combines domain business object properties and state logic with relational database persistence mapping
+Improvement: Use database-agnostic domain models alongside separate database mapped entities
+ */
+
 package com.aims.entity;
 
 import com.aims.enums.OrderStatus;
