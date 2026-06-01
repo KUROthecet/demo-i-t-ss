@@ -1,8 +1,15 @@
-// Stamp Coupling
-// The backend API endpoints accept the entire Media entity as the request body. 
-// This full object is then passed directly from MediaController to MediaServiceImpl.addMedia() 
-// and updateMedia(). However, the service methods only use a subset of fields 
-// (title, currentPrice, originalValue, barcode, status, quantityInStock) while ignoring many others.
+/* Stamp Coupling
+The backend API endpoints accept the entire Media entity as the request body. 
+This full object is then passed directly from MediaController to MediaServiceImpl.addMedia() 
+and updateMedia(). However, the service methods only use a subset of fields 
+(title, currentPrice, originalValue, barcode, status, quantityInStock) while ignoring many others
+ */
+
+/*
+SOLID Violations: Single Responsibility Principle (SRP) and Dependency Inversion Principle (DIP)
+Reason Why: Manages diverse request streams and directly targets the concrete MediaService class
+Improvement: Split into smaller controllers and depend on abstract service interfaces
+*/
 
 package com.aims.controller;
 

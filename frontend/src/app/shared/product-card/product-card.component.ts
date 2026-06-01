@@ -1,7 +1,22 @@
-// Stamp Coupling
-// The ProductCardComponent receives the entire Media object. However, the component only uses 
-// a small subset of product.id, product.title, product.category, product.currentPrice, 
-// product.imageUrl, product.Subtitle.
+/*
+Stamp Coupling
+The ProductCardComponent receives the entire Media object. However, the component only uses 
+a small subset of product.id, product.title, product.category, product.currentPrice, 
+product.imageUrl, product.Subtitle.
+*/
+
+/*
+SOLID Violations 1: Open/Closed Principle	(OCP) 
+Reason Why: Adding a new media type requires modifying the getImageUrl() and getSubtitle() methods. 
+The component is not closed for modification because new categories force internal changes. 
+This increases the risk of bugs and makes the component harder to maintain.
+Improvement: Move category‑specific logic into the Media model or a separate strategy.
+
+SOLID Violations 2: Dependency Inversion Principle (DIP)
+Reason Why: The component directly depends on the concrete CartService class. Switching to a different cart implementation would require changing the component’s code.
+Improvement: Define an abstract interface for cart operations.
+*/
+
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';

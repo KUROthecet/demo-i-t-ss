@@ -1,6 +1,13 @@
-// Cohesion Level: Logical Cohesion
-// Reasoning: 
-// Groups distinct order state actions because they all logically represent order resource endpoints
+/* Cohesion Level: Logical Cohesion
+Reasoning: 
+Groups distinct order state actions because they all logically represent order resource endpoints
+*/
+
+/*
+SOLID Violations: Single Responsibility Principle (SRP) and Dependency Inversion Principle (DIP)
+Reason Why: Handle customer checkouts, administrative approvals, rejections and cancellations in one controller class while relying directly on concrete services
+Improvement: Divide into specific task controllers and depend on abstraction layers
+*/
 
 package com.aims.controller;
 

@@ -1,5 +1,12 @@
-// Communication Cohesion
-// This repository is dedicated to Newspaper type.
+/*
+Communication Cohesion
+This repository is dedicated to Newspaper type.
+*/
+
+/*
+SOLID Violations: None
+*/
+
 package com.aims.repository;
 
 import com.aims.entity.Newspaper;

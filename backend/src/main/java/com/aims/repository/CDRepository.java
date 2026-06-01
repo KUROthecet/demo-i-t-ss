@@ -1,5 +1,12 @@
-// Communication Cohesion
-// This repository is dedicated to CD type.
+/*
+Communication Cohesion
+This repository is dedicated to CD type.
+*/
+
+/*
+SOLID Violations: None
+*/
+
 package com.aims.repository;
 
 import com.aims.entity.CD;

@@ -1,5 +1,13 @@
-// Communication Cohesion
-// Offer methods to retrieve history logs (findAllByOrderByCreatedAtDesc, findByActionTypeOrderByCreatedAtDesc) and count actions for daily limit enforcement.
+/*
+Communication Cohesion
+Offer methods to retrieve history logs (findAllByOrderByCreatedAtDesc, findByActionTypeOrderByCreatedAtDesc)
+and count actions for daily limit enforcement.
+*/
+
+/*
+SOLID Violations: None
+*/
+
 package com.aims.repository;
 
 import com.aims.entity.HistoryLog;

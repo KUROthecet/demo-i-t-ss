@@ -1,7 +1,14 @@
-// Cohesion Level: Coincidental Cohesion and Procedural Cohesion
-// Reason Why: 
-// "parseSqlFile" executes a sequential pipeline of reading, cleaning, indexing, and parsing row data step by step
-// The utility methods at the bottom are coincidentally grouped here, having no logical relation to SQL loading
+/* Cohesion Level: Coincidental Cohesion and Procedural Cohesion
+Reason Why: 
+"parseSqlFile" executes a sequential pipeline of reading, cleaning, indexing, and parsing row data step by step
+The utility methods at the bottom are coincidentally grouped here, having no logical relation to SQL loading
+ */
+
+/*
+SOLID Violation: Single Responsibility Principle (SRP)
+Reason Why: Handles raw string parsing and regex database dump sanitization alongside JDBC database write operations
+Improvement: Extract the text processing logic into a standalone and stateless parser component
+ */
 
 package com.aims.config;
 

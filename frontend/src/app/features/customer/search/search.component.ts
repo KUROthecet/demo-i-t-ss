@@ -1,4 +1,10 @@
 /*
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): SRP
+ * - Reason and Impact: Massive component (over 250 lines, many conditionals) handling both UI state, filtering logic, and API mappings.
+ * - Improvement Direction: Extract filtering and state management logic into a dedicated Angular service.
+ */
+/*
 Coupling level: Common Coupling
 Reason why: UI components directly access/mutate a shared global array or global localStorage.
 */

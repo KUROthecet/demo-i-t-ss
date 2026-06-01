@@ -1,5 +1,12 @@
-// Communication Cohesion
-// This repository is dedicated to Media type.
+/*
+Communication Cohesion
+This repository is dedicated to Media type.
+*/
+
+/*
+SOLID Violations: None
+*/
+
 package com.aims.repository;
 
 import com.aims.entity.Media;

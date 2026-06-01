@@ -1,4 +1,10 @@
 /*
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): DIP
+ * - Reason and Impact: Depends directly on concrete class PaymentService instead of an abstraction, making it hard to extend or test.
+ * - Improvement Direction: Introduce an IPaymentService interface and inject it into the controller.
+ */
+/*
 Coupling level: Control Coupling
 Reason why: Passes a String flag (paymentMethod) to control which internal payment logic executes; uses a boolean (isSuccess) to branch flow. 
 */

@@ -1,6 +1,13 @@
-// Cohesion Level: Logical Cohesion
-// Reason Why: 
-// Groups distinct login and logout authentication endpoints together because they logically represent the identity resource
+/* Cohesion Level: Logical Cohesion
+Reason Why: 
+Groups distinct login and logout authentication endpoints together because they logically represent the identity resource
+ */
+
+/*
+SOLID Violation: Dependency Inversion Principle (DIP)
+Reason Why: Directly depends on concrete JPA database repository layers instead of injecting abstract business services
+Improvement: Decouple database layer access behind service layer interfaces
+ */
 
 package com.aims.controller;
 

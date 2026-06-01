@@ -1,6 +1,13 @@
-// Cohesion Level: Logical Cohesion
-// Reason Why: 
-// Groups distinct exception mapping methods because they logically belong to the category of central REST API error handling
+/* Cohesion Level: Logical Cohesion
+Reason Why: 
+Groups distinct exception mapping methods because they logically belong to the category of central REST API error handling
+ */
+
+/*
+SOLID Violation: Single Responsibility Principle (SRP)
+Reason Why: It seeds default user accounts and triggers catalog loading, combining two unrelated initialization tasks
+Improvement: Split startup tasks into separate UserInitializer and CatalogInitializer beans
+ */
 
 package com.aims.exception;
 

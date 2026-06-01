@@ -1,5 +1,11 @@
-// Communication Cohesion
-// This repository is dedicated to Book type.
+/* 
+Communication Cohesion
+This repository is dedicated to Book type.*/
+
+/*
+SOLID Violations: None
+*/
+
 package com.aims.repository;
 
 import com.aims.entity.Book;

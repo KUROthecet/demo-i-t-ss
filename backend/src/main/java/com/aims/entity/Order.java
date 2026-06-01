@@ -1,4 +1,10 @@
 /*
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): SRP
+ * - Reason and Impact: Combines business logic and attribute validation with relational database persistence mapping configurations.
+ * - Improvement Direction: Separate business models from database configurations by using clean, database domain objects alongside mapped entities.
+ */
+/*
 Coupling level: Content Coupling 
 Reason why: Service acts as an overarching class, bypassing encapsulation to directly set the entities' internal state.
 */

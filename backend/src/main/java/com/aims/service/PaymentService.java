@@ -1,7 +1,14 @@
-// Stamp Coupling
-// The processPayment(PaymentRequestDto request) method accepts a full PaymentRequestDto object. 
-// However, generateVietQr() only uses request.getAmount(), request.getOrderInfo(), and request.getOrderId(), 
-// while generatePaypalUrl() only uses request.getAmount() and request.getOrderId().
+/* Stamp Coupling
+The processPayment(PaymentRequestDto request) method accepts a full PaymentRequestDto object. 
+However, generateVietQr() only uses request.getAmount(), request.getOrderInfo(), and request.getOrderId(), 
+while generatePaypalUrl() only uses request.getAmount() and request.getOrderId()
+ */
+
+/*
+SOLID Violations: Open/Closed Principle (OCP) and Dependency Inversion Principle (DIP)
+Reason Why: Branches payment operations using hardcoded "if else" string checks and directly instantiates a concrete RestTemplate object
+Improvement: Use the Strategy Pattern for payment strategies and inject RestTemplate through the constructor
+ */
 package com.aims.service;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,15 @@
-// Functional Cohesion
-// All logic inside the method directly focuses on intercepting HTTP requests, extracting 
-// and validating JWT tokens, and setting up the security context for authenticated requests.
+/*
+Functional Cohesion
+All logic inside the method directly focuses on intercepting HTTP requests, extracting 
+and validating JWT tokens, and setting up the security context for authenticated requests.
+*/
+
+/*
+SOLID Violations: Dependency Inversion Principle (DIP)
+Reason Why: The filter depends directly on UserDetailsServiceImpl, a concrete class, instead of the UserDetailsService interface. 
+If a different UserDetailsService implementation is needed, the filter code must be modified. This reduces flexibility, and makes unit testing harder.
+Improvement: Refactor controllers and filters to depend on abstract interfaces instead of concrete classes.
+*/
 
 package com.aims.security;
 
