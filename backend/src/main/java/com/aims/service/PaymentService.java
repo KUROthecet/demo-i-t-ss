@@ -5,13 +5,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import com.aims.dto.request.PaypalRequestDto;
 import com.aims.dto.response.PaypalResponseDto;
+import com.aims.entity.Order;
+import com.aims.entity.PaymentTransaction;
+import com.aims.entity.Transaction;
+import com.aims.enums.PaymentMethod;
+import com.aims.repository.PaymentTransactionRepository;
 
+import java.math.BigDecimal;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
@@ -20,7 +28,9 @@ import java.util.Map;
 @Service
 @Slf4j
 public class PaymentService {
-
+	
+	private final PaymentTransactionRepository paymentTransactionRepository;
+	
     @Value("${paypal.client.id}")
     private String clientId;
 
@@ -32,8 +42,9 @@ public class PaymentService {
 
     private final RestClient restClient;
 
-    public PaymentService() {
+    public PaymentService(PaymentTransactionRepository paymentTransactionRepository) {
         // RestClient is the modern Spring Boot 3.2+ way to make HTTP calls
+    	this.paymentTransactionRepository = paymentTransactionRepository;
         this.restClient = RestClient.create();
     }
 
@@ -128,4 +139,22 @@ public class PaymentService {
 	        throw new RuntimeException("Payment capture failed. User may not have approved the transaction.");
 	    }
 	}
+	
+	@Transactional
+    public PaymentTransaction processPayment(Order order, int amount, String content, PaymentMethod method) {
+        
+        // 1. Create the base transaction data
+        Transaction baseTransaction = new Transaction();
+        baseTransaction.setAmount(amount);
+
+        // 2. Create the specific payment transaction using your copy constructor
+        PaymentTransaction payment = new PaymentTransaction(baseTransaction);
+        payment.setOrder(order);
+        payment.setTransactionContent(content);
+        payment.setPaymentMethod(method);
+
+        // 3. Save to the database
+        return paymentTransactionRepository.save(payment);
+    }
+	
 }

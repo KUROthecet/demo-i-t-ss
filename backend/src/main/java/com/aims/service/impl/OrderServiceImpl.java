@@ -12,6 +12,7 @@ import com.aims.repository.HistoryLogRepository;
 import com.aims.repository.MediaRepository;
 import com.aims.repository.OrderRepository;
 import com.aims.service.EmailService;
+import com.aims.service.InvoiceService;
 import com.aims.service.OrderService;
 import com.aims.service.PaymentService;
 import com.aims.service.ShippingCalculatorService;
@@ -37,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
     private final HistoryLogRepository      historyLogRepository;
     private final EmailService              emailService;
     private final PaymentService            paymentService;
+    private final InvoiceService            invoiceService;
     private final ShippingCalculatorService shippingCalculatorService;
 
     private static final double VAT_RATE      = 0.10;
@@ -117,7 +119,8 @@ public class OrderServiceImpl implements OrderService {
 
         
         Order savedOrder = orderRepository.save(order);
-
+        PaymentTransaction newPaymentTransaction = paymentService.processPayment(savedOrder, total,"test", PaymentMethod.PAYPAL);
+        Invoice newInvoice = invoiceService.generateInvoiceFromOrder(savedOrder.getId());
         emailService.sendOrderConfirmation(dto.getCustomerEmail(), dto.getCustomerName(), order.getOrderCode(), total);
         logOrderAction("ORDER_CREATED", savedOrder.getId().toString(), "SYSTEM",
                 "Order " + order.getOrderCode() + " created for " + dto.getCustomerEmail() +
