@@ -1,4 +1,10 @@
 /*
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): SRP
+ * - Reason and Impact: Combines business logic and attribute validation with relational database persistence mapping configurations.
+ * - Improvement Direction: Separate business models from database configurations.
+ */
+/*
 Coupling level: Content coupling
 Reason why: Multiple services completely build the log entity using setters without the entity's control.
 */
@@ -7,12 +13,6 @@ Reason why: Multiple services completely build the log entity using setters with
 Cohesion Level: Temporal Cohesion
 Reason Why: 
 Uses lifecycle hooks to generate system logging timestamps exactly at the moment database transactions occur
-*/
-
-/*
-SOLID Violation: Single Responsibility Principle (SRP)
-Reason Why: Combines database persistence metadata with system event logging parameters
-Improvement: Separate relational database structures from transient application log objects
 */
 
 package com.aims.entity;

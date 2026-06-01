@@ -1,4 +1,10 @@
 /*
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): SRP
+ * - Reason and Impact: Combines business logic and attribute validation with relational database persistence mapping configurations.
+ * - Improvement Direction: Separate business models from database configurations.
+ */
+/*
 Coupling level: Content coupling
 Reason why: Service builds the entity piece-by-piece using setters instead of letting the entity manage its state.
 */
@@ -7,12 +13,6 @@ Reason why: Service builds the entity piece-by-piece using setters instead of le
 Cohesion Level: Temporal Cohesion
 Reason Why: 
 Forces timestamp logging to execute in sync with the database save cycle
-*/
-
-/*
-SOLID Violation: Single Responsibility Principle (SRP)
-Reason Why: Couples inventory adjustment values directly to database transactional table configurations
-Improvement: Use a clean stock history domain model decoupled from physical database annotations
 */
 
 package com.aims.entity;

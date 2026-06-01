@@ -1,4 +1,10 @@
 /*
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): SRP
+ * - Reason and Impact: Combines business logic and attribute validation with relational database persistence mapping configurations.
+ * - Improvement Direction: Separate business models from database configurations by using clean, database domain objects alongside mapped entities.
+ */
+/*
 Coupling level: Content Coupling 
 Reason why: Service acts as an overarching class, bypassing encapsulation to directly set the entities' internal state.
 */
@@ -8,12 +14,6 @@ Reason Why:
 The fields orderDate and lastUpdated are grouped within lifecycle hooks
 Since their database values must generate at the same point in time during persistence
 */
-
-/*
-SOLID Violation: Single Responsibility Principle (SRP)
-Reason Why: It combines domain business object properties and state logic with relational database persistence mapping
-Improvement: Use database-agnostic domain models alongside separate database mapped entities
- */
 
 package com.aims.entity;
 
