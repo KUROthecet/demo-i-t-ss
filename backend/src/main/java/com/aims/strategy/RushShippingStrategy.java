@@ -1,6 +1,9 @@
-// Functional Cohesion
-// All logic inside the method directly contributes to compute the rush shipping fee by delegating 
-// to the standard strategy and adding a fixed surcharge.
+/*
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): DIP
+ * - Reason and Impact: Injects and depends on the concrete StandardShippingStrategy class rather than an interface.
+ * - Improvement Direction: Inject the ShippingStrategy interface (using @Qualifier if needed) to decouple the implementation.
+ */
 package com.aims.strategy;
 
 import org.springframework.stereotype.Component;
