@@ -53,12 +53,22 @@ export class ApiService {
   getDailyDeleteCount(): Observable<{ count: number; remaining: number }> {
     return this.http.get<any>(`${this.baseUrl}/media/daily-delete-count`);
   }
-
-  placeOrder(order: OrderRequest): Observable<Order> {
-    return this.http.post<Order>(`${this.baseUrl}/orders`, order);
+  placeOrder(orderReq: any): Observable<string> {
+    return this.http.post<string>(
+      `${this.baseUrl}/orders`,
+      orderReq,
+      { responseType: 'text' as 'json' } // <-- This stops Angular from crashing
+    );
   }
   getOrders(): Observable<Order[]> {
     return this.http.get<Order[]>(`${this.baseUrl}/orders`);
+  }
+  captureOrder(paypalId: string): Observable<string> {
+    return this.http.post<string>(
+      `${this.baseUrl}/paypal/capture/${paypalId}`,
+      {}, // POST requests require a body, even an empty one
+      { responseType: 'text' as 'json' } // Tells Angular not to parse it as JSON
+    );
   }
   getPendingOrders(): Observable<Order[]> {
     return this.http.get<Order[]>(`${this.baseUrl}/orders/pending`);

@@ -60,3 +60,11 @@ logging:
   level:
     com.aims: INFO
     org.springframework.security: WARN
+
+# ===== PAYPAL =====
+paypal:
+     client:
+        id: AS80_ZkaQeM3a3jW8ymmla5sNV-j0j5wiyh2nvRfhtFn5x1dFZ26UgpWL7yB6eJMW-FUc1-3LQr3LRVB
+        secret: EKuym3PlkXCGFh42z5PqEexVgxkj7fOGKW94YM0aA0gVqQNglqIvm3-ul0ibcY5_02uqaw-OTtmHCtqX
+     api:
+        url: https://api-m.sandbox.paypal.com

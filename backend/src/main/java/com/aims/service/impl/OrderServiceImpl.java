@@ -1,7 +1,5 @@
 package com.aims.service.impl;
 
-import com.aims.adapter.PaymentResult;
-import com.aims.adapter.RefundResult;
 import com.aims.dto.request.OrderLineRequestDto;
 import com.aims.dto.request.OrderRequestDto;
 import com.aims.entity.*;
@@ -45,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
     private static final String MANAGER_EMAIL = "manager@aims.vn";
 
     @Override
-    public Order createOrder(OrderRequestDto dto) {
+    public String createOrder(OrderRequestDto dto) {
         log.info("Creating order for customer: {}", dto.getCustomerEmail());
 
         Order           order      = new Order();
@@ -113,16 +111,11 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderLines(orderLines);
         order.setOrderCode("ORD-" + Year.now().getValue() + "-" +
                 UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase());
+        log.info("IM HEREEEEEEEEEE");
+        String paypalId = paymentService.placeOrder(total);
+        log.info(paypalId);
 
-        PaymentResult paymentResult = paymentService.processPayment(
-                dto.getPaymentMethod().name(), order.getOrderCode(), total,
-                "AIMS Order Payment - " + order.getOrderCode());
-
-        if (!paymentResult.success()) {
-            throw new BusinessException("Payment failed: " + paymentResult.message());
-        }
-
-        order.markAsPaid(paymentResult.transactionId());
+        
         Order savedOrder = orderRepository.save(order);
 
         emailService.sendOrderConfirmation(dto.getCustomerEmail(), dto.getCustomerName(), order.getOrderCode(), total);
@@ -131,7 +124,7 @@ public class OrderServiceImpl implements OrderService {
                 " | Total: " + total + " VND");
 
         log.info("Order created successfully: {}, total: {} VND", order.getOrderCode(), total);
-        return savedOrder;
+        return paypalId;
     }
 
     @Override
@@ -217,18 +210,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private boolean processOrderRefund(Order order) {
-        if (order.getPaymentMethod() == PaymentMethod.PAYPAL) {
-            RefundResult result = paymentService.processRefund(
-                    order.getPaymentMethod().name(), order.getOrderCode(), order.getTotalAmount());
-            if (result.success()) {
-                order.markAsRefunded();
-                log.info("Refund processed for order {}: {}", order.getOrderCode(), result.refundId());
-                return true;
-            }
-        } else if (order.getPaymentMethod() == PaymentMethod.VIETQR) {
-            emailService.sendManagerRefundNotification(
-                    MANAGER_EMAIL, order.getOrderCode(), order.getTotalAmount(), order.getCustomerName());
-        }
+//        if (order.getPaymentMethod() == PaymentMethod.PAYPAL) {
+//            RefundResult result = paymentService.processRefund(
+//                    order.getPaymentMethod().name(), order.getOrderCode(), order.getTotalAmount());
+//            if (result.success()) {
+//                order.markAsRefunded();
+//                log.info("Refund processed for order {}: {}", order.getOrderCode(), result.refundId());
+//                return true;
+//            }
+//        } else if (order.getPaymentMethod() == PaymentMethod.VIETQR) {
+//            emailService.sendManagerRefundNotification(
+//                    MANAGER_EMAIL, order.getOrderCode(), order.getTotalAmount(), order.getCustomerName());
+//        }
         return false;
     }
 

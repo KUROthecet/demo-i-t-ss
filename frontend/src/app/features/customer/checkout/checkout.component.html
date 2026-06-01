@@ -239,22 +239,31 @@
           <span class="checkout-summary__total-amount">{{ total() | vndCurrency }}</span>
         </div>
 
-                <button
-          id="place-order-btn"
-          class="btn btn--primary btn--lg btn--full btn--liquid"
-          [class.btn--loading]="submitting"
-          [disabled]="submitting"
-          (click)="placeOrder()">
-          @if (submitting) {
-            <span class="checkout-summary__spinner"></span>
-            <span>Processing...</span>
-          } @else {
-            <span>Place Order</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          }
+        <div 
+          id="paypal-button-container" 
+          [hidden]="paymentMethod !== 'PAYPAL'" 
+          style="min-height: 55px; margin-top: 1rem;">
+        </div>
+
+        <div [hidden]="paymentMethod === 'PAYPAL'">
+          <button
+            id="place-order-btn"
+            class="btn btn--primary btn--lg btn--full btn--liquid"
+            [class.btn--loading]="submitting"
+            [disabled]="submitting"
+            (click)="placeOrder()">
+            
+            @if (submitting) {
+              <span class="checkout-summary__spinner"></span>
+              <span>Processing...</span>
+            } @else {
+              <span>Place Order</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            }
           </button>
+        </div>
 
         <p class="checkout-summary__secure">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -6,7 +6,7 @@ import com.aims.entity.Order;
 import java.util.List;
 
 public interface OrderService {
-    Order createOrder(OrderRequestDto dto);
+    String createOrder(OrderRequestDto dto);
     Order getOrderById(Long id);
     Order getOrderByCode(String code);
     List<Order> getPendingOrders();
