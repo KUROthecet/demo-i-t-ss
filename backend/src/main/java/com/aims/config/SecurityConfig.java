@@ -1,5 +1,17 @@
-// Functional Cohesion
-// All logic inside the method directly contributes to configure the security layer of the AIMS backend. 
+/* 
+Functional Cohesion
+All logic inside the method directly contributes to configure the security layer of the AIMS backend. 
+*/
+
+/*
+SOLID Violations: Open/Closed Principle (OCP)
+Reason Why: The filterChain() method hardcodes all endpoint patterns, so that adding a new public endpoint 
+forces the developer to modify this existing method. This breaks OCP and increases the risk of introducing 
+bugs in stable security rules. 
+Improvement: Move endpoint configuration to an external source or create a dedicated EndpointConfig class.
+Then SecurityConfig reads that list dynamically.
+*/
+
 package com.aims.config;
 
 import com.aims.security.JwtTokenFilter;

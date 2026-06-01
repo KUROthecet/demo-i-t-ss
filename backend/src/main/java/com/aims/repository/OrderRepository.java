@@ -1,6 +1,13 @@
-// Communication Cohesion
-// Provide custom query methods (findByOrderCode, findByStatusOrderByOrderDateDesc, 
-// findAllByOrderByOrderDateDesc, findByCustomerEmailOrderByOrderDateDesc) working with the Order entity.
+/*
+Communication Cohesion
+Provide custom query methods (findByOrderCode, findByStatusOrderByOrderDateDesc, 
+findAllByOrderByOrderDateDesc, findByCustomerEmailOrderByOrderDateDesc) working with the Order entity.
+*/
+
+/*
+SOLID Violations: None
+*/
+
 package com.aims.repository;
 
 import java.util.List;

@@ -1,11 +1,17 @@
-// Stamp Coupling
-// The backend API endpoints accept the entire Media entity as the request body. 
-// This full object is then passed directly from MediaController to MediaServiceImpl.addMedia() 
-// and updateMedia(). However, the service methods only use a subset of fields 
-// (title, currentPrice, originalValue, barcode, status, quantityInStock) while ignoring many others.
-/**
+/*
+Stamp Coupling
+The backend API endpoints accept the entire Media entity as the request body. 
+This full object is then passed directly from MediaController to MediaServiceImpl.addMedia() 
+and updateMedia(). However, the service methods only use a subset of fields 
+(title, currentPrice, originalValue, barcode, status, quantityInStock) while ignoring many others.
+*/
+
+/*
  * Media Model — ISP-compliant interface hierarchy for AIMS product catalog.
- *
+ * Reason: The BaseMedia interface contains many fields. A client that only needs id, title, and 
+ * currentPrice is forced to depend on unused fields.
+ * Improvement: Split BaseMedia into smaller, role‑based interfaces.
+ * 
  * OOP / Interface Segregation Principle (ISP) Design:
  * - Instead of one "God Interface" with 40 optional fields (an Anemic Design anti-pattern),
  *   we define a BaseMedia interface with shared fields, and separate sub-interfaces

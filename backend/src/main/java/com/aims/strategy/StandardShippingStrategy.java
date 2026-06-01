@@ -1,15 +1,14 @@
 /*
- * SOLID Principles Analysis:
- * - Violated Principle(s): OCP
- * - Reason and Impact: Hardcodes province names and pricing rules directly in the code.
- * - Improvement Direction: Externalize shipping configurations and regions into a database or properties file.
- */
+Functional Cohesion
+All logic inside the method directly contributes to compute the standard shipping fee based on weight, 
+province, and order total.
+*/
 
-
-// Functional Cohesion
-// All logic inside the method directly contributes to compute the standard shipping fee based on weight, 
-// province, and order total.
-
+/*
+SOLID Violations: Open/Closed Principle	(OCP) 
+Reason Why: Hardcodes province names and pricing rules directly in the code.
+Improvement: Externalize shipping configurations and regions into a database or properties file.
+*/
 
 package com.aims.strategy;
 

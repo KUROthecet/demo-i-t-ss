@@ -1,9 +1,28 @@
-// Stamp Coupling
-// The addToCart method receives the entire Media object (which contains over 15 fields). 
-// However, the service only needs a small subset of id, currentPrice, title, imageUrl, weight.
+/*
+Stamp Coupling
+The addToCart method receives the entire Media object (which contains over 15 fields). 
+However, the service only needs a small subset of id, currentPrice, title, imageUrl, weight.
 
-// Communicational Cohesion
-// All methods work together to manage the shopping cart state (add, update, remove, persist, compute totals).
+Communicational Cohesion
+All methods work together to manage the shopping cart state (add, update, remove, persist, compute totals).
+*/
+
+/*
+SOLID Violations 1: Single Responsibility Principle (SRP)
+Reason Why: The CartService handles multiple responsibilities. A change in storage mechanism would force changes to this class, affecting cart logic.
+Improvement: Separate persistence into a dedicated service.
+
+SOLID Violations 2: Open/Closed Principle (OCP)
+Reason Why: Adding a new cart behavior would require modifying the existing addToCart() or 
+adding new methods inside this class. This violates OCP because the class is closed for extension.
+Improvement: Use composition or strategy patterns.
+
+SOLID Violations 3: Dependency Inversion Principle (DIP)
+Reason Why: The service directly depends on the concrete browser API localStorage. Unit testing becomes difficult because it requires mocking localStorage. 
+Switching to a different storage would require rewriting parts of the class.
+Improvement: Implement an abstraction CartStorage.
+*/
+
 import { Injectable, computed, signal } from '@angular/core';
 import { CartItem, Media } from '../models/media.model';
 

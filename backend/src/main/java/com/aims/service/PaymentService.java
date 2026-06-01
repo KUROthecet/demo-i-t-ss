@@ -1,8 +1,13 @@
+/* Stamp Coupling
+The processPayment(PaymentRequestDto request) method accepts a full PaymentRequestDto object. 
+However, generateVietQr() only uses request.getAmount(), request.getOrderInfo(), and request.getOrderId(), 
+while generatePaypalUrl() only uses request.getAmount() and request.getOrderId()
+ */
+
 /*
- * SOLID Principles Analysis:
- * - Violated Principle(s): SRP, OCP
- * - Reason and Impact: Uses hardcoded conditional branching to process different payment methods (VietQR, PayPal).
- * - Improvement Direction: Implement the Strategy Pattern with a PaymentStrategy interface to resolve gateways dynamically.
+SOLID Violations: Open/Closed Principle (OCP) and Dependency Inversion Principle (DIP)
+Reason Why: Branches payment operations using hardcoded "if else" string checks and directly instantiates a concrete RestTemplate object
+Improvement: Use the Strategy Pattern for payment strategies and inject RestTemplate through the constructor
  */
 package com.aims.service;
 

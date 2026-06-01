@@ -1,5 +1,12 @@
-// Communication Cohesion
-// Provide queries (findByMedia_IdOrderByCreatedAtDesc, findAllByOrderByCreatedAtDesc) dedicated to StockHistory.
+/*
+Communication Cohesion
+Provide queries (findByMedia_IdOrderByCreatedAtDesc, findAllByOrderByCreatedAtDesc) dedicated to StockHistory.
+*/
+
+/*
+SOLID Violations: None
+*/
+
 package com.aims.repository;
 
 import com.aims.entity.StockHistory;

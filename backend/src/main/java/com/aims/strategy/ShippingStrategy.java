@@ -1,3 +1,6 @@
+/*
+SOLID Violations: None
+*/
 
 package com.aims.strategy;
 

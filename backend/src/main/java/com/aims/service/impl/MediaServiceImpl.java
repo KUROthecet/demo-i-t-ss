@@ -1,9 +1,9 @@
 /*
- * SOLID Principles Analysis:
- * - Violated Principle(s): SRP, ISP
- * - Reason and Impact: Interface and class are bloated, handling read, write, and history log management together.
- * - Improvement Direction: Split into smaller role-specific interfaces such as MediaReadService and MediaWriteService.
- */
+SOLID Violations: Single Responsibility Principle (SRP)
+Reason Why: Interface and class are bloated, handling read, write, and history log management together.
+Improvement: Split into smaller role-specific interfaces such as MediaReadService and MediaWriteService.
+*/
+
 package com.aims.service.impl;
 
 import com.aims.entity.HistoryLog;

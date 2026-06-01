@@ -1,9 +1,15 @@
 /*
- * SOLID Principles Analysis:
- * - Violated Principle(s): DIP
- * - Reason and Impact: Injects and depends on the concrete StandardShippingStrategy class rather than an interface.
- * - Improvement Direction: Inject the ShippingStrategy interface (using @Qualifier if needed) to decouple the implementation.
- */
+Functional Cohesion
+All logic inside the method directly contributes to compute the rush shipping fee by delegating 
+to the standard strategy and adding a fixed surcharge.
+*/
+
+/*
+SOLID Violations: Dependency Inversion Principle (DIP)
+Reason Why: Injects and depends on the concrete StandardShippingStrategy class rather than an interface.
+Improvement: Inject the ShippingStrategy interface (using @Qualifier if needed) to decouple the implementation.
+*/
+
 package com.aims.strategy;
 
 import org.springframework.stereotype.Component;
