@@ -1,4 +1,10 @@
 /*
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): SRP
+ * - Reason and Impact: Contains business logic for calculating the rush fee difference instead of delegating to the service.
+ * - Improvement Direction: Move the fee calculation logic entirely to the ShippingCalculatorService layer.
+ */
+/*
 Coupling level: Control coupling
 Reason why: Passes a boolean flag (rushDelivery) to explicitly dictate the internal if/else execution path.
 */
