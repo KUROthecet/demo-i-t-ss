@@ -1,4 +1,10 @@
 /*
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): OCP
+ * - Reason and Impact: Uses hardcoded conditions (delta > 0 or < 0) to assign Action Types. Adding new actions requires modification.
+ * - Improvement Direction: Separate actions through polymorphism or dedicated handler methods for each adjustment type.
+ */
+/*
 Coupling level: Content coupling
 Reason why: Service builds the entity piece-by-piece using setters instead of letting the entity manage its state.
 */

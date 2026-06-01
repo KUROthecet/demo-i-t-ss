@@ -1,14 +1,13 @@
-/* Stamp Coupling
-The processOrderRefund(Order order) method receives the entire Order entity object as a parameter, 
-but internally it only accesses three fields: order.getPaymentMethod(), order.getOrderCode(), 
-order.getTotalAmount(), and order.getCustomerName()
- */
-
 /*
-SOLID Violation: Single Responsibility Principle (SRP)
-Reason Why: This class handles stock updates, fee calculations, payment routing and email triggers simultaneously
-Improvement: Delegate shipping logic to a ShippingService and dispatch emails asynchronously using spring event listeners
-*/
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): SRP
+ * - Reason and Impact: Combines multiple business concerns including stock database updates, order validations, shipping cost computations, payment service routing, and email triggers.
+ * - Improvement Direction: Delegate shipping calculations to a dedicated ShippingService, email notifications to an event listener, and inventory checks to MediaService.
+ */
+// Stamp Coupling
+// The processOrderRefund(Order order) method receives the entire Order entity object as a parameter, 
+// but internally it only accesses three fields: order.getPaymentMethod(), order.getOrderCode(), 
+// order.getTotalAmount(), and order.getCustomerName().
 
 
 package com.aims.service.impl;

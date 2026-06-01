@@ -1,14 +1,9 @@
-/* Data Coupling
-All methods (calculateFee(), calculate()) accept only primitive parameters 
-(double weightKg, String province, double orderTotal, boolean rushDelivery). 
-No complex objects are passed between modules
- */
-
 /*
-SOLID Violation: Open/Closed Principle (OCP)
-Reason Why: Selects shipping fee logic using a hardcoded boolean flag (rushDelivery) rather than relying on polymorphism.
-Improvement: Inject a polymorphic ShippingStrategy directly instead of branching on boolean parameters.
-*/
+ * SOLID Principles Analysis:
+ * - Violated Principle(s): OCP
+ * - Reason and Impact: Relies on a hardcoded boolean rushDelivery check. Introducing a new delivery mode requires modifying this class.
+ * - Improvement Direction: Use a polymorphically resolved ShippingStrategy rather than branching flow via hardcoded booleans.
+ */
 
 package com.aims.service.impl;
 
