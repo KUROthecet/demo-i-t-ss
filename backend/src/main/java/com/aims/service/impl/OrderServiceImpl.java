@@ -2,6 +2,7 @@ package com.aims.service.impl;
 
 import com.aims.dto.request.OrderLineRequestDto;
 import com.aims.dto.request.OrderRequestDto;
+import com.aims.dto.response.OrderResponseDto;
 import com.aims.entity.*;
 import com.aims.enums.OrderStatus;
 import com.aims.enums.PaymentMethod;
@@ -15,6 +16,7 @@ import com.aims.service.EmailService;
 import com.aims.service.InvoiceService;
 import com.aims.service.OrderService;
 import com.aims.service.PaymentService;
+import com.aims.service.PaypalService;
 import com.aims.service.ShippingCalculatorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
     private static final String MANAGER_EMAIL = "manager@aims.vn";
 
     @Override
-    public String createOrder(OrderRequestDto dto) {
+    public OrderResponseDto createOrder(OrderRequestDto dto) {
         log.info("Creating order for customer: {}", dto.getCustomerEmail());
 
         Order           order      = new Order();
@@ -113,21 +115,18 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderLines(orderLines);
         order.setOrderCode("ORD-" + Year.now().getValue() + "-" +
                 UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase());
-        log.info("IM HEREEEEEEEEEE");
-        String paypalId = paymentService.placeOrder(total);
-        log.info(paypalId);
 
-        
         Order savedOrder = orderRepository.save(order);
-        PaymentTransaction newPaymentTransaction = paymentService.processPayment(savedOrder, total,"test", PaymentMethod.PAYPAL);
+        String status = paymentService.processPayment(savedOrder.getPaymentMethod(), total);
+
+        PaymentTransaction newPaymentTransaction = paymentService.processPaymentTransaction(savedOrder, total,savedOrder.getDeliveryNotes(), savedOrder.getPaymentMethod());
         Invoice newInvoice = invoiceService.generateInvoiceFromOrder(savedOrder.getId());
         emailService.sendOrderConfirmation(dto.getCustomerEmail(), dto.getCustomerName(), order.getOrderCode(), total);
         logOrderAction("ORDER_CREATED", savedOrder.getId().toString(), "SYSTEM",
                 "Order " + order.getOrderCode() + " created for " + dto.getCustomerEmail() +
                 " | Total: " + total + " VND");
 
-        log.info("Order created successfully: {}, total: {} VND", order.getOrderCode(), total);
-        return paypalId;
+        return OrderResponseDto.fromEntity(savedOrder);
     }
 
     @Override

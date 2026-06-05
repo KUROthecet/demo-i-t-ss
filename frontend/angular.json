@@ -48,6 +48,12 @@
             "production": { "buildTarget": "frontend:build:production" },
             "development": { "buildTarget": "frontend:build:development" }
           },
+          "options": {
+              "port": 4200,
+              "allowedHosts": [
+                "all"
+              ]
+            },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {

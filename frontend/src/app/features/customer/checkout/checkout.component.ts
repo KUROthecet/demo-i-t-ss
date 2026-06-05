@@ -92,11 +92,11 @@ export class CheckoutComponent implements OnInit {
             try {
               // Call your Spring Boot backend to create the order
               // We use lastValueFrom to await the Observable
-              const paypalID = await lastValueFrom(this.api.placeOrder(orderReq));
+              const savedOrder = await lastValueFrom(this.api.placeOrder(orderReq));
               
               // CRITICAL: Return the PayPal Order ID to the SDK!
               // (Adjust 'paypalOrderId' to whatever property your backend actually returns)
-              return paypalID;
+              return savedOrder.id.toString();
 
             } catch (err: any) {
               this.error = err.error?.message ?? 'Failed to place order. Please try again.';
@@ -201,13 +201,19 @@ export class CheckoutComponent implements OnInit {
       orderLines:            this.items().map(i => ({ mediaId: i.id, quantity: i.cartQty }))
     };
 
+    // Trong checkout.component.ts -> hàm placeOrder()
     this.api.placeOrder(orderReq).subscribe({
       next: (order) => {
         this.cartService.clearCart();
-        this.router.navigate(['/payment'], { state: { order, paymentMethod: this.paymentMethod } });
+        
+        this.router.navigate(['/payment'], { 
+          state: { 
+            orderData: order,
+          }
+        });
       },
       error: (err) => {
-        this.error      = err.error?.message ?? 'Failed to place order. Please try again.';
+        this.error = err.error?.message ?? 'Failed to place order. Please try again.';
         this.submitting = false;
       }
     });

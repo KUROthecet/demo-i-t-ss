@@ -1,12 +1,13 @@
 package com.aims.service;
 
 import com.aims.dto.request.OrderRequestDto;
+import com.aims.dto.response.OrderResponseDto;
 import com.aims.entity.Order;
 
 import java.util.List;
 
 public interface OrderService {
-    String createOrder(OrderRequestDto dto);
+	OrderResponseDto createOrder(OrderRequestDto dto);
     Order getOrderById(Long id);
     Order getOrderByCode(String code);
     List<Order> getPendingOrders();

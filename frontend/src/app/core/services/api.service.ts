@@ -53,8 +53,8 @@ export class ApiService {
   getDailyDeleteCount(): Observable<{ count: number; remaining: number }> {
     return this.http.get<any>(`${this.baseUrl}/media/daily-delete-count`);
   }
-  placeOrder(orderReq: any): Observable<string> {
-    return this.http.post<string>(
+  placeOrder(orderReq: any): Observable<any> {
+    return this.http.post<any>(
       `${this.baseUrl}/orders`,
       orderReq,
       { responseType: 'text' as 'json' } // <-- This stops Angular from crashing

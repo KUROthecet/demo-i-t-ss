@@ -27,7 +27,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class PaymentService {
+public class PaypalService {
 	
 	private final PaymentTransactionRepository paymentTransactionRepository;
 	
@@ -42,7 +42,7 @@ public class PaymentService {
 
     private final RestClient restClient;
 
-    public PaymentService(PaymentTransactionRepository paymentTransactionRepository) {
+    public PaypalService(PaymentTransactionRepository paymentTransactionRepository) {
         // RestClient is the modern Spring Boot 3.2+ way to make HTTP calls
     	this.paymentTransactionRepository = paymentTransactionRepository;
         this.restClient = RestClient.create();
@@ -139,22 +139,5 @@ public class PaymentService {
 	        throw new RuntimeException("Payment capture failed. User may not have approved the transaction.");
 	    }
 	}
-	
-	@Transactional
-    public PaymentTransaction processPayment(Order order, int amount, String content, PaymentMethod method) {
-        
-        // 1. Create the base transaction data
-        Transaction baseTransaction = new Transaction();
-        baseTransaction.setAmount(amount);
-
-        // 2. Create the specific payment transaction using your copy constructor
-        PaymentTransaction payment = new PaymentTransaction(baseTransaction);
-        payment.setOrder(order);
-        payment.setTransactionContent(content);
-        payment.setPaymentMethod(method);
-
-        // 3. Save to the database
-        return paymentTransactionRepository.save(payment);
-    }
 	
 }

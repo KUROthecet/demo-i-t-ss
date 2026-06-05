@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/orders/*/cancel").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/shipping/calculate").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/paypal/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
