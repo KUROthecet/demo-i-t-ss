@@ -1,0 +1,73 @@
+<a class="result-card"
+   [attr.data-category]="product.category.toLowerCase()"
+   [routerLink]="['/product', product.id]"
+   (click)="productClick.emit(product)">
+
+  <div class="result-card__icon-wrap">
+    <img
+      class="result-card__img"
+      [src]="getImageUrl()"
+      [alt]="product.title"
+      loading="lazy"
+    />
+    <div class="result-card__hover-glow"></div>
+
+    @if (product.quantityInStock === 0) {
+      <span class="result-card__sold-out">SOLD OUT</span>
+    }
+  </div>
+
+  <div class="result-card__body">
+    <div class="result-card__tags">
+      @if (product.supportRushDelivery) {
+        <span class="result-card__tag result-card__tag--rush">⚡ RUSH</span>
+      }
+      @if (product.quantityInStock > 0) {
+        <span class="result-card__tag result-card__tag--category">{{ product.category | uppercase }}</span>
+      }
+    </div>
+
+    <div class="result-card__info">
+      <h3 class="result-card__title">{{ product.title }}</h3>
+      <p class="result-card__subtitle">{{ getSubtitle() }}</p>
+    </div>
+
+    <div class="result-card__price-row">
+      <span class="result-card__price">{{ product.currentPrice | vndCurrency }}</span>
+      <span class="result-card__currency">VND</span>
+    </div>
+
+    <div class="result-card__actions">
+      @if (product.quantityInStock === 0) {
+        <button class="result-card__btn result-card__btn--disabled" disabled (click)="$event.stopPropagation(); $event.preventDefault()">Unavailable</button>
+      } @else {
+        <button class="result-card__btn result-card__btn--view"
+                (click)="$event.stopPropagation()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          View
+        </button>
+        @if (showAddToCart) {
+          <button class="result-card__btn result-card__btn--add"
+                  (click)="onAddToCart($event)">
+            @if (added) {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
+              Added
+            } @else {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+              Add
+            }
+          </button>
+        }
+      }
+    </div>
+  </div>
+</a>

@@ -1,0 +1,135 @@
+﻿
+.home-benefits {
+  background:
+    radial-gradient(ellipse at 70% 20%, rgba(255, 215, 0, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 70%, rgba(29, 185, 84, 0.14) 0%, transparent 55%),
+    linear-gradient(160deg, #060806 0%, #050505 60%, #070606 100%);
+  min-height: 100dvh;
+  overflow: hidden;
+  position: relative;
+
+  /* Warm gold glow upper-right, green pulse lower-left */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 5%;
+    right: -5%;
+    width: 50%;
+    height: 55%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(255, 215, 0, 0.13) 0%,
+      rgba(255, 215, 0, 0.04) 45%,
+      transparent 65%
+    );
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 10%;
+    left: 0%;
+    width: 45%;
+    height: 50%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(29, 185, 84, 0.18) 0%,
+      rgba(29, 185, 84, 0.05) 45%,
+      transparent 65%
+    );
+    pointer-events: none;
+  }
+
+    &__inner {
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 6rem;
+
+    @media (min-width: 768px) { padding: 5rem 2.5rem 7rem; }
+  }
+
+    &__intro {
+    display: flex;
+    justify-content: center;
+    margin-bottom: clamp(5rem, 8vw, 7.5rem);
+  }
+
+  &__para {
+    max-width: 32rem;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.55);
+    text-align: center;
+    line-height: 1.65;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3em;
+
+    @media (min-width: 768px) { font-size: 1.0625rem; }
+  }
+
+  &__word { display: inline-block; }
+
+    &__stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Wrapper that applies per-item rotation & vertical offset */
+  &__clip-wrap {
+    position: relative;
+    z-index: 10;
+    transform: rotate(var(--benefit-rotation, 0deg))
+               translateY(var(--benefit-translate-y, 0));
+
+    /* stacked: each wrapper pulls up under the previous */
+    @media (min-width: 768px) {
+      &:nth-child(n+2) {
+        /* additional manual offsets applied via --benefit-translate-y */
+      }
+    }
+  }
+
+  /* The ClipPath block itself — starts clipped, revealed via GSAP */
+  &__clip-block {
+    clip-path: polygon(50% 0%, 50% 0%, 50% 100%, 50% 100%);
+    border: clamp(2px, 0.5vw, 6px) solid;
+    opacity: 0;
+    white-space: nowrap;
+    will-change: clip-path, opacity;
+
+    /* Size matches SpyltMilk general-title scale */
+    font-size: clamp(2rem, 7vw, 8.5rem);
+  }
+
+  &__clip-inner {
+    padding: 0.35rem 0.75rem 0.65rem;
+
+    @media (min-width: 768px) { padding: 0.5rem 3.5rem 0.8rem; }
+  }
+
+  &__clip-title {
+    font-size: clamp(2rem, 7vw, 8.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.035em;
+    line-height: 0.88;
+  }
+
+    &__more {
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 0.5rem;
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+
+    @media (min-width: 768px) { padding-left: 2rem; }
+  }
+
+  &__more-text {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+  }
+}

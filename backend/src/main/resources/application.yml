@@ -1,0 +1,73 @@
+spring:
+  application:
+    name: aims-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5435/aims_db?reWriteBatchedInserts=true
+    username: aims_user
+    password: aims_password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
+
+  mail:
+    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+app:
+  jwt:
+    secret: AIMSShopSecretKeyForJWTTokenGeneration2026MustBe256BitsLong!
+    expiration-ms: 86400000
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:4200}
+
+logging:
+  level:
+    com.aims: INFO
+    org.springframework.security: WARN
+    org.springframework.mail: DEBUG
+
+paypal:
+     client:
+        id: AS80_ZkaQeM3a3jW8ymmla5sNV-j0j5wiyh2nvRfhtFn5x1dFZ26UgpWL7yB6eJMW-FUc1-3LQr3LRVB
+        secret: EKuym3PlkXCGFh42z5PqEexVgxkj7fOGKW94YM0aA0gVqQNglqIvm3-ul0ibcY5_02uqaw-OTtmHCtqX
+     api:
+        url: https://api-m.sandbox.paypal.com
+
+cloudinary:
+  cloud_name: ${CLOUDINARY_CLOUD_NAME:dlm4q57tz}
+  api_key: ${CLOUDINARY_API_KEY:243414491124122}
+  api_secret: ${CLOUDINARY_API_SECRET:KCwmgHgBrqvunuCLXwtGSytKGRM}

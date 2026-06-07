@@ -1,0 +1,40 @@
+<main class="faq-page">
+  <section class="faq-hero">
+    <span class="faq-hero__eyebrow">Help Center</span>
+    <h1 class="faq-hero__title">How can we help?</h1>
+    <p class="faq-hero__subtitle">Everything you need to know about ordering, shipping, and returns at AIMS. We keep things simple. No account required to buy, no hidden fees, no surprise charges.</p>
+  </section>
+
+  <section class="faq-content">
+    @for (section of sections; track section.title) {
+      <div class="faq-section">
+        <h2 class="faq-section__title">{{ section.title }}</h2>
+        <div class="faq-list">
+          @for (item of section.items; track item.q) {
+            <div class="faq-item" [class.faq-item--open]="item.open">
+              <button class="faq-item__header" (click)="toggle(section, item)">
+                <span class="faq-item__question">{{ item.q }}</span>
+                <span class="faq-item__icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </span>
+              </button>
+              <div class="faq-item__body">
+                <div class="faq-item__content-wrapper">
+                  <p class="faq-item__answer">{{ item.a }}</p>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </section>
+
+  <section class="faq-contact">
+    <h2 class="faq-contact__title">Still have questions?</h2>
+    <p class="faq-contact__text">Write to <strong>support&#64;aims.store</strong> — we respond within one business day.</p>
+    <a href="/contact" class="faq-contact__button">Contact us</a>
+  </section>
+</main>

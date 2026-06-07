@@ -1,0 +1,52 @@
+<section class="home-stats">
+
+  <div class="home-stats__dip"></div>
+
+  <div class="home-stats__body">
+
+    <div class="home-stats__left">
+
+      <div class="home-stats__heading-title">
+        <div class="home-stats__heading-overflow">
+          <h2 class="home-stats__heading">
+            @for (char of headingChars; track $index) {
+              <span class="home-stats__heading-char">{{ char === ' ' ? ' ' : char }}</span>
+            }
+          </h2>
+        </div>
+
+        <div class="home-stats__clip">
+          <div class="home-stats__clip-inner">
+            <h3 class="home-stats__clip-text">All</h3>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="home-stats__right">
+      <p class="home-stats__para">
+        @for (word of paraWords; track $index) {
+          <span class="home-stats__word">{{ word }}</span>
+        }
+      </p>
+    </div>
+
+  </div>
+
+  <div class="home-stats__bar-wrap">
+    <div class="home-stats__bar">
+      @for (stat of stats; track stat.label; let last = $last) {
+        <div class="home-stats__stat">
+          <p class="home-stats__stat-label">{{ stat.label }}</p>
+          <p class="home-stats__stat-sub">up to</p>
+          <p class="home-stats__stat-value">{{ stat.value }}{{ stat.unit }}</p>
+        </div>
+        @if (!last) {
+          <div class="home-stats__divider"></div>
+        }
+      }
+    </div>
+  </div>
+
+</section>

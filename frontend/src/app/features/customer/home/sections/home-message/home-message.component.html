@@ -1,0 +1,39 @@
+<section class="home-message">
+  <div class="home-message__content">
+    <div class="home-message__inner">
+
+      <div class="home-message__msg-wrapper">
+
+        <h1 class="home-message__first">
+          @for (word of firstMessageWords; track $index) {
+            <span class="home-message__word home-message__word--first">{{ word }}</span>
+          }
+        </h1>
+
+        <div class="home-message__clip">
+          <div class="home-message__clip-inner">
+            <h2 class="home-message__clip-text">Every Page</h2>
+          </div>
+        </div>
+
+        <div class="home-message__second-wrapper">
+          <h1 class="home-message__second">
+            @for (word of secondMessageWords; track $index) {
+              <span class="home-message__word home-message__word--second">{{ word }}</span>
+            }
+          </h1>
+        </div>
+
+      </div>
+
+      <div class="home-message__para-wrapper">
+        <p class="home-message__para">
+          @for (word of paraWords; track $index) {
+            <span class="home-message__word home-message__word--para">{{ word }}</span>
+          }
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>

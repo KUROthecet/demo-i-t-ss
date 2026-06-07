@@ -1,0 +1,43 @@
+<section class="home-benefits">
+  <div class="home-benefits__inner">
+
+    <div class="home-benefits__intro">
+      <p class="home-benefits__para">
+        @for (word of paraWords; track $index) {
+          <span class="home-benefits__word">{{ word }}</span>
+        }
+      </p>
+    </div>
+
+    <div class="home-benefits__stack">
+      @for (benefit of benefits; track benefit.title) {
+        <div
+          class="home-benefits__clip-wrap"
+          [style.--benefit-rotation]="benefit.rotation"
+          [style.--benefit-translate-y]="benefit.translateY">
+
+          <div
+            class="home-benefits__clip-block {{ benefit.cssClass }}"
+            [style.border-color]="benefit.borderColor">
+
+            <div
+              class="home-benefits__clip-inner"
+              [style.background-color]="benefit.bg">
+              <h2
+                class="home-benefits__clip-title"
+                [style.color]="benefit.color">
+                {{ benefit.title }}
+              </h2>
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="home-benefits__more">
+      <p class="home-benefits__more-text">And much more …</p>
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,50 @@
+<section class="home-hero">
+  <div class="home-hero__container">
+
+    <div class="home-hero__bg">
+      <img
+        class="home-hero__bg-img"
+        [src]="heroImageUrl"
+        alt="Library filled with books, music and film"
+        loading="eager" />
+    </div>
+
+    <div class="home-hero__overlay"></div>
+
+    <div class="home-hero__content">
+
+      <div class="home-hero__title-wrapper">
+        <h1 class="home-hero__title">
+          <span class="home-hero__title-line">
+            @for (char of titleLine1Chars; track $index) {
+              <span class="home-hero__char">{{ char }}</span>
+            }
+          </span>
+          <span class="home-hero__title-line">
+            @for (char of titleLine2Chars; track $index) {
+              <span class="home-hero__char">{{ char === ' ' ? '\u00A0' : char }}</span>
+            }
+          </span>
+        </h1>
+      </div>
+
+      <div class="home-hero__subtitle-clip">
+        <div class="home-hero__subtitle-box">
+          <span class="home-hero__subtitle-text">Books · CDs · DVDs · Newspapers</span>
+        </div>
+      </div>
+
+      <p class="home-hero__desc">
+        Skip the algorithms. Own what you love. AIMS brings you the definitive collection of physical media, ready to ship to your door.
+      </p>
+
+      <a class="home-hero__cta" routerLink="/search">
+        <span>Browse Collection</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+
+    </div>
+  </div>
+</section>

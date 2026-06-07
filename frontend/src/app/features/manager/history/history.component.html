@@ -1,0 +1,103 @@
+<div class="page-content">
+
+  <div class="admin-main__header">
+    <div>
+      <h1 class="admin-main__title">Product History</h1>
+      <p class="admin-main__subtitle">{{ filteredLogs.length }} of {{ allLogs.length }} operation records</p>
+    </div>
+  </div>
+
+  <div class="history-filters">
+    <div class="hfilter-group">
+      <label class="hfilter-group__label">Action Type</label>
+      <div class="hfilter-group__select-wrap">
+        <select class="hfilter-group__select" [(ngModel)]="filterAction">
+          <option value="">All Actions</option>
+          <option value="ADD">ADD</option>
+          <option value="UPDATE">UPDATE</option>
+          <option value="DELETE">DELETE</option>
+          <option value="DEACTIVATE">DEACTIVATE</option>
+        </select>
+        <svg class="hfilter-group__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="hfilter-group">
+      <label class="hfilter-group__label">Barcode</label>
+      <input class="hfilter-group__input" type="text" [(ngModel)]="filterBarcode"
+             placeholder="Search barcode..." />
+    </div>
+
+    <div class="hfilter-group">
+      <label class="hfilter-group__label">From Date</label>
+      <input class="hfilter-group__input" type="date" [(ngModel)]="filterStartDate" />
+    </div>
+
+    <div class="hfilter-group">
+      <label class="hfilter-group__label">To Date</label>
+      <input class="hfilter-group__input" type="date" [(ngModel)]="filterEndDate" />
+    </div>
+
+    @if (filterAction || filterBarcode || filterStartDate || filterEndDate) {
+      <button class="hfilter-clear" (click)="clearFilters()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Clear
+      </button>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="table-skeleton">
+      @for (s of skeletons; track $index) {
+        <div class="table-skeleton__row skeleton"></div>
+      }
+    </div>
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Action</th>
+            <th>Barcode</th>
+            <th>Details</th>
+            <th>Performed By</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of filteredLogs; track log.id; let i = $index) {
+            <tr>
+              <td class="admin-table__muted">{{ i + 1 }}</td>
+              <td>
+                <span class="action-badge" [ngClass]="getActionClass(log.actionType)">
+                  {{ log.actionType }}
+                </span>
+              </td>
+              <td class="admin-table__mono">{{ log.productBarcode || '—' }}</td>
+              <td class="admin-table__muted">{{ log.details || '—' }}</td>
+              <td class="admin-table__mono">{{ log.performedBy || '—' }}</td>
+              <td class="admin-table__muted">{{ formatDate(log.createdAt) }}</td>
+            </tr>
+          }
+          @if (filteredLogs.length === 0) {
+            <tr>
+              <td colspan="6" class="admin-table__empty">
+                @if (allLogs.length === 0) {
+                  No history records yet.
+                } @else {
+                  No records match the current filters.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>

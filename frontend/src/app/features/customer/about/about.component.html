@@ -1,0 +1,36 @@
+<main class="about">
+  <!-- Story Section -->
+  <section class="story-section">
+    <div class="story-section__container">
+      <h1 class="story-section__headline">The AIMS Journey</h1>
+      <p class="story-section__text">
+        It started with a simple question: in a world moving purely to digital streams, what happens to the things we can touch? The books we flip through, the CDs we treasure, the physical media that defines our memories. 
+        <br><br>
+        AIMS was born out of that question. We didn't want to build just another storefront; we wanted to create a seamless bridge between the past and the future. By eliminating mandatory logins and introducing blazing-fast 2-second checkouts via PayPal and VietQR, we set out to make owning physical media feel effortless. 
+        <br><br>
+        For the managers behind the scenes, we engineered a system capable of running 300 hours non-stop, handling thousands of simultaneous users without breaking a sweat. From automatic inventory updates to secure refund protocols, every line of code was crafted to ensure total command over the platform.
+        <br><br>
+        Today, AIMS is more than a capstone project. It’s an unwavering commitment to the tangible, a platform where cutting-edge technology empowers the joy of physical ownership. Welcome to our story.
+      </p>
+    </div>
+  </section>
+
+  <!-- Meet the Team Section -->
+  <section class="about__team team">
+    <h2 class="team__heading">Meet the Team</h2>
+    <div class="team__grid">
+      <div class="team__card-wrapper" *ngFor="let member of teamMembers">
+        <div class="team__card" #card (mousemove)="onMouseMove($event, card)" (mouseleave)="onMouseLeave(card)">
+          <div class="team__glare"></div>
+          <div class="team__image-wrapper">
+            <img [src]="member.imageUrl" [alt]="member.name" class="team__image">
+          </div>
+          <div class="team__info">
+            <h3 class="team__name">{{ member.name }}</h3>
+            <p class="team__role">{{ member.role }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

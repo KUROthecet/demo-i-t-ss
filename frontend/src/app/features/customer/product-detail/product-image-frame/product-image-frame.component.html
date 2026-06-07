@@ -1,0 +1,120 @@
+@if (isDisc()) {
+  <div
+    class="disc-frame"
+    [class.disc-frame--hovered]="isHovered"
+    #frameEl>
+
+    <div class="disc-frame__ambient"></div>
+
+    <div class="disc-frame__tilt-wrapper">
+      <div class="disc-frame__disc" [class.disc-frame__disc--spinning]="isHovered">
+
+        <div class="disc-frame__rainbow"></div>
+        <div class="disc-frame__grooves"></div>
+        <div class="disc-frame__sheen"></div>
+
+        <div class="disc-frame__label">
+          <img [src]="imageUrl" [alt]="category" draggable="false" />
+          <div class="disc-frame__label-ring"></div>
+        </div>
+
+        <div class="disc-frame__hole">
+          <div class="disc-frame__hole-inner"></div>
+        </div>
+
+        <div class="disc-frame__glare"></div>
+      </div>
+    </div>
+
+    <div class="disc-frame__reflection"></div>
+
+    <div class="disc-frame__type-badge">{{ category }}</div>
+  </div>
+}
+
+@if (isBook()) {
+  <div
+    class="book-frame"
+    [class.book-frame--hovered]="isHovered"
+    #frameEl>
+
+    <div class="book-frame__glow"></div>
+
+    <div class="book-frame__scene">
+      <div class="book-frame__book">
+
+        <div class="book-frame__spine">
+          <div class="book-frame__spine-stripe"></div>
+        </div>
+
+        <div class="book-frame__cover">
+          <img [src]="imageUrl" [alt]="category" draggable="false" />
+          <div class="book-frame__cover-crease"></div>
+          <div class="book-frame__cover-sheen"></div>
+          <div class="book-frame__cover-glare"></div>
+        </div>
+
+        <div class="book-frame__pages">
+          <div class="book-frame__pages-top"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="book-frame__shadow"></div>
+  </div>
+}
+
+@if (isNewspaper()) {
+  <div
+    class="newspaper-frame"
+    [class.newspaper-frame--hovered]="isHovered"
+    #frameEl>
+
+    <div class="newspaper-frame__paper">
+
+      <div class="newspaper-frame__fold-shadow"></div>
+
+      <header class="newspaper-frame__masthead">
+        <div class="newspaper-frame__top-bar">
+          <span class="newspaper-frame__dateline">EST. 2024</span>
+          <span class="newspaper-frame__issue">VOL. I · SPECIAL EDITION</span>
+          <span class="newspaper-frame__price">₫ 5,000</span>
+        </div>
+        <div class="newspaper-frame__nameplate">
+          <div class="newspaper-frame__rule newspaper-frame__rule--thick"></div>
+          <h2 class="newspaper-frame__title">AIMS DAILY</h2>
+          <div class="newspaper-frame__rule newspaper-frame__rule--thick"></div>
+          <div class="newspaper-frame__rule newspaper-frame__rule--thin"></div>
+        </div>
+        <p class="newspaper-frame__tagline">
+          "All The Print That's Fit To Ship"
+        </p>
+      </header>
+
+      <div class="newspaper-frame__body">
+        <div class="newspaper-frame__col-rule"></div>
+
+        <div class="newspaper-frame__photo-block">
+          <div class="newspaper-frame__photo">
+            <img [src]="imageUrl" [alt]="category" draggable="false" />
+            <div class="newspaper-frame__photo-overlay"></div>
+          </div>
+          <p class="newspaper-frame__caption">
+            <em>Featured Edition — Physical Media Excellence Award</em>
+          </p>
+        </div>
+
+        <div class="newspaper-frame__col-rule"></div>
+      </div>
+
+      <footer class="newspaper-frame__footer">
+        <span>AIMS Media Corporation · Hanoi, Vietnam</span>
+        <span>PRINT EDITION</span>
+      </footer>
+
+      <div class="newspaper-frame__fold"></div>
+      <div class="newspaper-frame__aged-overlay"></div>
+    </div>
+  </div>
+}

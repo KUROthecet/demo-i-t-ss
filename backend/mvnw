@@ -1,0 +1,24 @@
+#!/bin/sh
+# Maven Wrapper Proxy Script for Bash/Git Bash
+
+if command -v mvn >/dev/null 2>&1; then
+  mvn "$@"
+  exit $?
+fi
+
+INT_MVN="/c/Program Files/JetBrains/IntelliJ IDEA Community Edition 2024.3.3/plugins/maven/lib/maven3/bin/mvn.cmd"
+if [ -f "$INT_MVN" ]; then
+  "$INT_MVN" "$@"
+  exit $?
+fi
+
+# Try generic search
+for dir in "/c/Program Files/JetBrains/IntelliJ IDEA"*; do
+  if [ -f "$dir/plugins/maven/lib/maven3/bin/mvn.cmd" ]; then
+    "$dir/plugins/maven/lib/maven3/bin/mvn.cmd" "$@"
+    exit $?
+  fi
+done
+
+echo "[ERROR] Maven (mvn) was not found on your system."
+exit 1

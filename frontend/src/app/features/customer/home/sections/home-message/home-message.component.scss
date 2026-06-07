@@ -1,0 +1,153 @@
+﻿
+.home-message {
+  background: #091510;
+  min-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 20;
+
+    &::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -5%;
+    width: 60%;
+    height: 75%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(29, 185, 84, 0.22) 0%,
+      rgba(29, 185, 84, 0.07) 40%,
+      transparent 65%
+    );
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -5%;
+    right: -5%;
+    width: 50%;
+    height: 60%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(29, 185, 84, 0.16) 0%,
+      rgba(29, 185, 84, 0.05) 40%,
+      transparent 65%
+    );
+    pointer-events: none;
+  }
+
+    &__content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 7rem 0;
+  }
+
+  &__inner {
+    width: 100%;
+    padding: 0 1.5rem;
+
+    @media (min-width: 768px) { padding: 0 7.5rem; }
+  }
+
+    &__msg-wrapper {
+    font-size: clamp(2.2rem, 7vw, 8.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(3rem, 5vw, 4.5rem);
+  }
+
+    &__first,
+  &__second {
+    text-align: center;
+    line-height: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25em;
+  }
+
+  /* ── Words — initial state nearly invisible, revealed via GSAP */
+  &__word {
+    display: inline-block;
+
+    &--first,
+    &--second {
+      color: rgba(255, 255, 255, 0.05);
+    }
+
+    &--para {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: bottom;
+    }
+  }
+
+    &__clip {
+    /* initial: sliced closed from left */
+    clip-path: polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%);
+    transform: rotate(3deg);
+    border: clamp(2px, 0.5vw, 6px) solid #091510;
+    will-change: clip-path;
+    position: relative;
+    z-index: 10;
+
+    /* negative margin to overlap adjacent text (SpyltMilk style) */
+    @media (min-width: 768px) { margin-top: -1.5rem; }
+  }
+
+  &__clip-inner {
+    background: var(--color-accent);
+    padding: 0.35rem 1.25rem 0.65rem;
+
+    @media (min-width: 768px) { padding: 0.5rem 2rem 0.8rem; }
+  }
+
+  &__clip-text {
+    font-size: clamp(2.2rem, 7vw, 8.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.035em;
+    color: #050505;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  &__second-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+    &__para-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(2.5rem, 5vw, 5rem);
+  }
+
+  &__para {
+    max-width: 28rem;
+    padding: 0 2.5rem;
+    text-align: center;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.65;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3em;
+
+    @media (min-width: 768px) { font-size: 1.0625rem; }
+  }
+}
