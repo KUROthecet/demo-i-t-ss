@@ -86,6 +86,7 @@
 
   /* Staggered slide-up for each product card */
   &__item {
+    min-width: 0;
     animation: homeRecSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
