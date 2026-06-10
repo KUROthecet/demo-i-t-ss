@@ -27,8 +27,6 @@ if errorlevel 1 (
   exit /b 1
 )
 echo.
-echo  Waiting 20 seconds for PostgreSQL and Redis to fully initialize...
-timeout /t 20 /nobreak >nul
 echo  Infrastructure ready.
 echo.
 

@@ -56,17 +56,16 @@ public class SqlCatalogLoader {
             media.add(new Object[]{
                 barcode, bookTitle(author, genre), "Book", orig, curr,
                 bookDesc(author, pub, genre, pages, pubDate),
-                bookDims(pages), bookWeight(pages),
                 "https://picsum.photos/seed/" + barcode + "/400/600",
                 stock(barcode), rushDelivery(barcode)
             });
-            sub.add(new Object[]{author, cover, pubDate, pub, genre, lang, pages, barcode});
+            sub.add(new Object[]{author, cover, pubDate, pub, genre, lang, pages, bookDims(pages), bookWeight(pages), barcode});
         }
 
         batchMedia(media);
         batchExec(
-            "INSERT INTO book (id,author,cover_type,publication_date,publisher,genre,language,number_of_pages) " +
-            "SELECT m.id,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
+            "INSERT INTO book (id,author,cover_type,publication_date,publisher,genre,language,number_of_pages,dimensions,weight) " +
+            "SELECT m.id,?,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
             sub
         );
         log.info("SqlCatalogLoader: {} book rows processed", p.rows().size());
@@ -96,17 +95,16 @@ public class SqlCatalogLoader {
             media.add(new Object[]{
                 barcode, cdTitle(artist, tracks, genre), "CD", orig, curr,
                 cdDesc(artist, genre, tracks, relDate),
-                "14×12×0.5 cm", 0.1,
                 "https://picsum.photos/seed/" + barcode + "/400/400",
                 stock(barcode), true
             });
-            sub.add(new Object[]{artist, genre, label, tracks, relDate, barcode});
+            sub.add(new Object[]{artist, genre, label, tracks, relDate, "14×12×0.5 cm", 0.1, barcode});
         }
 
         batchMedia(media);
         batchExec(
-            "INSERT INTO cd (id,artist,genre,record_label,track_list,release_date) " +
-            "SELECT m.id,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
+            "INSERT INTO cd (id,artist,genre,record_label,track_list,release_date,dimensions,weight) " +
+            "SELECT m.id,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
             sub
         );
         log.info("SqlCatalogLoader: {} CD rows processed", p.rows().size());
@@ -140,17 +138,16 @@ public class SqlCatalogLoader {
             media.add(new Object[]{
                 barcode, dvdTitle(director, genre, relDate), "DVD", orig, curr,
                 dvdDesc(director, genre, runtime, relDate),
-                "19×13×1.5 cm", 0.15,
                 "https://picsum.photos/seed/" + barcode + "/400/580",
                 stock(barcode), rush
             });
-            sub.add(new Object[]{director, disc, lang, runtime, studio, subs, genre, relDate, barcode});
+            sub.add(new Object[]{director, disc, lang, runtime, studio, subs, genre, relDate, "19×13×1.5 cm", 0.15, barcode});
         }
 
         batchMedia(media);
         batchExec(
-            "INSERT INTO dvd (id,director,disc_type,language,runtime_minutes,studio,subtitles,genre,release_date) " +
-            "SELECT m.id,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
+            "INSERT INTO dvd (id,director,disc_type,language,runtime_minutes,studio,subtitles,genre,release_date,dimensions,weight) " +
+            "SELECT m.id,?,?,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
             sub
         );
         log.info("SqlCatalogLoader: {} DVD rows processed", p.rows().size());
@@ -182,18 +179,17 @@ public class SqlCatalogLoader {
             media.add(new Object[]{
                 barcode, newsTitle(pub, sections), "Newspaper", orig, curr,
                 newsDesc(pub, editor, sections, pubDate),
-                "40×30×0.2 cm", 0.3,
                 "https://picsum.photos/seed/" + barcode + "/400/550",
                 stock(barcode), false
             });
-            sub.add(new Object[]{editor, pubDate, pub, issn, issueNum, lang, "Daily", sections, barcode});
+            sub.add(new Object[]{editor, pubDate, pub, issn, issueNum, lang, "Daily", sections, "40×30×0.2 cm", 0.3, barcode});
         }
 
         batchMedia(media);
         batchExec(
             "INSERT INTO newspaper " +
-            "(id,editor_in_chief,publication_date,publisher,issn,issue_number,language,publication_frequency,sections) " +
-            "SELECT m.id,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
+            "(id,editor_in_chief,publication_date,publisher,issn,issue_number,language,publication_frequency,sections,dimensions,weight) " +
+            "SELECT m.id,?,?,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
             sub
         );
         log.info("SqlCatalogLoader: {} Newspaper rows processed", p.rows().size());
@@ -203,8 +199,8 @@ public class SqlCatalogLoader {
         batchExec(
             "INSERT INTO media " +
             "(barcode,title,category,original_price,current_price," +
-            "general_description,dimensions,weight,image_url,quantity_in_stock,status,support_rush_delivery) " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?,'ACTIVE',?) ON CONFLICT (barcode) DO NOTHING",
+            "general_description,image_url,quantity_in_stock,status,support_rush_delivery) " +
+            "VALUES (?,?,?,?,?,?,?,?,'ACTIVE',?) ON CONFLICT (barcode) DO NOTHING",
             rows
         );
     }
