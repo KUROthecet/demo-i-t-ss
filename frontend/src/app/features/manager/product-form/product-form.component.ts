@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MediaApiService } from '../../../core/services/media-api.service';
+import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { ProductFormModel, createEmptyProductForm } from '../../../core/models/product-form.model';
+import { ProductFormModel } from '../../../core/models/product-form.model';
 
 @Component({
   selector: 'app-product-form',
@@ -24,10 +24,7 @@ export class ProductFormComponent implements OnInit {
   protected step      = 1;
   protected direction: 'forward' | 'back' = 'forward';
 
-  protected uploadMode     = false;
-  protected uploadingImage = false;
-
-  protected form: ProductFormModel = createEmptyProductForm();
+  protected form: ProductFormModel = ProductFormModel.createEmpty();
 
   readonly categories = [
     { id: 'Book'      as const, label: 'Book',      icon: 'book',      color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  glow: '0 0 30px rgba(96,165,250,0.25)'  },
@@ -39,10 +36,10 @@ export class ProductFormComponent implements OnInit {
   protected readonly performedBy: string;
 
   constructor(
-    private readonly mediaApi: MediaApiService,
-    private readonly auth:     AuthService,
-    private readonly route:    ActivatedRoute,
-    private readonly router:   Router
+    private readonly api:   ApiService,
+    private readonly auth:  AuthService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
   ) {
     this.performedBy = this.auth.getCurrentUser()?.username ?? 'Manager';
   }
@@ -53,21 +50,11 @@ export class ProductFormComponent implements OnInit {
       this.isEdit    = true;
       this.productId = Number(id);
       this.loading   = true;
-      this.mediaApi.getProduct(this.productId).subscribe({
-        next:  this.onProductLoaded.bind(this),
-        error: this.onProductLoadError.bind(this)
+      this.api.getProduct(this.productId).subscribe({
+        next:  (p) => { Object.assign(this.form, p); this.loading = false; },
+        error: ()  => { this.error = 'Failed to load product.'; this.loading = false; }
       });
     }
-  }
-
-  private onProductLoaded(p: any): void {
-    Object.assign(this.form, p);
-    this.loading = false;
-  }
-
-  private onProductLoadError(): void {
-    this.error   = 'Failed to load product.';
-    this.loading = false;
   }
 
   protected selectCategory(id: 'Book' | 'CD' | 'DVD' | 'Newspaper'): void {
@@ -104,28 +91,11 @@ export class ProductFormComponent implements OnInit {
   }
 
   protected getCategoryDef() {
-    for (const cat of this.categories) {
-      if (cat.id === this.form.category) return cat;
-    }
-    return this.categories[0];
+    return this.categories.find(c => c.id === this.form.category) ?? this.categories[0];
   }
 
   protected getStepLabel(s: number): string {
     return s === 1 ? 'Category' : s === 2 ? 'General Info' : (this.form.category || 'Details');
-  }
-
-  private onSaveSuccess(): void {
-    this.successMsg = this.isEdit ? 'Product updated successfully!' : 'Product added successfully!';
-    setTimeout(this.navigateAfterSave.bind(this), 1800);
-  }
-
-  private onSaveError(err: any): void {
-    this.error  = err.error?.message ?? 'Failed to save product.';
-    this.saving = false;
-  }
-
-  private navigateAfterSave(): void {
-    this.router.navigate(['/manager/products']);
   }
 
   protected save(): void {
@@ -136,37 +106,18 @@ export class ProductFormComponent implements OnInit {
     this.saving = true;
     this.error  = '';
     const obs = this.isEdit
-      ? this.mediaApi.updateMedia(this.productId!, this.form)
-      : this.mediaApi.addMedia(this.form);
+      ? this.api.updateMedia(this.productId!, this.form)
+      : this.api.addMedia(this.form);
 
     obs.subscribe({
-      next:  this.onSaveSuccess.bind(this),
-      error: this.onSaveError.bind(this)
+      next:  () => {
+        this.successMsg = this.isEdit ? 'Product updated successfully!' : 'Product added successfully!';
+        setTimeout(() => this.router.navigate(['/manager/products']), 1800);
+      },
+      error: (err) => {
+        this.error  = err.error?.message ?? 'Failed to save product.';
+        this.saving = false;
+      }
     });
-  }
-
-  private onImageUploaded(res: any): void {
-    this.form.imageUrl    = res.url;
-    this.uploadingImage   = false;
-  }
-
-  private onImageUploadError(): void {
-    this.error          = 'Failed to upload image. Make sure the backend is running.';
-    this.uploadingImage = false;
-  }
-
-  protected onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file     = input.files[0];
-      this.uploadingImage = true;
-      const formData = new FormData();
-      formData.append('file', file);
-
-      this.mediaApi.uploadImage(formData).subscribe({
-        next:  this.onImageUploaded.bind(this),
-        error: this.onImageUploadError.bind(this)
-      });
-    }
   }
 }

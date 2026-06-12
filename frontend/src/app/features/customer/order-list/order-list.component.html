@@ -87,8 +87,9 @@
                   </div>
 
                   <div class="order-row__right">
-                    <span class="badge" [ngClass]="getStatusBadge(order.status)">
-                      {{ order.status.replace('_', ' ') }}
+                    <span class="badge" [ngClass]="(order.status | orderStatus).cssClass"
+                          [style.color]="(order.status | orderStatus).color">
+                      {{ (order.status | orderStatus).label }}
                     </span>
                     <span class="order-row__total">{{ order.totalAmount | vndCurrency }}</span>
                     <a class="order-row__btn" [routerLink]="['/order', order.id]">

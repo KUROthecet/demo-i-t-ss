@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.beans.factory.annotation.Value;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,33 +33,20 @@ public class OrderService {
     private final ShippingCalculatorService shippingCalculatorService;
     private final HistoryLogService         historyLogService;
 
-    private static final double VAT_RATE      = 0.10;
-    private static final String MANAGER_EMAIL = "manager@aims.vn";
+    private static final double VAT_RATE = 0.10;
+
+    @Value("${app.manager.email}")
+    private String managerEmail;
 
     public OrderResponseDto createOrder(OrderRequestDto dto) {
-        Order           order      = new Order();
-        List<OrderLine> orderLines = new ArrayList<>();
-        int    subtotal    = 0;
-        double totalWeight = 0.0;
+        List<OrderLine> orderLines = buildOrderLines(dto);
 
-        for (OrderLineRequestDto lineDto : dto.getOrderLines()) {
-            Media media = mediaService.validateAndDeductStock(lineDto.getMediaId(), lineDto.getQuantity());
+        int    subtotal    = computeSubtotal(orderLines);
+        double totalWeight = computeTotalWeight(orderLines);
 
-            OrderLine line = new OrderLine();
-            line.setMedia(media);
-            line.setQuantity(lineDto.getQuantity());
-            line.setUnitPrice(media.getCurrentPrice());
-            line.setTitleSnapshot(media.getTitle());
-            line.setOrder(order);
-            orderLines.add(line);
-
-            subtotal    += media.getCurrentPrice() * lineDto.getQuantity();
-            totalWeight += media.getShippingWeight() * lineDto.getQuantity();
-        }
-
-        int    vat         = (int) Math.round(subtotal * VAT_RATE);
-        int    deliveryFee;
-        int    rushFee     = 0;
+        int vat        = computeVat(subtotal);
+        int deliveryFee;
+        int rushFee = 0;
 
         if (Boolean.TRUE.equals(dto.getRushDelivery())) {
             double standardFee = shippingCalculatorService.calculateStandardFee(totalWeight, dto.getProvince(), subtotal);
@@ -72,6 +60,58 @@ public class OrderService {
 
         int total = subtotal + vat + deliveryFee + rushFee;
 
+        Order order = assembleOrder(dto, orderLines, subtotal, vat, deliveryFee, rushFee, total);
+        Order savedOrder = orderRepository.save(order);
+
+        String paymentTransactionId = paymentService.processPayment(savedOrder.getPaymentMethod(), total);
+        if (paymentTransactionId != null && !paymentTransactionId.isEmpty()) {
+            savedOrder.setPaymentTransactionId(paymentTransactionId);
+            savedOrder = orderRepository.save(savedOrder);
+        }
+
+        paymentService.processPaymentTransaction(savedOrder, total, savedOrder.getDeliveryNotes(), savedOrder.getPaymentMethod());
+
+        if (savedOrder.getPaymentMethod() != PaymentMethod.PAYPAL) {
+            invoiceService.generateInvoiceFromOrder(savedOrder.getId());
+            emailService.sendOrderConfirmation(dto.getCustomerEmail(), dto.getCustomerName(), order.getOrderCode(), total);
+        }
+
+        historyLogService.log("ORDER_CREATED", savedOrder.getId().toString(), "SYSTEM",
+                "Order " + order.getOrderCode() + " created for " + dto.getCustomerEmail() +
+                " | Total: " + total + " VND");
+
+        return OrderResponseDto.fromEntity(savedOrder);
+    }
+
+    private List<OrderLine> buildOrderLines(OrderRequestDto dto) {
+        List<OrderLine> lines = new ArrayList<>();
+        for (OrderLineRequestDto lineDto : dto.getOrderLines()) {
+            Media media = mediaService.validateAndDeductStock(lineDto.getMediaId(), lineDto.getQuantity());
+            OrderLine line = new OrderLine();
+            line.setMedia(media);
+            line.setQuantity(lineDto.getQuantity());
+            line.setUnitPrice(media.getCurrentPrice());
+            line.setTitleSnapshot(media.getTitle());
+            lines.add(line);
+        }
+        return lines;
+    }
+
+    private int computeSubtotal(List<OrderLine> lines) {
+        return lines.stream().mapToInt(OrderLine::getSubtotal).sum();
+    }
+
+    private double computeTotalWeight(List<OrderLine> lines) {
+        return lines.stream().mapToDouble(OrderLine::getShippingWeight).sum();
+    }
+
+    private int computeVat(int subtotal) {
+        return (int) Math.round(subtotal * VAT_RATE);
+    }
+
+    private Order assembleOrder(OrderRequestDto dto, List<OrderLine> orderLines,
+                                int subtotal, int vat, int deliveryFee, int rushFee, int total) {
+        Order order = new Order();
         order.setCustomerName(dto.getCustomerName());
         order.setCustomerEmail(dto.getCustomerEmail());
         order.setCustomerPhone(dto.getCustomerPhone());
@@ -88,26 +128,17 @@ public class OrderService {
         order.setStatus(OrderStatus.PENDING_PROCESSING);
         order.setPaymentMethod(dto.getPaymentMethod());
         order.setPaymentStatus(PaymentStatus.PENDING);
-        order.setOrderLines(orderLines);
-        order.setOrderCode("ORD-" + Year.now().getValue() + "-" +
-                UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase());
-
-        Order savedOrder = orderRepository.save(order);
-
-        String paymentTransactionId = paymentService.processPayment(savedOrder.getPaymentMethod(), total);
-        if (paymentTransactionId != null && !paymentTransactionId.isEmpty()) {
-            savedOrder.setPaymentTransactionId(paymentTransactionId);
-            savedOrder = orderRepository.save(savedOrder);
+        order.setOrderCode(generateOrderCode());
+        for (OrderLine line : orderLines) {
+            line.setOrder(order);
         }
+        order.setOrderLines(orderLines);
+        return order;
+    }
 
-        paymentService.processPaymentTransaction(savedOrder, total, savedOrder.getDeliveryNotes(), savedOrder.getPaymentMethod());
-        invoiceService.generateInvoiceFromOrder(savedOrder.getId());
-        emailService.sendOrderConfirmation(dto.getCustomerEmail(), dto.getCustomerName(), order.getOrderCode(), total);
-        historyLogService.log("ORDER_CREATED", savedOrder.getId().toString(), "SYSTEM",
-                "Order " + order.getOrderCode() + " created for " + dto.getCustomerEmail() +
-                " | Total: " + total + " VND");
-
-        return OrderResponseDto.fromEntity(savedOrder);
+    private String generateOrderCode() {
+        return "ORD-" + Year.now().getValue() + "-" +
+                UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
     }
 
     @Transactional(readOnly = true)
@@ -158,7 +189,7 @@ public class OrderService {
         Order order = getOrderById(id);
         order.reject(reason);
         restoreInventory(order);
-        paymentService.processRefund(order, MANAGER_EMAIL);
+        paymentService.processRefund(order, managerEmail);
         Order saved = orderRepository.save(order);
         emailService.sendOrderRejected(order.getCustomerEmail(), order.getCustomerName(), order.getOrderCode(), reason);
         historyLogService.log("ORDER_REJECTED", order.getOrderCode(), performedBy,
@@ -170,7 +201,7 @@ public class OrderService {
         Order order = getOrderById(id);
         order.cancel();
         restoreInventory(order);
-        paymentService.processRefund(order, MANAGER_EMAIL);
+        paymentService.processRefund(order, managerEmail);
         Order saved = orderRepository.save(order);
         emailService.sendOrderCancelled(
                 order.getCustomerEmail(), order.getCustomerName(), order.getOrderCode(),
@@ -186,6 +217,12 @@ public class OrderService {
             Order order = found.get();
             order.markAsPaid(paypalOrderId, captureId);
             orderRepository.save(order);
+            invoiceService.generateInvoiceFromOrder(order.getId());
+            emailService.sendOrderConfirmation(
+                    order.getCustomerEmail(), order.getCustomerName(),
+                    order.getOrderCode(), order.getTotalAmount());
+            historyLogService.log("PAYPAL_CAPTURED", order.getOrderCode(), "SYSTEM",
+                    "PayPal capture " + captureId + " confirmed for order " + order.getOrderCode());
         }
     }
 

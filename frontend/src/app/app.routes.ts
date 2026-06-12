@@ -26,7 +26,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/customer/checkout/checkout.component').then(m => m.CheckoutComponent)
   },
   {
-    path: 'payment',
+    path: 'payment/:orderId',
     loadComponent: () => import('./features/customer/payment/payment.component').then(m => m.PaymentComponent)
   },
   {

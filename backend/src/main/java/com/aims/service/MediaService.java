@@ -24,18 +24,22 @@ import java.util.Optional;
 @Transactional
 public class MediaService {
 
-    private final MediaRepository   mediaRepository;
-    private final HistoryLogService historyLogService;
+    private final MediaRepository       mediaRepository;
+    private final HistoryLogService     historyLogService;
+    private final StockHistoryService   stockHistoryService;
 
     private static final int MAX_BATCH_DELETE = 10;
     private static final int MAX_DAILY_DELETE = 20;
 
     @Transactional(readOnly = true)
     public List<Media> getRandomMedia(int limit) {
-        List<Media> allActive = mediaRepository.findByStatus(MediaStatus.ACTIVE);
-        Collections.shuffle(allActive);
-        int end = Math.min(limit, allActive.size());
-        return new ArrayList<>(allActive.subList(0, end));
+        List<Media> available = mediaRepository.findByStatus(MediaStatus.ACTIVE)
+                .stream()
+                .filter(Media::isAvailable)
+                .collect(java.util.stream.Collectors.toList());
+        Collections.shuffle(available);
+        int end = Math.min(limit, available.size());
+        return new ArrayList<>(available.subList(0, end));
     }
 
     @Transactional(readOnly = true)
@@ -51,6 +55,12 @@ public class MediaService {
     public Page<Media> searchMedia(String query, List<String> categories, int minPrice, int maxPrice, Pageable pageable) {
         List<String> validCategories = (categories == null || categories.isEmpty()) ? null : categories;
         return mediaRepository.searchByTitleOrCategory(query, validCategories, minPrice, maxPrice, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Media> getManagerProducts(String query, List<String> categories, int minPrice, int maxPrice, Pageable pageable) {
+        List<String> validCategories = (categories == null || categories.isEmpty()) ? null : categories;
+        return mediaRepository.searchAllByTitleOrCategory(query, validCategories, minPrice, maxPrice, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -75,14 +85,20 @@ public class MediaService {
     }
 
     public Media updateMedia(Long id, Media updated, String performedBy) {
-        Media existing = getMediaById(id);
+        Media existing  = getMediaById(id);
         String oldTitle = existing.getTitle();
         int oldPrice    = existing.getCurrentPrice();
+        int oldStock    = existing.getQuantityInStock();
         existing.updateDetails(updated);
         Media saved = mediaRepository.save(existing);
         historyLogService.log("UPDATE", saved.getBarcode(), performedBy,
                 String.format("Updated media '%s' → '%s'. Price: %d → %d",
                         oldTitle, saved.getTitle(), oldPrice, saved.getCurrentPrice()));
+        int delta = saved.getQuantityInStock() - oldStock;
+        if (delta != 0) {
+            stockHistoryService.recordHistory(saved, delta, "Stock updated via Edit Product",
+                    performedBy != null ? performedBy : "System");
+        }
         return saved;
     }
 
@@ -118,13 +134,25 @@ public class MediaService {
         return historyLogService.countDailyDeletions();
     }
 
+    @Transactional(readOnly = true)
+    public Map<Long, Integer> getStockBatch(List<Long> ids) {
+        Map<Long, Integer> result = new HashMap<>();
+        for (Long id : ids) {
+            mediaRepository.findById(id).ifPresent(m -> result.put(m.getId(), m.getQuantityInStock()));
+        }
+        return result;
+    }
+
     public Media validateAndDeductStock(Long mediaId, int quantity) {
         Media media = getMediaById(mediaId);
         if (!media.isAvailable()) {
             throw new BusinessException("Media '" + media.getTitle() + "' is not available for purchase.");
         }
         media.reduceStock(quantity);
-        return mediaRepository.save(media);
+        Media saved = mediaRepository.save(media);
+        stockHistoryService.recordHistory(saved, -quantity,
+                "Deducted by order placement", "SYSTEM", "ORDER_DEDUCTION");
+        return saved;
     }
 
     @Transactional(readOnly = true)
@@ -134,11 +162,21 @@ public class MediaService {
                 current.getCategory(), mediaId, current.getCurrentPrice(), PageRequest.of(0, 6));
     }
 
+    public Media reactivateMedia(Long id, String performedBy) {
+        Media media = getMediaById(id);
+        media.reactivate();
+        Media saved = mediaRepository.save(media);
+        historyLogService.log("ACTIVATE", saved.getBarcode(), performedBy,
+                "Re-activated media: " + saved.getTitle() + " (ID: " + saved.getId() + ")");
+        return saved;
+    }
+
     public void restoreStock(Long mediaId, int quantity) {
         Media media = mediaRepository.findById(mediaId).orElse(null);
-        if (media != null) {
-            media.restoreStock(quantity);
-            mediaRepository.save(media);
-        }
+        if (media == null) return;
+        media.restoreStock(quantity);
+        Media saved = mediaRepository.save(media);
+        stockHistoryService.recordHistory(saved, quantity,
+                "Restored by order cancellation/rejection", "SYSTEM", "ORDER_RESTORE");
     }
 }

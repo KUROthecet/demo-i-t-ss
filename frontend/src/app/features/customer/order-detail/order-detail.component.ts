@@ -6,19 +6,21 @@ import { Order } from '../../../core/models/order.model';
 import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 import { FooterComponent } from '../../../shared/footer/footer.component';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
+import { OrderStatusPipe } from '../../../shared/pipes/order-status.pipe';
 
 @Component({
   selector: 'app-order-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent, VndCurrencyPipe],
+  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent, VndCurrencyPipe, OrderStatusPipe],
   templateUrl: './order-detail.component.html',
   styleUrl: './order-detail.component.scss'
 })
 export class OrderDetailComponent implements OnInit {
   protected order: Order | null = null;
-  protected loading    = true;
-  protected error      = '';
-  protected cancelling = false;
+  protected loading          = true;
+  protected error            = '';
+  protected cancelling       = false;
+  protected cancelConfirming = false;
 
   constructor(
     private readonly route:    ActivatedRoute,
@@ -27,8 +29,11 @@ export class OrderDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.orderApi.getOrderById(id).subscribe({
+    const param = this.route.snapshot.paramMap.get('id') ?? '';
+    const obs$ = /^\d+$/.test(param)
+      ? this.orderApi.getOrderById(Number(param))
+      : this.orderApi.getOrderByCode(param);
+    obs$.subscribe({
       next:  this.onOrderLoaded.bind(this),
       error: this.onOrderLoadError.bind(this)
     });
@@ -44,13 +49,22 @@ export class OrderDetailComponent implements OnInit {
     this.loading = false;
   }
 
-  protected cancelOrder(): void {
+  protected requestCancel(): void {
+    this.cancelConfirming = true;
+  }
+
+  protected confirmCancel(): void {
     if (!this.order) return;
-    this.cancelling = true;
+    this.cancelConfirming = false;
+    this.cancelling       = true;
     this.orderApi.cancelOrder(this.order.id).subscribe({
       next:  this.onCancelSuccess.bind(this),
       error: this.onCancelError.bind(this)
     });
+  }
+
+  protected abortCancel(): void {
+    this.cancelConfirming = false;
   }
 
   private onCancelSuccess(o: Order): void {
@@ -74,17 +88,7 @@ export class OrderDetailComponent implements OnInit {
 
   protected continuePayment(): void {
     if (!this.order) return;
-    this.router.navigate(['/payment'], { state: { orderData: this.order } });
-  }
-
-  protected getStatusBadge(s: string): string {
-    switch (s) {
-      case 'PENDING_PROCESSING': return 'badge--warning';
-      case 'APPROVED':           return 'badge--success';
-      case 'REJECTED':           return 'badge--error';
-      case 'CANCELLED':          return 'badge--muted';
-      default:                   return 'badge--muted';
-    }
+    this.router.navigate(['/payment', this.order.id], { state: { orderData: this.order } });
   }
 
   protected formatDate(d: string): string {

@@ -11,17 +11,9 @@ export const slideInAnimation = trigger('routeAnimations', [
   transition(':increment', [
     style({ position: 'relative' }),
     query(':enter, :leave', [
-      style({
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        opacity: 1
-      })
+      style({ position: 'absolute', top: 0, left: 0, width: '100%', opacity: 1 })
     ], { optional: true }),
-    query(':enter', [
-      style({ transform: 'translateX(50px)', opacity: 0 })
-    ], { optional: true }),
+    query(':enter', [style({ transform: 'translateX(50px)', opacity: 0 })], { optional: true }),
     group([
       query(':leave', [
         animate('350ms cubic-bezier(0.34, 1.56, 0.64, 1)', style({ transform: 'translateX(-50px)', opacity: 0 }))
@@ -34,23 +26,30 @@ export const slideInAnimation = trigger('routeAnimations', [
   transition(':decrement', [
     style({ position: 'relative' }),
     query(':enter, :leave', [
-      style({
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        opacity: 1
-      })
+      style({ position: 'absolute', top: 0, left: 0, width: '100%', opacity: 1 })
     ], { optional: true }),
-    query(':enter', [
-      style({ transform: 'translateX(-50px)', opacity: 0 })
-    ], { optional: true }),
+    query(':enter', [style({ transform: 'translateX(-50px)', opacity: 0 })], { optional: true }),
     group([
       query(':leave', [
         animate('350ms cubic-bezier(0.34, 1.56, 0.64, 1)', style({ transform: 'translateX(50px)', opacity: 0 }))
       ], { optional: true }),
       query(':enter', [
         animate('350ms cubic-bezier(0.34, 1.56, 0.64, 1)', style({ transform: 'translateX(0)', opacity: 1 }))
+      ], { optional: true })
+    ])
+  ]),
+  transition('* <=> *', [
+    style({ position: 'relative' }),
+    query(':enter, :leave', [
+      style({ position: 'absolute', top: 0, left: 0, width: '100%' })
+    ], { optional: true }),
+    group([
+      query(':leave', [
+        animate('200ms ease-out', style({ opacity: 0 }))
+      ], { optional: true }),
+      query(':enter', [
+        style({ opacity: 0, transform: 'translateY(16px)' }),
+        animate('380ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 1, transform: 'translateY(0)' }))
       ], { optional: true })
     ])
   ])
@@ -102,6 +101,9 @@ export class AppComponent {
   }
 
   getRouteAnimationData(outlet: RouterOutlet) {
-    return outlet && outlet.isActivated ? outlet.activatedRouteData['tabIndex'] : undefined;
+    if (!outlet?.isActivated) return undefined;
+    const tabIndex = outlet.activatedRouteData['tabIndex'];
+    if (tabIndex !== undefined) return tabIndex;
+    return outlet.activatedRoute.snapshot.url.map(s => s.path).join('/') || 'root';
   }
 }

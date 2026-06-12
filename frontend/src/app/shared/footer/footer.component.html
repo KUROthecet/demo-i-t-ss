@@ -73,9 +73,14 @@
               name="newsletterEmail"
               placeholder="Email address"
               autocomplete="email"
+              [disabled]="newsletterSubmitting"
             />
-            <button class="btn btn--primary btn--sheen" type="submit">
-              <span class="footer__newsletter-btn-text">Subscribe</span>
+            <button class="btn btn--primary btn--sheen" type="submit" [disabled]="newsletterSubmitting || !newsletterEmail.trim()">
+              @if (newsletterSubmitting) {
+                <span class="footer__newsletter-spinner"></span>
+              } @else {
+                <span class="footer__newsletter-btn-text">Subscribe</span>
+              }
             </button>
           </form>
         }

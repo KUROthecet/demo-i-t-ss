@@ -1,4 +1,4 @@
-import { Component, computed } from '@angular/core';
+import { Component, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { CartService } from '../../../core/services/cart.service';
@@ -14,7 +14,7 @@ import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss'
 })
-export class CartComponent {
+export class CartComponent implements OnInit {
   protected items         = computed(this.computeItems.bind(this));
   protected count         = computed(this.computeCount.bind(this));
   protected subtotal      = computed(this.computeSubtotal.bind(this));
@@ -23,6 +23,10 @@ export class CartComponent {
   protected hasStockError = computed(this.computeHasStockError.bind(this));
 
   constructor(private readonly cartService: CartService, private readonly router: Router) {}
+
+  ngOnInit(): void {
+    this.cartService.refreshStock().subscribe();
+  }
 
   protected updateQty(id: number, qty: number): void { this.cartService.updateQuantity(id, qty); }
   protected remove(id: number): void { this.cartService.removeItem(id); }

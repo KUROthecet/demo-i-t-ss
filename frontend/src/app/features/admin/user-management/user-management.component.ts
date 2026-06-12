@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink, Params } from '@angular/router';
 import { UserApiService } from '../../../core/services/user-api.service';
+import { MediaApiService } from '../../../core/services/media-api.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { HttpClient } from '@angular/common/http';
 import { User, UserCreateRequest } from '../../../core/models/user.model';
 
 @Component({
@@ -40,10 +40,10 @@ export class UserManagementComponent implements OnInit {
   };
 
   constructor(
-    private readonly userApi: UserApiService,
-    private readonly auth:    AuthService,
-    private readonly route:   ActivatedRoute,
-    private readonly http:    HttpClient
+    private readonly userApi:   UserApiService,
+    private readonly mediaApi:  MediaApiService,
+    private readonly auth:      AuthService,
+    private readonly route:     ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -106,7 +106,7 @@ export class UserManagementComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
 
-    this.http.post<{url: string}>('http://localhost:8080/api/upload', formData).subscribe({
+    this.mediaApi.uploadImage(formData).subscribe({
       next:  this.onAvatarUploaded.bind(this),
       error: this.onAvatarUploadError.bind(this)
     });

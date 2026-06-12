@@ -4,24 +4,33 @@ import com.aims.entity.Order;
 import com.aims.entity.PaymentTransaction;
 import com.aims.entity.Transaction;
 import com.aims.enums.PaymentMethod;
+import com.aims.exception.BusinessException;
+import com.aims.payment.PaymentHandler;
 import com.aims.repository.PaymentTransactionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @Service
-@RequiredArgsConstructor
 public class PaymentService {
 
-    private final PaypalService                paypalService;
-    private final PaymentTransactionRepository paymentTransactionRepository;
-    private final EmailService                 emailService;
+    private final Map<PaymentMethod, PaymentHandler> handlers;
+    private final PaymentTransactionRepository       paymentTransactionRepository;
+
+    public PaymentService(
+            List<PaymentHandler> handlerList,
+            PaymentTransactionRepository paymentTransactionRepository) {
+        this.handlers = handlerList.stream()
+                .collect(Collectors.toMap(PaymentHandler::supportedMethod, Function.identity()));
+        this.paymentTransactionRepository = paymentTransactionRepository;
+    }
 
     public String processPayment(PaymentMethod method, int amount) {
-        if (method == PaymentMethod.PAYPAL) {
-            return paypalService.placeOrder(amount);
-        }
-        return "";
+        return resolveHandler(method).initiate(amount);
     }
 
     @Transactional
@@ -38,17 +47,14 @@ public class PaymentService {
     }
 
     public boolean processRefund(Order order, String managerEmail) {
-        if (order.getPaymentMethod() == PaymentMethod.PAYPAL && order.getPaymentCaptureId() != null) {
-            boolean refunded = paypalService.refundOrder(order.getPaymentCaptureId(), order.getTotalAmount());
-            if (refunded) {
-                order.markAsRefunded();
-            }
-            return refunded;
+        return resolveHandler(order.getPaymentMethod()).refund(order, managerEmail);
+    }
+
+    private PaymentHandler resolveHandler(PaymentMethod method) {
+        PaymentHandler handler = handlers.get(method);
+        if (handler == null) {
+            throw new BusinessException("No payment handler registered for method: " + method);
         }
-        if (order.getPaymentMethod() == PaymentMethod.VIETQR) {
-            emailService.sendManagerRefundNotification(
-                    managerEmail, order.getOrderCode(), order.getTotalAmount(), order.getCustomerName());
-        }
-        return false;
+        return handler;
     }
 }

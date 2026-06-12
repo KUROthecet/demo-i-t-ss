@@ -214,6 +214,13 @@
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+}
+
+@keyframes footer-spin {
+  to { transform: rotate(360deg); }
+}
+
+.footer {
 
   &__newsletter-desc {
     font-size: 14px;
@@ -282,6 +289,16 @@
   &__newsletter-btn-text {
     position: relative;
     z-index: 1;
+  }
+
+  &__newsletter-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 0, 0, 0.25);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: footer-spin 0.7s linear infinite;
+    display: inline-block;
   }
 
   &__bottom {

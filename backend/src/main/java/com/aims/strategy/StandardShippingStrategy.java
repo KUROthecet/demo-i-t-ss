@@ -1,8 +1,10 @@
 package com.aims.strategy;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
+@Qualifier("standardShippingStrategy")
 public class StandardShippingStrategy implements ShippingStrategy {
 
     private static final double HANOI_HCM_BASE_FEE       = 22_000.0;

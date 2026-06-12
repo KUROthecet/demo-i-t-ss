@@ -10,7 +10,6 @@ import org.springframework.web.client.RestClient;
 
 import com.aims.dto.request.PaypalRequestDto;
 import com.aims.dto.response.PaypalResponseDto;
-import com.aims.repository.PaymentTransactionRepository;
 
 import java.util.Base64;
 import java.util.List;
@@ -21,8 +20,6 @@ import java.util.Map;
 @Slf4j
 public class PaypalService {
 
-    private final PaymentTransactionRepository paymentTransactionRepository;
-
     @Value("${paypal.client.id}")
     private String clientId;
 
@@ -32,11 +29,12 @@ public class PaypalService {
     @Value("${paypal.api.url}")
     private String baseUrl;
 
-    private final RestClient restClient;
+    private final ExchangeRateService exchangeRateService;
+    private final RestClient          restClient;
 
-    public PaypalService(PaymentTransactionRepository paymentTransactionRepository) {
-        this.paymentTransactionRepository = paymentTransactionRepository;
-        this.restClient = RestClient.create();
+    public PaypalService(ExchangeRateService exchangeRateService) {
+        this.exchangeRateService = exchangeRateService;
+        this.restClient          = RestClient.create();
     }
 
     @SuppressWarnings("unchecked")
@@ -63,7 +61,7 @@ public class PaypalService {
                         PaypalRequestDto.PurchaseUnit.builder()
                                 .amount(PaypalRequestDto.Amount.builder()
                                         .currencyCode("USD")
-                                        .value(String.format(Locale.US, "%.2f", (double) cartTotal))
+                                        .value(String.format(Locale.US, "%.2f", cartTotal / exchangeRateService.getVndPerUsd()))
                                         .build())
                                 .build()
                 ))
@@ -132,7 +130,7 @@ public class PaypalService {
         String accessToken = getAccessToken();
         Map<String, Object> payload = Map.of(
             "amount", Map.of(
-                "value", String.format(Locale.US, "%.2f", (double) amount),
+                "value", String.format(Locale.US, "%.2f", amount / exchangeRateService.getVndPerUsd()),
                 "currency_code", "USD"
             )
         );

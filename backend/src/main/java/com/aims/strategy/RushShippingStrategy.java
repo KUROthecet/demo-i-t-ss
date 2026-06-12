@@ -1,17 +1,20 @@
 package com.aims.strategy;
 
 import com.aims.exception.BusinessException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
+@Qualifier("rushShippingStrategy")
 public class RushShippingStrategy implements ShippingStrategy {
 
     private static final double   RUSH_SURCHARGE           = 30_000.0;
     private static final String[] RUSH_ELIGIBLE_PROVINCES  = { "Hanoi", "Ho Chi Minh City" };
 
-    private final StandardShippingStrategy standardShippingStrategy;
+    private final ShippingStrategy standardShippingStrategy;
 
-    public RushShippingStrategy(StandardShippingStrategy standardShippingStrategy) {
+    public RushShippingStrategy(
+            @Qualifier("standardShippingStrategy") ShippingStrategy standardShippingStrategy) {
         this.standardShippingStrategy = standardShippingStrategy;
     }
 

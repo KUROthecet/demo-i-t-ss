@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { OrderApiService } from '../../../core/services/order-api.service';
 import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 import { loadScript } from '@paypal/paypal-js';
 import { lastValueFrom } from 'rxjs';
+import { PAYPAL_CLIENT_ID, VIETQR } from '../../../core/config/app.constants';
 
 @Component({
   selector: 'app-payment',
@@ -20,12 +21,11 @@ export class PaymentComponent implements OnInit {
   protected paypalCapturing   = false;
   protected paypalDone        = false;
   protected paypalError       = '';
-
-  private readonly PAYPAL_CLIENT_ID =
-    'AS80_ZkaQeM3a3jW8ymmla5sNV-j0j5wiyh2nvRfhtFn5x1dFZ26UgpWL7yB6eJMW-FUc1-3LQr3LRVB';
+  protected loading           = false;
 
   constructor(
     private readonly router:   Router,
+    private readonly route:    ActivatedRoute,
     private readonly orderApi: OrderApiService
   ) {
     const nav   = this.router.getCurrentNavigation();
@@ -40,9 +40,23 @@ export class PaymentComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     if (!this.order) {
-      this.router.navigate(['/home']);
-      return;
+      const orderId = Number(this.route.snapshot.paramMap.get('orderId'));
+      if (!orderId) {
+        this.router.navigate(['/home']);
+        return;
+      }
+      this.loading = true;
+      try {
+        this.order         = await lastValueFrom(this.orderApi.getOrderById(orderId));
+        this.paymentMethod = this.order.paymentMethod;
+      } catch {
+        this.router.navigate(['/home']);
+        return;
+      } finally {
+        this.loading = false;
+      }
     }
+
     if (
       this.paymentMethod === 'PAYPAL' &&
       this.order.paymentStatus === 'PENDING' &&
@@ -76,7 +90,7 @@ export class PaymentComponent implements OnInit {
 
   private async initPaypalContinueButton(): Promise<void> {
     try {
-      const paypal = await loadScript({ clientId: this.PAYPAL_CLIENT_ID, currency: 'USD' });
+      const paypal = await loadScript({ clientId: PAYPAL_CLIENT_ID, currency: 'USD', locale: 'en_US' });
       if (!paypal?.Buttons) return;
 
       paypal.Buttons({
@@ -95,10 +109,7 @@ export class PaymentComponent implements OnInit {
 
   get vietQrLink(): string {
     if (!this.order) return '';
-    const bankId      = 'MB';
-    const accountNo   = '0975452106';
-    const accountName = 'BUI TRUNG HIEU';
-    const memo        = 'DH' + this.order.id;
-    return `https://img.vietqr.io/image/${bankId}-${accountNo}-qr_only.png?amount=${this.order.totalAmount}&addInfo=${memo}&accountName=${accountName}`;
+    const memo = 'DH' + this.order.id;
+    return `https://img.vietqr.io/image/${VIETQR.bankId}-${VIETQR.accountNo}-qr_only.png?amount=${this.order.totalAmount}&addInfo=${memo}&accountName=${VIETQR.accountName}`;
   }
 }

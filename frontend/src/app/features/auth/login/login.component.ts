@@ -14,8 +14,8 @@ import { AmbientBackgroundComponent } from '../../../shared/ambient-background/a
 })
 export class LoginComponent {
   selectedRole: 'admin' | 'pm' = 'admin';
-  username     = 'admin';
-  password     = 'admin123';
+  username     = '';
+  password     = '';
   showPassword = false;
   loading      = false;
   error        = '';
@@ -27,8 +27,9 @@ export class LoginComponent {
 
   selectRole(role: 'admin' | 'pm'): void {
     this.selectedRole = role;
-    this.username     = role === 'admin' ? 'admin' : 'manager';
-    this.password     = role === 'admin' ? 'admin123' : 'manager123';
+    this.username     = '';
+    this.password     = '';
+    this.error        = '';
   }
 
   login(): void {

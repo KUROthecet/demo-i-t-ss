@@ -45,13 +45,21 @@ public class StockHistoryService {
         }
         mediaRepository.save(media);
 
+        return recordHistory(media, dto.getQuantityDelta(), dto.getReason(),
+                dto.getPerformedBy() != null ? dto.getPerformedBy() : "System");
+    }
+
+    public StockHistory recordHistory(Media media, int delta, String reason, String performedBy) {
+        return recordHistory(media, delta, reason, performedBy, delta >= 0 ? "MANUAL_ADD" : "MANUAL_REDUCE");
+    }
+
+    public StockHistory recordHistory(Media media, int delta, String reason, String performedBy, String actionType) {
         StockHistory record = new StockHistory();
         record.setMedia(media);
-        record.setQuantityDelta(dto.getQuantityDelta());
-        record.setReason(dto.getReason());
-        record.setPerformedBy(dto.getPerformedBy() != null ? dto.getPerformedBy() : "System");
-        record.setActionType(dto.getQuantityDelta() >= 0 ? "MANUAL_ADD" : "MANUAL_REDUCE");
-
+        record.setQuantityDelta(delta);
+        record.setReason(reason);
+        record.setPerformedBy(performedBy);
+        record.setActionType(actionType);
         return stockHistoryRepository.save(record);
     }
 }

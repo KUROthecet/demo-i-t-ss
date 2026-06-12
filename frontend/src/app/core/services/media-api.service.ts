@@ -37,6 +37,26 @@ export class MediaApiService {
     return this.http.get<PaginatedResponse<Media>>(`${this.baseUrl}/products/search`, { params });
   }
 
+  getManagerProducts(
+    query: string,
+    categories: string[],
+    minPrice = 0,
+    maxPrice = 2147483647,
+    page = 0,
+    size = 20
+  ): Observable<PaginatedResponse<Media>> {
+    let params = new HttpParams()
+      .set('query', query)
+      .set('minPrice', minPrice)
+      .set('maxPrice', maxPrice)
+      .set('page', page)
+      .set('size', size);
+    if (categories && categories.length > 0) {
+      params = params.set('category', categories.join(','));
+    }
+    return this.http.get<PaginatedResponse<Media>>(`${this.baseUrl}/manager/products`, { params });
+  }
+
   getCatalogStats(): Observable<Record<string, number>> {
     return this.http.get<Record<string, number>>(`${this.baseUrl}/products/stats`);
   }
@@ -53,6 +73,10 @@ export class MediaApiService {
     return this.http.delete(`${this.baseUrl}/products`, { body: ids });
   }
 
+  reactivateMedia(id: number): Observable<Media> {
+    return this.http.patch<Media>(`${this.baseUrl}/products/${id}/activate`, {});
+  }
+
   getDailyDeleteCount(): Observable<{ count: number; remaining: number }> {
     return this.http.get<{ count: number; remaining: number }>(`${this.baseUrl}/media/daily-delete-count`);
   }
@@ -67,5 +91,17 @@ export class MediaApiService {
 
   uploadImage(formData: FormData): Observable<{ url: string }> {
     return this.http.post<{ url: string }>(`${this.baseUrl}/upload`, formData);
+  }
+
+  getStockBatch(ids: number[]): Observable<Record<number, number>> {
+    return this.http.post<Record<number, number>>(`${this.baseUrl}/products/stock-batch`, ids);
+  }
+
+  submitContact(payload: { name: string; email: string; subject: string; message: string }): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/contact`, payload);
+  }
+
+  subscribeNewsletter(email: string): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/newsletter/subscribe`, { email });
   }
 }

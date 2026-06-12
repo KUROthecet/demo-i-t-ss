@@ -4,11 +4,12 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 import { AmbientBackgroundComponent } from '../../../shared/ambient-background/ambient-background.component';
+import { NotificationBellComponent } from '../../../shared/notification-bell/notification-bell.component';
 
 @Component({
   selector: 'app-admin-shell',
   standalone: true,
-  imports: [CommonModule, RouterModule, AmbientBackgroundComponent],
+  imports: [CommonModule, RouterModule, AmbientBackgroundComponent, NotificationBellComponent],
   templateUrl: './admin-shell.component.html',
   styleUrl: './admin-shell.component.scss'
 })

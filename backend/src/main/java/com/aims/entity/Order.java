@@ -11,8 +11,10 @@ import com.aims.enums.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +22,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class Order {
 
@@ -80,6 +83,8 @@ public class Order {
     private List<OrderLine> orderLines = new ArrayList<>();
 
     @Transient
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private AbstractOrderState currentState;
 
     @PostLoad
@@ -100,6 +105,10 @@ public class Order {
         if (currentState == null) {
             currentState = createStateFor(status);
         }
+    }
+
+    public void transitionState(AbstractOrderState newState) {
+        this.currentState = newState;
     }
 
     @PrePersist

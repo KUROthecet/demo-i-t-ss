@@ -142,7 +142,7 @@
                   {{ p.status }}
                 </span>
               </td>
-              <td>
+              <td class="admin-table__actions">
                 <a class="btn btn--sm btn--ghost" [routerLink]="['/manager/product-form', p.id]">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -150,6 +150,15 @@
                   </svg>
                   Edit
                 </a>
+                @if (p.status === 'DEACTIVATED') {
+                  <button class="btn btn--sm btn--activate" (click)="reactivateProduct(p.id)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                      <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                      <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                    </svg>
+                    Activate
+                  </button>
+                }
               </td>
             </tr>
           }

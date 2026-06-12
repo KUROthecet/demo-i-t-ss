@@ -30,6 +30,34 @@ public class EmailService {
     }
 
     @Async
+    public void sendUserBlocked(String to, String username, String reason) {
+        sendHtml(to,
+            "Your AIMS Account Has Been Suspended",
+            buildUserBlockedHtml(username, reason));
+    }
+
+    @Async
+    public void sendUserUnblocked(String to, String username) {
+        sendHtml(to,
+            "Your AIMS Account Has Been Reinstated",
+            buildUserUnblockedHtml(username));
+    }
+
+    @Async
+    public void sendUserDeactivated(String to, String username) {
+        sendHtml(to,
+            "Your AIMS Account Has Been Deactivated",
+            buildUserDeactivatedHtml(username));
+    }
+
+    @Async
+    public void sendRoleChanged(String to, String username, String newRole) {
+        sendHtml(to,
+            "Your AIMS Account Role Has Changed",
+            buildRoleChangedHtml(username, newRole));
+    }
+
+    @Async
     public void sendOrderApproved(String to, String name, String orderCode) {
         sendHtml(to,
             "Your Order Has Been Approved — " + orderCode,
@@ -169,10 +197,9 @@ public class EmailService {
             ) +
             divider() +
             "<p style='margin:0;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.8'>" +
-            "To track your order, visit the <strong style='color:rgba(255,255,255,0.5)'>Orders</strong> page " +
-            "on the AIMS website and enter the email address used at checkout." +
+            "Click the button below to view your order details and track its status." +
             "</p>" +
-            ctaButton("Track your order", frontendUrl + "/orders", "#1DB954", "#000");
+            ctaButton("View my order", frontendUrl + "/order/" + orderCode, "#1DB954", "#000");
 
         return layout("#1DB954", "Order Confirmed", "Thank you for your purchase. We're on it.", body);
     }
@@ -284,6 +311,131 @@ public class EmailService {
             "</p>";
 
         return layout("#60a5fa", "Password Reset", "Your AIMS staff account password has been reset.", body);
+    }
+
+    @Async
+    public void sendNewsletterConfirmation(String to) {
+        sendHtml(to,
+            "You're subscribed to AIMS updates",
+            buildNewsletterConfirmationHtml(to));
+    }
+
+    @Async
+    public void sendContactMessage(String senderName, String senderEmail, String subject, String message) {
+        sendHtml(fromAddress,
+            "[AIMS Contact] " + (subject != null && !subject.isBlank() ? subject : "New message from " + senderName),
+            buildContactMessageHtml(senderName, senderEmail, subject, message));
+    }
+
+    private String buildNewsletterConfirmationHtml(String email) {
+        String body =
+            "<p style='margin:0 0 24px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8'>" +
+            "You're now subscribed to AIMS updates. We'll send you new arrivals, restocks, " +
+            "and occasional promotions — no spam, unsubscribe anytime." +
+            "</p>" +
+            infoBox("#1DB954",
+                infoRow("Subscribed email", "<span style='color:rgba(255,255,255,0.8)'>" + email + "</span>") +
+                infoRow("What to expect", "<span style='color:rgba(255,255,255,0.6)'>New arrivals &amp; restocks</span>")
+            ) +
+            divider() +
+            "<p style='margin:0;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.8'>" +
+            "To unsubscribe, reply to this email with the subject line <strong>UNSUBSCRIBE</strong>." +
+            "</p>" +
+            ctaButton("Browse the catalog", frontendUrl + "/search", "#1DB954", "#000");
+
+        return layout("#1DB954", "You're subscribed", "Welcome to the AIMS mailing list.", body);
+    }
+
+    private String buildContactMessageHtml(String senderName, String senderEmail, String subject, String message) {
+        String body =
+            "<p style='margin:0 0 24px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8'>" +
+            "A new message was submitted through the AIMS contact form." +
+            "</p>" +
+            infoBox("rgba(255,255,255,0.08)",
+                infoRow("From", "<strong style='color:#fff'>" + senderName + "</strong>") +
+                infoRow("Email", "<a href='mailto:" + senderEmail + "' style='color:#1DB954;text-decoration:none'>" + senderEmail + "</a>") +
+                infoRow("Subject", subject != null && !subject.isBlank() ? subject : "—")
+            ) +
+            "<div style='background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:24px;margin:20px 0'>" +
+            "<p style='margin:0 0 10px;font-size:10px;font-weight:700;letter-spacing:0.2em;color:rgba(255,255,255,0.35)'>MESSAGE</p>" +
+            "<p style='margin:0;font-size:14px;color:rgba(255,255,255,0.7);line-height:1.8;white-space:pre-wrap'>" + message + "</p>" +
+            "</div>" +
+            divider() +
+            "<p style='margin:0;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.8'>" +
+            "Reply directly to this email to respond to " + senderName + "." +
+            "</p>";
+
+        return layout("rgba(255,255,255,0.2)", "New Contact Message", "Submitted via the AIMS contact form.", body);
+    }
+
+    private String buildUserBlockedHtml(String username, String reason) {
+        String body =
+            "<p style='margin:0 0 24px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8'>" +
+            "Your AIMS account <strong style='color:rgba(255,255,255,0.85)'>" + username + "</strong> " +
+            "has been suspended by an administrator. You will not be able to log in until reinstated." +
+            "</p>" +
+            infoBox("#ef4444",
+                infoRow("Account", "<code style='font-family:monospace;color:#f87171'>" + username + "</code>") +
+                infoRow("Status", badge("SUSPENDED", "#ef4444")) +
+                infoRow("Reason", "<span style='color:rgba(255,255,255,0.6)'>" +
+                    (reason != null && !reason.isBlank() ? reason : "Policy violation") + "</span>")
+            ) +
+            divider() +
+            "<p style='margin:0;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.8'>" +
+            "If you believe this is a mistake, contact support at " +
+            "<strong style='color:rgba(255,255,255,0.5)'>support@aims.store</strong>." +
+            "</p>";
+        return layout("#ef4444", "Account Suspended", "Your AIMS account has been suspended.", body);
+    }
+
+    private String buildUserUnblockedHtml(String username) {
+        String body =
+            "<p style='margin:0 0 24px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8'>" +
+            "Your AIMS account <strong style='color:rgba(255,255,255,0.85)'>" + username + "</strong> " +
+            "has been reinstated. You may now log in and access all features." +
+            "</p>" +
+            infoBox("#1DB954",
+                infoRow("Account", "<code style='font-family:monospace;color:#1DB954'>" + username + "</code>") +
+                infoRow("Status", badge("ACTIVE", "#1DB954"))
+            ) +
+            ctaButton("Log in to AIMS", frontendUrl + "/login", "#1DB954", "#000");
+        return layout("#1DB954", "Account Reinstated", "Your access has been restored.", body);
+    }
+
+    private String buildUserDeactivatedHtml(String username) {
+        String body =
+            "<p style='margin:0 0 24px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8'>" +
+            "Your AIMS account <strong style='color:rgba(255,255,255,0.85)'>" + username + "</strong> " +
+            "has been deactivated. If you need assistance, please contact the administrator." +
+            "</p>" +
+            infoBox("rgba(255,255,255,0.08)",
+                infoRow("Account", "<code style='font-family:monospace;color:rgba(255,255,255,0.5)'>" + username + "</code>") +
+                infoRow("Status", badge("DEACTIVATED", "rgba(255,255,255,0.4)"))
+            ) +
+            divider() +
+            "<p style='margin:0;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.8'>" +
+            "Contact support at <strong style='color:rgba(255,255,255,0.5)'>support@aims.store</strong> for inquiries." +
+            "</p>";
+        return layout("rgba(255,255,255,0.3)", "Account Deactivated", "Your AIMS account has been deactivated.", body);
+    }
+
+    private String buildRoleChangedHtml(String username, String newRole) {
+        String body =
+            "<p style='margin:0 0 24px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8'>" +
+            "The role for your AIMS account <strong style='color:rgba(255,255,255,0.85)'>" + username + "</strong> " +
+            "has been updated by an administrator." +
+            "</p>" +
+            infoBox("#60a5fa",
+                infoRow("Account", "<code style='font-family:monospace;color:#60a5fa'>" + username + "</code>") +
+                infoRow("New role", badge(newRole.toUpperCase(), "#60a5fa"))
+            ) +
+            divider() +
+            "<p style='margin:0;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.8'>" +
+            "If you did not expect this change, contact support at " +
+            "<strong style='color:rgba(255,255,255,0.5)'>support@aims.store</strong>." +
+            "</p>" +
+            ctaButton("Log in to AIMS", frontendUrl + "/login", "#60a5fa", "#000");
+        return layout("#60a5fa", "Role Updated", "Your account permissions have changed.", body);
     }
 
     private String buildManagerRefundHtml(String orderCode, long amount, String customerName) {

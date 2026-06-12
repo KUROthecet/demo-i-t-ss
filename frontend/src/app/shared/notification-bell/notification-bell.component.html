@@ -1,0 +1,58 @@
+<div class="notif-bell">
+  <button class="notif-bell__trigger" (click)="toggle()" [class.notif-bell__trigger--active]="open" title="Notifications">
+    <svg class="notif-bell__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </svg>
+    @if (notifService.unreadCount() > 0) {
+      <span class="notif-bell__badge">
+        {{ notifService.unreadCount() > 99 ? '99+' : notifService.unreadCount() }}
+      </span>
+    }
+  </button>
+
+  @if (open) {
+    <div class="notif-panel">
+      <div class="notif-panel__header">
+        <span class="notif-panel__title">Notifications</span>
+        @if (notifService.unreadCount() > 0) {
+          <button class="notif-panel__mark-read" (click)="markAllRead()">Mark all read</button>
+        }
+      </div>
+
+      <div class="notif-panel__list">
+        @if (notifService.items().length === 0) {
+          <div class="notif-panel__empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span>No pending orders</span>
+          </div>
+        }
+        @for (item of notifService.items(); track item.id) {
+          <a class="notif-item" [class.notif-item--unread]="!item.read" [routerLink]="['/order', item.id]" (click)="open = false">
+            <div class="notif-item__dot" [class.notif-item__dot--active]="!item.read"></div>
+            <div class="notif-item__body">
+              <div class="notif-item__top">
+                <span class="notif-item__code">{{ item.orderCode }}</span>
+                <span class="notif-item__time">{{ formatRelative(item.createdAt) }}</span>
+              </div>
+              <div class="notif-item__customer">{{ item.customerName }}</div>
+              <div class="notif-item__amount">{{ item.totalAmount | vndCurrency }} VND</div>
+            </div>
+          </a>
+        }
+      </div>
+
+      <div class="notif-panel__footer">
+        <a class="notif-panel__view-all" routerLink="/manager/orders" (click)="open = false">
+          View all orders
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  }
+</div>

@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.aims.dto.response.MediaResponseDto;
 import java.util.Map;
 
 @JsonTypeInfo(
@@ -71,6 +72,8 @@ public abstract class Media {
 
     public abstract Map<String, String> getTypeSpecificAttributes();
 
+    public abstract void populateDto(MediaResponseDto dto);
+
     public double getShippingWeight() {
         return 0.0;
     }
@@ -100,14 +103,14 @@ public abstract class Media {
             );
         }
         this.quantityInStock -= quantity;
-        if (this.quantityInStock == 0) this.status = MediaStatus.DEACTIVATED;
     }
 
     public void restoreStock(int quantity) {
         this.quantityInStock += quantity;
-        if (MediaStatus.DEACTIVATED == this.status && this.quantityInStock > 0) {
-            this.status = MediaStatus.ACTIVE;
-        }
+    }
+
+    public void reactivate() {
+        this.status = MediaStatus.ACTIVE;
     }
 
     public void updateDetails(Media updated) {

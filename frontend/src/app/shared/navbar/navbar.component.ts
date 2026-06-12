@@ -6,6 +6,11 @@ import { filter } from 'rxjs';
 import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/services/auth.service';
 
+const ROLE_DASHBOARD_MAP: Record<string, string> = {
+  ADMIN:           '/admin/dashboard',
+  PRODUCT_MANAGER: '/manager/dashboard'
+};
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -14,23 +19,23 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent implements AfterViewInit {
-  searchQuery = '';
+  searchQuery  = '';
   showUserMenu = false;
 
-  @ViewChild('navHome') navHome!: ElementRef;
+  @ViewChild('navHome')   navHome!:   ElementRef;
   @ViewChild('navBrowse') navBrowse!: ElementRef;
   @ViewChild('navOrders') navOrders!: ElementRef;
 
-  indicatorLeft = 0;
+  indicatorLeft  = 0;
   indicatorWidth = 0;
 
   itemCount   = computed(this.computeItemCount.bind(this));
   currentUser = computed(this.computeCurrentUser.bind(this));
 
   constructor(
-    private cartService: CartService,
-    private authService: AuthService,
-    private router: Router
+    private readonly cartService:  CartService,
+    private readonly authService:  AuthService,
+    private readonly router:       Router
   ) {
     this.router.events.pipe(
       filter(this.isNavigationEnd.bind(this))
@@ -59,12 +64,12 @@ export class NavbarComponent implements AfterViewInit {
 
   updateIndicator() {
     let activeEl: HTMLElement | null = null;
-    if (this.isActive('/home')) activeEl = this.navHome?.nativeElement;
-    else if (this.isActive('/search')) activeEl = this.navBrowse?.nativeElement;
-    else if (this.isActive('/order')) activeEl = this.navOrders?.nativeElement;
+    if (this.isActive('/home'))   activeEl = this.navHome?.nativeElement;
+    else if (this.isActive('/search'))  activeEl = this.navBrowse?.nativeElement;
+    else if (this.isActive('/order'))   activeEl = this.navOrders?.nativeElement;
 
     if (activeEl) {
-      this.indicatorLeft = activeEl.offsetLeft;
+      this.indicatorLeft  = activeEl.offsetLeft;
       this.indicatorWidth = activeEl.offsetWidth;
     } else {
       this.indicatorWidth = 0;
@@ -111,9 +116,11 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   goToDashboard(): void {
-    const role = this.currentUser()?.role;
+    const role  = this.currentUser()?.role ?? '';
+    const route = ROLE_DASHBOARD_MAP[role];
     this.showUserMenu = false;
-    if (role === 'ADMIN') this.router.navigate(['/admin/dashboard']);
-    else if (role === 'PRODUCT_MANAGER') this.router.navigate(['/manager/dashboard']);
+    if (route) {
+      this.router.navigate([route]);
+    }
   }
 }

@@ -53,6 +53,8 @@ app:
     expiration-ms: 86400000
   frontend:
     url: ${FRONTEND_URL:http://localhost:4200}
+  manager:
+    email: ${MANAGER_EMAIL:manager@aims.vn}
 
 logging:
   level:
@@ -66,6 +68,7 @@ paypal:
         secret: EKuym3PlkXCGFh42z5PqEexVgxkj7fOGKW94YM0aA0gVqQNglqIvm3-ul0ibcY5_02uqaw-OTtmHCtqX
      api:
         url: https://api-m.sandbox.paypal.com
+     vnd-to-usd-rate: 25000
 
 cloudinary:
   cloud_name: ${CLOUDINARY_CLOUD_NAME:dlm4q57tz}

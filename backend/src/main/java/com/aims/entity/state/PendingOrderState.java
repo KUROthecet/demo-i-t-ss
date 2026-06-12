@@ -17,19 +17,19 @@ public class PendingOrderState extends AbstractOrderState {
     @Override
     public void approve() {
         order.setStatus(OrderStatus.APPROVED);
-        order.setCurrentState(new ApprovedOrderState(order));
+        order.transitionState(new ApprovedOrderState(order));
     }
 
     @Override
     public void reject(String reason) {
         order.setStatus(OrderStatus.REJECTED);
         order.setRejectionReason(reason);
-        order.setCurrentState(new RejectedOrderState(order));
+        order.transitionState(new RejectedOrderState(order));
     }
 
     @Override
     public void cancel() {
         order.setStatus(OrderStatus.CANCELLED);
-        order.setCurrentState(new CancelledOrderState(order));
+        order.transitionState(new CancelledOrderState(order));
     }
 }

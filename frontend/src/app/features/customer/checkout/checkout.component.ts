@@ -10,6 +10,7 @@ import { AmbientBackgroundComponent } from '../../../shared/ambient-background/a
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 import { loadScript } from '@paypal/paypal-js';
 import { lastValueFrom } from 'rxjs';
+import { PAYPAL_CLIENT_ID, AppConstants } from '../../../core/config/app.constants';
 
 @Component({
   selector: 'app-checkout',
@@ -27,15 +28,19 @@ export class CheckoutComponent implements OnInit {
   protected deliveryNotes   = '';
   protected rushDelivery    = false;
   protected preferredTime   = '';
-  protected paymentMethod: 'VIETQR' | 'PAYPAL' = 'PAYPAL';
+  protected paymentMethod: 'VIETQR' | 'PAYPAL' = 'VIETQR';
   protected deliveryFee     = 0;
   protected rushFee         = 0;
   protected calculating     = false;
-  protected submitting      = false;
-  protected error           = '';
-  private   placedOrder: any = null;
+  protected submitting        = false;
+  protected error             = '';
+  private   placedOrder: any  = null;
+  private   pendingPaypalId   = '';
 
   private static readonly RUSH_ELIGIBLE_PROVINCES: string[] = ['Hanoi', 'Ho Chi Minh City'];
+
+  readonly freeShippingThreshold = AppConstants.FREE_SHIPPING_THRESHOLD;
+  readonly freeShippingCap       = AppConstants.FREE_SHIPPING_CAP;
 
   protected items    = computed(this.computeItems.bind(this));
   protected subtotal = computed(this.computeSubtotal.bind(this));
@@ -59,10 +64,13 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
+    this.cartService.refreshStock().subscribe();
+
     try {
       const paypal = await loadScript({
-        clientId: 'AS80_ZkaQeM3a3jW8ymmla5sNV-j0j5wiyh2nvRfhtFn5x1dFZ26UgpWL7yB6eJMW-FUc1-3LQr3LRVB',
-        currency: 'USD'
+        clientId: PAYPAL_CLIENT_ID,
+        currency: 'USD',
+        locale:   'en_US'
       });
 
       if (paypal && paypal.Buttons) {
@@ -78,19 +86,24 @@ export class CheckoutComponent implements OnInit {
   }
 
   private async onPaypalCreateOrder(_data: any, _actions: any): Promise<string> {
-    if (this.submitting) throw new Error('Order already in progress.');
     if (!this.validateForm()) throw new Error('Form validation failed');
+
+    if (this.pendingPaypalId) {
+      return this.pendingPaypalId;
+    }
+
+    if (this.submitting) throw new Error('Order already in progress.');
     this.submitting = true;
     this.error      = '';
 
-    const orderReq = this.buildOrderRequest();
     try {
-      const rawResponse = await lastValueFrom(this.orderApi.placeOrder(orderReq));
+      const rawResponse = await lastValueFrom(this.orderApi.placeOrder(this.buildOrderRequest()));
       const savedOrder  = typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
       this.placedOrder  = savedOrder;
 
       const paypalOrderId = savedOrder.paymentTransactionId;
       if (!paypalOrderId) throw new Error('PayPal Order ID not found in server response.');
+      this.pendingPaypalId = paypalOrderId;
       return paypalOrderId;
     } catch (err: any) {
       this.submitting = false;
@@ -102,8 +115,9 @@ export class CheckoutComponent implements OnInit {
   private async onPaypalApprove(data: any, _actions: any): Promise<void> {
     try {
       await lastValueFrom(this.orderApi.captureOrder(data.orderID));
+      this.pendingPaypalId = '';
       this.cartService.clearCart();
-      this.router.navigate(['/payment'], { state: { orderData: this.placedOrder } });
+      this.router.navigate(['/payment', this.placedOrder.id], { state: { orderData: this.placedOrder } });
     } catch {
       this.error      = 'Payment capture failed. Please contact support.';
       this.submitting = false;
@@ -227,7 +241,7 @@ export class CheckoutComponent implements OnInit {
   private onOrderPlaced(rawResponse: any): void {
     this.cartService.clearCart();
     const order = typeof rawResponse === 'string' ? JSON.parse(rawResponse) : rawResponse;
-    this.router.navigate(['/payment'], { state: { orderData: order } });
+    this.router.navigate(['/payment', order.id], { state: { orderData: order } });
   }
 
   private onOrderError(err: any): void {

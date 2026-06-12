@@ -67,20 +67,30 @@
             <button
               class="btn btn--icon btn--secondary"
               [class.detail-hero__action-btn--active]="isWishlisted"
-              (click)="isWishlisted = !isWishlisted"
-              title="Wishlist">
+              (click)="toggleWishlist()"
+              [title]="isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
                       [attr.fill]="isWishlisted ? '#1DB954' : 'none'"
                       [attr.stroke]="isWishlisted ? '#1DB954' : 'currentColor'"/>
               </svg>
             </button>
-            <button class="btn btn--icon btn--secondary" title="Share">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-              </svg>
+            <button
+              class="btn btn--icon btn--secondary"
+              [class.detail-hero__action-btn--active]="shareCopied"
+              (click)="shareProduct()"
+              [title]="shareCopied ? 'Link copied!' : 'Share'">
+              @if (shareCopied) {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              } @else {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+              }
             </button>
           </div>
         </div>
@@ -187,28 +197,22 @@
                 <span class="spec-row__value">{{ getAuthor() }}</span>
               </div>
             }
+            @if (getCoverType()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Cover Type</span>
+                <span class="spec-row__value">{{ getCoverType() }}</span>
+              </div>
+            }
             @if (getPublisher()) {
               <div class="spec-row">
                 <span class="spec-row__label">Publisher</span>
                 <span class="spec-row__value">{{ getPublisher() }}</span>
               </div>
             }
-            @if (getArtist()) {
+            @if (getPublicationDate()) {
               <div class="spec-row">
-                <span class="spec-row__label">Artist</span>
-                <span class="spec-row__value">{{ getArtist() }}</span>
-              </div>
-            }
-            @if (getDirector()) {
-              <div class="spec-row">
-                <span class="spec-row__label">Director</span>
-                <span class="spec-row__value">{{ getDirector() }}</span>
-              </div>
-            }
-            @if (getLanguage()) {
-              <div class="spec-row">
-                <span class="spec-row__label">Language</span>
-                <span class="spec-row__value">{{ getLanguage() }}</span>
+                <span class="spec-row__label">Publication Date</span>
+                <span class="spec-row__value">{{ getPublicationDate() }}</span>
               </div>
             }
             @if (getNumberOfPages()) {
@@ -217,10 +221,118 @@
                 <span class="spec-row__value">{{ getNumberOfPages() }}</span>
               </div>
             }
+            @if (getLanguage()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Language</span>
+                <span class="spec-row__value">{{ getLanguage() }}</span>
+              </div>
+            }
+            @if (getGenre()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Genre</span>
+                <span class="spec-row__value">{{ getGenre() }}</span>
+              </div>
+            }
+            @if (getArtist()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Artist</span>
+                <span class="spec-row__value">{{ getArtist() }}</span>
+              </div>
+            }
+            @if (getRecordLabel()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Record Label</span>
+                <span class="spec-row__value">{{ getRecordLabel() }}</span>
+              </div>
+            }
+            @if (getTrackList()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Track List</span>
+                <span class="spec-row__value">{{ getTrackList() }}</span>
+              </div>
+            }
+            @if (getCDReleaseDate()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Release Date</span>
+                <span class="spec-row__value">{{ getCDReleaseDate() }}</span>
+              </div>
+            }
+            @if (getDirector()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Director</span>
+                <span class="spec-row__value">{{ getDirector() }}</span>
+              </div>
+            }
+            @if (getDiscType()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Disc Type</span>
+                <span class="spec-row__value">{{ getDiscType() }}</span>
+              </div>
+            }
             @if (getRuntimeMinutes()) {
               <div class="spec-row">
                 <span class="spec-row__label">Runtime</span>
                 <span class="spec-row__value">{{ getRuntimeMinutes() }} min</span>
+              </div>
+            }
+            @if (getStudio()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Studio</span>
+                <span class="spec-row__value">{{ getStudio() }}</span>
+              </div>
+            }
+            @if (getSubtitles()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Subtitles</span>
+                <span class="spec-row__value">{{ getSubtitles() }}</span>
+              </div>
+            }
+            @if (getDVDReleaseDate()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Release Date</span>
+                <span class="spec-row__value">{{ getDVDReleaseDate() }}</span>
+              </div>
+            }
+            @if (getEditorInChief()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Editor in Chief</span>
+                <span class="spec-row__value">{{ getEditorInChief() }}</span>
+              </div>
+            }
+            @if (getNewspaperPublisher()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Publisher</span>
+                <span class="spec-row__value">{{ getNewspaperPublisher() }}</span>
+              </div>
+            }
+            @if (getIssueNumber()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Issue Number</span>
+                <span class="spec-row__value">{{ getIssueNumber() }}</span>
+              </div>
+            }
+            @if (getPublicationFrequency()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Publication Frequency</span>
+                <span class="spec-row__value">{{ getPublicationFrequency() }}</span>
+              </div>
+            }
+            @if (getIssn()) {
+              <div class="spec-row">
+                <span class="spec-row__label">ISSN</span>
+                <span class="spec-row__value">{{ getIssn() }}</span>
+              </div>
+            }
+            @if (getNewspaperLanguage()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Language</span>
+                <span class="spec-row__value">{{ getNewspaperLanguage() }}</span>
+              </div>
+            }
+            @if (getSections()) {
+              <div class="spec-row">
+                <span class="spec-row__label">Sections</span>
+                <span class="spec-row__value">{{ getSections() }}</span>
               </div>
             }
             <div class="spec-row">

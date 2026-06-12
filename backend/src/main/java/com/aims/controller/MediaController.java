@@ -39,6 +39,17 @@ public class MediaController {
         return ResponseEntity.ok(mediaService.searchMedia(query, category, minPrice, maxPrice, PageRequest.of(page, size)));
     }
 
+    @GetMapping("/api/manager/products")
+    public ResponseEntity<Page<Media>> getManagerProducts(
+            @RequestParam(defaultValue = "") String query,
+            @RequestParam(required = false) List<String> category,
+            @RequestParam(defaultValue = "0") int minPrice,
+            @RequestParam(defaultValue = "2147483647") int maxPrice,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(mediaService.getManagerProducts(query, category, minPrice, maxPrice, PageRequest.of(page, size)));
+    }
+
     @GetMapping("/api/products/stats")
     public ResponseEntity<Map<String, Long>> getCatalogStats() {
         return ResponseEntity.ok(mediaService.getCatalogStats());
@@ -67,6 +78,13 @@ public class MediaController {
         return ResponseEntity.ok(Map.of("message", "Products processed successfully"));
     }
 
+    @PatchMapping("/api/products/{id}/activate")
+    public ResponseEntity<Media> activateMedia(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-Performed-By", defaultValue = "System") String performedBy) {
+        return ResponseEntity.ok(mediaService.reactivateMedia(id, performedBy));
+    }
+
     @GetMapping("/api/products/{id}/similar")
     public ResponseEntity<List<Media>> getSimilarProducts(@PathVariable Long id) {
         return ResponseEntity.ok(mediaService.getSimilarMedia(id));
@@ -76,5 +94,10 @@ public class MediaController {
     public ResponseEntity<Map<String, Integer>> getDailyDeleteCount() {
         int count = mediaService.getDailyDeleteCount();
         return ResponseEntity.ok(Map.of("count", count, "remaining", 20 - count));
+    }
+
+    @PostMapping("/api/products/stock-batch")
+    public ResponseEntity<Map<Long, Integer>> getStockBatch(@RequestBody List<Long> ids) {
+        return ResponseEntity.ok(mediaService.getStockBatch(ids));
     }
 }

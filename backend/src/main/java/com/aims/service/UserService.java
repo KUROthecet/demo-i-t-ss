@@ -19,9 +19,10 @@ import java.util.Random;
 @Transactional
 public class UserService {
 
-    private final UserRepository  userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final EmailService    emailService;
+    private final UserRepository    userRepository;
+    private final PasswordEncoder   passwordEncoder;
+    private final EmailService      emailService;
+    private final HistoryLogService historyLogService;
 
     @Transactional(readOnly = true)
     public List<User> getAllUsers() {
@@ -79,22 +80,40 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User blockUser(Long id, String reason) {
+    public User blockUser(Long id, String reason, String performedBy) {
         User user = getUserById(id);
         user.block(reason);
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        historyLogService.log("USER_BLOCKED", user.getUsername(), performedBy,
+                "User '" + user.getUsername() + "' blocked. Reason: " + reason);
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            emailService.sendUserBlocked(user.getEmail(), user.getUsername(), reason);
+        }
+        return saved;
     }
 
-    public User unblockUser(Long id) {
+    public User unblockUser(Long id, String performedBy) {
         User user = getUserById(id);
         user.unblock();
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        historyLogService.log("USER_UNBLOCKED", user.getUsername(), performedBy,
+                "User '" + user.getUsername() + "' unblocked");
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            emailService.sendUserUnblocked(user.getEmail(), user.getUsername());
+        }
+        return saved;
     }
 
-    public User deactivateUser(Long id) {
+    public User deactivateUser(Long id, String performedBy) {
         User user = getUserById(id);
         user.deactivate();
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        historyLogService.log("USER_DEACTIVATED", user.getUsername(), performedBy,
+                "User '" + user.getUsername() + "' deactivated");
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            emailService.sendUserDeactivated(user.getEmail(), user.getUsername());
+        }
+        return saved;
     }
 
     public User resetPassword(Long id) {
@@ -106,9 +125,16 @@ public class UserService {
         return saved;
     }
 
-    public User changeRole(Long id, String newRole) {
+    public User changeRole(Long id, String newRole, String performedBy) {
         User user = getUserById(id);
+        String oldRole = user.getRole();
         user.changeRole(newRole);
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        historyLogService.log("USER_ROLE_CHANGED", user.getUsername(), performedBy,
+                "User '" + user.getUsername() + "' role changed: " + oldRole + " → " + newRole);
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            emailService.sendRoleChanged(user.getEmail(), user.getUsername(), newRole);
+        }
+        return saved;
     }
 }

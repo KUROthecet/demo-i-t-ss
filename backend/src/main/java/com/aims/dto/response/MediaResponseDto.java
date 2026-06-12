@@ -1,6 +1,7 @@
 package com.aims.dto.response;
 
-import com.aims.entity.*;
+import com.aims.entity.Media;
+import com.aims.entity.PhysicalMedia;
 
 public class MediaResponseDto {
 
@@ -57,53 +58,16 @@ public class MediaResponseDto {
         dto.setCurrentPrice(media.getCurrentPrice());
         dto.setGeneralDescription(media.getGeneralDescription());
         dto.setImageUrl(media.getImageUrl());
-        if (media instanceof PhysicalMedia physical) {
-            dto.setWeight(physical.getWeight());
-            dto.setDimensions(physical.getDimensions());
-        }
         dto.setQuantityInStock(media.getQuantityInStock());
         dto.setStatus(media.getStatus() != null ? media.getStatus().name() : null);
         dto.setSupportRushDelivery(media.isSupportRushDelivery());
 
-        if (media instanceof Book book) {
-            dto.setType("Book");
-            dto.setAuthor(book.getAuthor());
-            dto.setCoverType(book.getCoverType());
-            dto.setPublicationDate(book.getPublicationDate());
-            dto.setPublisher(book.getPublisher());
-            dto.setGenre(book.getGenre());
-            dto.setLanguage(book.getLanguage());
-            dto.setNumberOfPages(book.getNumberOfPages());
-        } else if (media instanceof CD cd) {
-            dto.setType("CD");
-            dto.setArtist(cd.getArtist());
-            dto.setGenre(cd.getGenre());
-            dto.setRecordLabel(cd.getRecordLabel());
-            dto.setTrackList(cd.getTrackList());
-            dto.setReleaseDate(cd.getReleaseDate());
-        } else if (media instanceof DVD dvd) {
-            dto.setType("DVD");
-            dto.setDirector(dvd.getDirector());
-            dto.setDiscType(dvd.getDiscType());
-            dto.setLanguage(dvd.getLanguage());
-            dto.setRuntimeMinutes(dvd.getRuntimeMinutes());
-            dto.setStudio(dvd.getStudio());
-            dto.setSubtitles(dvd.getSubtitles());
-            dto.setGenre(dvd.getGenre());
-            dto.setReleaseDate(dvd.getReleaseDate());
-        } else if (media instanceof Newspaper newspaper) {
-            dto.setType("Newspaper");
-            dto.setEditorInChief(newspaper.getEditorInChief());
-            dto.setPublicationDate(newspaper.getPublicationDate());
-            dto.setPublisher(newspaper.getPublisher());
-            dto.setIssn(newspaper.getIssn());
-            dto.setIssueNumber(newspaper.getIssueNumber());
-            dto.setLanguage(newspaper.getLanguage());
-            dto.setPublicationFrequency(newspaper.getPublicationFrequency());
-            dto.setSections(newspaper.getSections());
-        } else {
-            dto.setType("Unknown");
+        if (media instanceof PhysicalMedia physical) {
+            dto.setWeight(physical.getWeight());
+            dto.setDimensions(physical.getDimensions());
         }
+
+        media.populateDto(dto);
 
         return dto;
     }

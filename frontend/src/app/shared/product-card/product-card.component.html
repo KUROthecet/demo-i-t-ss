@@ -42,7 +42,7 @@
         <button class="result-card__btn result-card__btn--disabled" disabled (click)="$event.stopPropagation(); $event.preventDefault()">Unavailable</button>
       } @else {
         <button class="result-card__btn result-card__btn--view"
-                (click)="$event.stopPropagation()">
+                (click)="onViewProduct($event)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
             <circle cx="12" cy="12" r="3"/>

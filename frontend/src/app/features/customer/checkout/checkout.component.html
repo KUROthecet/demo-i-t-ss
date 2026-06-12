@@ -233,6 +233,11 @@
               <span>{{ rushFee | vndCurrency }}</span>
             </div>
           }
+          <div class="checkout-summary__row">
+            <span style="font-size:11px;color:var(--color-text-muted,#6b7280);line-height:1.4;">
+              Orders over {{ freeShippingThreshold | vndCurrency }} qualify for free shipping (up to {{ freeShippingCap | vndCurrency }} discount)
+            </span>
+          </div>
         </div>
 
         <div class="checkout-summary__divider"></div>

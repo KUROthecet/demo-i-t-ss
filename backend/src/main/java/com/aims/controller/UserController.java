@@ -44,19 +44,26 @@ public class UserController {
     }
 
     @PostMapping("/{id}/block")
-    public ResponseEntity<UserResponseDto> blockUser(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<UserResponseDto> blockUser(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body,
+            @RequestHeader(value = "X-Performed-By", defaultValue = "Admin") String performedBy) {
         String reason = body.getOrDefault("reason", "Blocked by admin");
-        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.blockUser(id, reason)));
+        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.blockUser(id, reason, performedBy)));
     }
 
     @PostMapping("/{id}/unblock")
-    public ResponseEntity<UserResponseDto> unblockUser(@PathVariable Long id) {
-        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.unblockUser(id)));
+    public ResponseEntity<UserResponseDto> unblockUser(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-Performed-By", defaultValue = "Admin") String performedBy) {
+        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.unblockUser(id, performedBy)));
     }
 
     @PostMapping("/{id}/deactivate")
-    public ResponseEntity<UserResponseDto> deactivateUser(@PathVariable Long id) {
-        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.deactivateUser(id)));
+    public ResponseEntity<UserResponseDto> deactivateUser(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-Performed-By", defaultValue = "Admin") String performedBy) {
+        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.deactivateUser(id, performedBy)));
     }
 
     @PostMapping("/{id}/reset-password")
@@ -66,8 +73,11 @@ public class UserController {
     }
 
     @PostMapping("/{id}/change-role")
-    public ResponseEntity<UserResponseDto> changeRole(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public ResponseEntity<UserResponseDto> changeRole(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body,
+            @RequestHeader(value = "X-Performed-By", defaultValue = "Admin") String performedBy) {
         String role = body.getOrDefault("role", "PRODUCT_MANAGER");
-        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.changeRole(id, role)));
+        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.changeRole(id, role, performedBy)));
     }
 }

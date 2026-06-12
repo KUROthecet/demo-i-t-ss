@@ -2,17 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { OrderApiService } from '../../../core/services/order-api.service';
+import { ApiService } from '../../../core/services/api.service';
 import { Order } from '../../../core/models/order.model';
 import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 import { FooterComponent } from '../../../shared/footer/footer.component';
 import { AmbientBackgroundComponent } from '../../../shared/ambient-background/ambient-background.component';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
+import { OrderStatusPipe } from '../../../shared/pipes/order-status.pipe';
 
 @Component({
   selector: 'app-order-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent, FooterComponent, AmbientBackgroundComponent, VndCurrencyPipe],
+  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent, FooterComponent, AmbientBackgroundComponent, VndCurrencyPipe, OrderStatusPipe],
   templateUrl: './order-list.component.html',
   styleUrl: './order-list.component.scss'
 })
@@ -23,7 +24,7 @@ export class OrderListComponent implements OnInit {
   protected searched = false;
   protected error    = '';
 
-  constructor(private readonly orderApi: OrderApiService) {}
+  constructor(private readonly api: ApiService) {}
 
   ngOnInit(): void {}
 
@@ -31,31 +32,10 @@ export class OrderListComponent implements OnInit {
     if (!this.email.trim()) return;
     this.loading  = true;
     this.searched = false;
-    this.orderApi.getOrdersByEmail(this.email.trim()).subscribe({
-      next:  this.onOrdersLoaded.bind(this),
-      error: this.onOrdersError.bind(this)
+    this.api.getOrdersByEmail(this.email.trim()).subscribe({
+      next:  (orders) => { this.orders = orders; this.searched = true; this.loading = false; },
+      error: ()       => { this.error = 'Failed to retrieve orders.'; this.loading = false; }
     });
-  }
-
-  private onOrdersLoaded(orders: Order[]): void {
-    this.orders   = orders;
-    this.searched = true;
-    this.loading  = false;
-  }
-
-  private onOrdersError(): void {
-    this.error   = 'Failed to retrieve orders.';
-    this.loading = false;
-  }
-
-  protected getStatusBadge(status: string): string {
-    switch (status) {
-      case 'PENDING_PROCESSING': return 'badge--warning';
-      case 'APPROVED':           return 'badge--success';
-      case 'REJECTED':           return 'badge--error';
-      case 'CANCELLED':          return 'badge--muted';
-      default:                   return 'badge--muted';
-    }
   }
 
   protected formatDate(d: string): string {

@@ -1,5 +1,6 @@
 package com.aims.entity;
 
+import com.aims.dto.response.MediaResponseDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -42,5 +43,18 @@ public class Newspaper extends PhysicalMedia {
         if (publicationFrequency != null) attrs.put("Frequency", publicationFrequency);
         if (sections != null)             attrs.put("Sections", sections);
         return attrs;
+    }
+
+    @Override
+    public void populateDto(MediaResponseDto dto) {
+        dto.setType("Newspaper");
+        dto.setEditorInChief(editorInChief);
+        dto.setPublicationDate(publicationDate);
+        dto.setPublisher(publisher);
+        dto.setIssn(issn);
+        dto.setIssueNumber(issueNumber);
+        dto.setLanguage(language);
+        dto.setPublicationFrequency(publicationFrequency);
+        dto.setSections(sections);
     }
 }

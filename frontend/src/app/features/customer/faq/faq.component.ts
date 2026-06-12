@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 export class FaqItem {
   public q: string;
@@ -26,7 +27,7 @@ export class FaqSection {
 @Component({
   selector: 'app-faq',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './faq.component.html',
   styleUrl: './faq.component.scss'
 })

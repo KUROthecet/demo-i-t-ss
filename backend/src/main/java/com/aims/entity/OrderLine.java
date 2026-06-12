@@ -29,4 +29,12 @@ public class OrderLine {
     private int unitPrice;
 
     private String titleSnapshot;
+
+    public int getSubtotal() {
+        return unitPrice * quantity;
+    }
+
+    public double getShippingWeight() {
+        return media != null ? media.getShippingWeight() * quantity : 0.0;
+    }
 }

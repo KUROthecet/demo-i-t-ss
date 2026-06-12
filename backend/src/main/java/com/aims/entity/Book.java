@@ -1,5 +1,6 @@
 package com.aims.entity;
 
+import com.aims.dto.response.MediaResponseDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -38,5 +39,17 @@ public class Book extends PhysicalMedia {
         if (numberOfPages != null)   attrs.put("Pages", String.valueOf(numberOfPages));
         if (coverType != null)       attrs.put("Cover Type", coverType);
         return attrs;
+    }
+
+    @Override
+    public void populateDto(MediaResponseDto dto) {
+        dto.setType("Book");
+        dto.setAuthor(author);
+        dto.setCoverType(coverType);
+        dto.setPublicationDate(publicationDate);
+        dto.setPublisher(publisher);
+        dto.setGenre(genre);
+        dto.setLanguage(language);
+        dto.setNumberOfPages(numberOfPages);
     }
 }

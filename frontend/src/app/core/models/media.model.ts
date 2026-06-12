@@ -30,6 +30,7 @@ export interface CDMedia extends BaseMedia {
   artist: string;
   recordLabel?: string;
   trackList?: string;
+  genre?: string;
   releaseDate?: string;
 }
 
@@ -48,9 +49,12 @@ export interface DVDMedia extends BaseMedia {
 export interface NewspaperMedia extends BaseMedia {
   category: 'Newspaper';
   editorInChief?: string;
-  issn?: string;
+  publisher?: string;
+  publicationDate?: string;
   issueNumber?: string;
   publicationFrequency?: string;
+  issn?: string;
+  language?: string;
   sections?: string;
 }
 

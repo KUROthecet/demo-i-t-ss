@@ -54,22 +54,24 @@
         </div>
 
                 <div class="input-group">
-          <label class="input-label">Staff ID</label>
-          <input 
-            type="text" 
-            class="input-field" 
-            [(ngModel)]="username" 
-            name="username" 
+          <label class="input-label">Username</label>
+          <input
+            type="text"
+            class="input-field"
+            [(ngModel)]="username"
+            name="username"
+            autocomplete="username"
             required>
         </div>
 
         <div class="input-group">
           <label class="input-label">Password</label>
-          <input 
-            type="password" 
-            class="input-field" 
-            [(ngModel)]="password" 
-            name="password" 
+          <input
+            type="password"
+            class="input-field"
+            [(ngModel)]="password"
+            name="password"
+            autocomplete="current-password"
             required>
         </div>
 
@@ -90,5 +92,13 @@
         </button>
       </form>
     </div>
+
+    <a routerLink="/home" class="login-back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Back to Store
+    </a>
   </div>
 </div>

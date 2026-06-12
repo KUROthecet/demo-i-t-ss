@@ -1,5 +1,6 @@
 package com.aims.entity;
 
+import com.aims.dto.response.MediaResponseDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -39,5 +40,15 @@ public class CD extends PhysicalMedia {
         if (releaseDate != null) attrs.put("Release Date", releaseDate);
         if (trackList != null)   attrs.put("Track List", trackList);
         return attrs;
+    }
+
+    @Override
+    public void populateDto(MediaResponseDto dto) {
+        dto.setType("CD");
+        dto.setArtist(artist);
+        dto.setGenre(genre);
+        dto.setRecordLabel(recordLabel);
+        dto.setTrackList(trackList);
+        dto.setReleaseDate(releaseDate);
     }
 }

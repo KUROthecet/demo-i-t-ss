@@ -63,9 +63,10 @@ public class OrderController {
     @PostMapping("/{id}/reject")
     public ResponseEntity<Order> rejectOrder(
             @PathVariable Long id,
-            @RequestBody Map<String, String> body) {
+            @RequestBody Map<String, String> body,
+            @RequestHeader(value = "X-Performed-By", defaultValue = "Manager") String performedBy) {
         String reason = body.getOrDefault("reason", "No reason provided");
-        return ResponseEntity.ok(orderService.rejectOrder(id, reason, "Manager"));
+        return ResponseEntity.ok(orderService.rejectOrder(id, reason, performedBy));
     }
 
     @PostMapping("/{id}/cancel")

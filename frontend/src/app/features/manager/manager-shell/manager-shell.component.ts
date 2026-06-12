@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 import { AmbientBackgroundComponent } from '../../../shared/ambient-background/ambient-background.component';
+import { NotificationBellComponent } from '../../../shared/notification-bell/notification-bell.component';
 
 @Component({
   selector: 'app-manager-shell',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, AmbientBackgroundComponent],
+  imports: [CommonModule, RouterModule, FormsModule, AmbientBackgroundComponent, NotificationBellComponent],
   templateUrl: './manager-shell.component.html',
   styleUrl: './manager-shell.component.scss'
 })

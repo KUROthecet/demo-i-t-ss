@@ -94,6 +94,9 @@
                 Send Message
               }
             </button>
+            @if (submitError) {
+              <p class="contact-form__error">{{ submitError }}</p>
+            }
           </form>
         } @else {
           <div class="contact-success">

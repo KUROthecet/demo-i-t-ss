@@ -21,16 +21,42 @@ public class SqlCatalogLoader {
     private static final int  BATCH_SIZE = 500;
     private static final long HASH_MASK  = 0x7FFF_FFFFL;
 
+    private record ProductMeta(
+        String title, int currentPrice, int originalPrice,
+        String description, String imageUrl, int quantity
+    ) {}
+
     public void loadAll() {
         log.info("SqlCatalogLoader: loading catalog from SQL dump files…");
-        loadBooks();
-        loadCDs();
-        loadDVDs();
-        loadNewspapers();
+        Map<String, ProductMeta> productMap = loadProductMetaMap();
+        log.info("SqlCatalogLoader: loaded {} product metadata entries", productMap.size());
+        loadBooks(productMap);
+        loadCDs(productMap);
+        loadDVDs(productMap);
+        loadNewspapers(productMap);
         log.info("SqlCatalogLoader: catalog load complete.");
     }
 
-    private void loadBooks() {
+    private Map<String, ProductMeta> loadProductMetaMap() {
+        ParsedSql p = parseSqlFile("db/Product_rows.sql");
+        if (p == null) return Collections.emptyMap();
+        Map<String, Integer> idx = buildIndex(p.columns());
+        Map<String, ProductMeta> map = new HashMap<>(p.rows().size() * 2);
+        for (List<String> row : p.rows()) {
+            String id = col(row, idx, "productId");
+            if (id == null) continue;
+            String imageUrl   = col(row, idx, "imageUrl");
+            String title      = col(row, idx, "title");
+            String desc       = col(row, idx, "generalDescription");
+            int    currPrice  = colIntDefault(row, idx, "currentPrice",  0);
+            int    origPrice  = colIntDefault(row, idx, "originalValue", 0);
+            int    qty        = colIntDefault(row, idx, "quantity",      10);
+            map.put(id, new ProductMeta(title, currPrice, origPrice, desc, imageUrl, qty));
+        }
+        return map;
+    }
+
+    private void loadBooks(Map<String, ProductMeta> productMap) {
         ParsedSql p = parseSqlFile("db/Book_rows.sql");
         if (p == null) return;
         Map<String, Integer> idx = buildIndex(p.columns());
@@ -50,15 +76,15 @@ public class SqlCatalogLoader {
             String lang    = trunc(col(row, idx, "language"),        255);
             String genre   = trunc(col(row, idx, "genre"),           255);
 
-            int    orig  = price(barcode, 60_000,  500_000);
-            int    curr  = discounted(barcode, orig);
+            ProductMeta meta = productMap.get(barcode);
+            String title    = meta != null && meta.title()       != null ? trunc(meta.title(), 255)       : bookTitle(author, genre);
+            int    orig     = meta != null && meta.originalPrice() > 0   ? meta.originalPrice()           : price(barcode, 60_000,  500_000);
+            int    curr     = meta != null && meta.currentPrice()  > 0   ? meta.currentPrice()            : discounted(barcode, orig);
+            String desc     = meta != null && meta.description()  != null ? meta.description()            : bookDesc(author, pub, genre, pages, pubDate);
+            String imageUrl = meta != null && meta.imageUrl()     != null ? meta.imageUrl()               : "https://picsum.photos/seed/" + barcode + "/400/600";
+            int    qty      = meta != null && meta.quantity()      > 0   ? meta.quantity()                : stock(barcode);
 
-            media.add(new Object[]{
-                barcode, bookTitle(author, genre), "Book", orig, curr,
-                bookDesc(author, pub, genre, pages, pubDate),
-                "https://picsum.photos/seed/" + barcode + "/400/600",
-                stock(barcode), rushDelivery(barcode)
-            });
+            media.add(new Object[]{barcode, title, "Book", orig, curr, desc, imageUrl, qty, rushDelivery(barcode)});
             sub.add(new Object[]{author, cover, pubDate, pub, genre, lang, pages, bookDims(pages), bookWeight(pages), barcode});
         }
 
@@ -71,7 +97,7 @@ public class SqlCatalogLoader {
         log.info("SqlCatalogLoader: {} book rows processed", p.rows().size());
     }
 
-    private void loadCDs() {
+    private void loadCDs(Map<String, ProductMeta> productMap) {
         ParsedSql p = parseSqlFile("db/CD_rows.sql");
         if (p == null) return;
         Map<String, Integer> idx = buildIndex(p.columns());
@@ -89,15 +115,15 @@ public class SqlCatalogLoader {
             String genre   = trunc(col(row, idx, "genre"),       255);
             String relDate = normCdDate(col(row, idx, "releaseDate"));
 
-            int orig = price(barcode, 80_000, 300_000);
-            int curr = discounted(barcode, orig);
+            ProductMeta meta = productMap.get(barcode);
+            String title    = meta != null && meta.title()       != null ? trunc(meta.title(), 255)  : cdTitle(artist, tracks, genre);
+            int    orig     = meta != null && meta.originalPrice() > 0   ? meta.originalPrice()      : price(barcode, 80_000, 300_000);
+            int    curr     = meta != null && meta.currentPrice()  > 0   ? meta.currentPrice()       : discounted(barcode, orig);
+            String desc     = meta != null && meta.description()  != null ? meta.description()       : cdDesc(artist, genre, tracks, relDate);
+            String imageUrl = meta != null && meta.imageUrl()     != null ? meta.imageUrl()          : "https://picsum.photos/seed/" + barcode + "/400/400";
+            int    qty      = meta != null && meta.quantity()      > 0   ? meta.quantity()           : stock(barcode);
 
-            media.add(new Object[]{
-                barcode, cdTitle(artist, tracks, genre), "CD", orig, curr,
-                cdDesc(artist, genre, tracks, relDate),
-                "https://picsum.photos/seed/" + barcode + "/400/400",
-                stock(barcode), true
-            });
+            media.add(new Object[]{barcode, title, "CD", orig, curr, desc, imageUrl, qty, true});
             sub.add(new Object[]{artist, genre, label, tracks, relDate, "14×12×0.5 cm", 0.1, barcode});
         }
 
@@ -110,7 +136,7 @@ public class SqlCatalogLoader {
         log.info("SqlCatalogLoader: {} CD rows processed", p.rows().size());
     }
 
-    private void loadDVDs() {
+    private void loadDVDs(Map<String, ProductMeta> productMap) {
         ParsedSql p = parseSqlFile("db/DVD_rows.sql");
         if (p == null) return;
         Map<String, Integer> idx = buildIndex(p.columns());
@@ -131,16 +157,17 @@ public class SqlCatalogLoader {
             String relDate  = trunc(col(row, idx, "releaseDate"), 50);
             String genre    = trunc(col(row, idx, "genre"),      255);
 
-            int    orig = price(barcode, 100_000, 450_000);
-            int    curr = discounted(barcode, orig);
             boolean rush = (hash(barcode) % 3) != 0;
 
-            media.add(new Object[]{
-                barcode, dvdTitle(director, genre, relDate), "DVD", orig, curr,
-                dvdDesc(director, genre, runtime, relDate),
-                "https://picsum.photos/seed/" + barcode + "/400/580",
-                stock(barcode), rush
-            });
+            ProductMeta meta = productMap.get(barcode);
+            String title    = meta != null && meta.title()       != null ? trunc(meta.title(), 255)       : dvdTitle(director, genre, relDate);
+            int    orig     = meta != null && meta.originalPrice() > 0   ? meta.originalPrice()           : price(barcode, 100_000, 450_000);
+            int    curr     = meta != null && meta.currentPrice()  > 0   ? meta.currentPrice()            : discounted(barcode, orig);
+            String desc     = meta != null && meta.description()  != null ? meta.description()            : dvdDesc(director, genre, runtime, relDate);
+            String imageUrl = meta != null && meta.imageUrl()     != null ? meta.imageUrl()               : "https://picsum.photos/seed/" + barcode + "/400/580";
+            int    qty      = meta != null && meta.quantity()      > 0   ? meta.quantity()                : stock(barcode);
+
+            media.add(new Object[]{barcode, title, "DVD", orig, curr, desc, imageUrl, qty, rush});
             sub.add(new Object[]{director, disc, lang, runtime, studio, subs, genre, relDate, "19×13×1.5 cm", 0.15, barcode});
         }
 
@@ -153,7 +180,7 @@ public class SqlCatalogLoader {
         log.info("SqlCatalogLoader: {} DVD rows processed", p.rows().size());
     }
 
-    private void loadNewspapers() {
+    private void loadNewspapers(Map<String, ProductMeta> productMap) {
         ParsedSql p = parseSqlFile("db/Newspaper_rows.sql");
         if (p == null) return;
         Map<String, Integer> idx = buildIndex(p.columns());
@@ -173,15 +200,15 @@ public class SqlCatalogLoader {
             String lang     = trunc(col(row, idx, "language"),        255);
             String sections = col(row, idx, "section");
 
-            int orig = price(barcode, 8_000, 50_000);
-            int curr = discounted(barcode, orig);
+            ProductMeta meta = productMap.get(barcode);
+            String title    = meta != null && meta.title()       != null ? trunc(meta.title(), 255)  : newsTitle(pub, sections);
+            int    orig     = meta != null && meta.originalPrice() > 0   ? meta.originalPrice()      : price(barcode, 8_000, 50_000);
+            int    curr     = meta != null && meta.currentPrice()  > 0   ? meta.currentPrice()       : discounted(barcode, orig);
+            String desc     = meta != null && meta.description()  != null ? meta.description()       : newsDesc(pub, editor, sections, pubDate);
+            String imageUrl = meta != null && meta.imageUrl()     != null ? meta.imageUrl()          : "https://picsum.photos/seed/" + barcode + "/400/550";
+            int    qty      = meta != null && meta.quantity()      > 0   ? meta.quantity()           : stock(barcode);
 
-            media.add(new Object[]{
-                barcode, newsTitle(pub, sections), "Newspaper", orig, curr,
-                newsDesc(pub, editor, sections, pubDate),
-                "https://picsum.photos/seed/" + barcode + "/400/550",
-                stock(barcode), false
-            });
+            media.add(new Object[]{barcode, title, "Newspaper", orig, curr, desc, imageUrl, qty, false});
             sub.add(new Object[]{editor, pubDate, pub, issn, issueNum, lang, "Daily", sections, "40×30×0.2 cm", 0.3, barcode});
         }
 
@@ -200,7 +227,13 @@ public class SqlCatalogLoader {
             "INSERT INTO media " +
             "(barcode,title,category,original_price,current_price," +
             "general_description,image_url,quantity_in_stock,status,support_rush_delivery) " +
-            "VALUES (?,?,?,?,?,?,?,?,'ACTIVE',?) ON CONFLICT (barcode) DO NOTHING",
+            "VALUES (?,?,?,?,?,?,?,?,'ACTIVE',?) " +
+            "ON CONFLICT (barcode) DO UPDATE SET " +
+            "title=EXCLUDED.title, " +
+            "general_description=EXCLUDED.general_description, " +
+            "image_url=EXCLUDED.image_url, " +
+            "original_price=EXCLUDED.original_price, " +
+            "current_price=EXCLUDED.current_price",
             rows
         );
     }
@@ -339,7 +372,12 @@ public class SqlCatalogLoader {
     private Integer colInt(List<String> row, Map<String, Integer> idx, String colName) {
         String v = col(row, idx, colName);
         if (v == null) return null;
-        try { return Integer.parseInt(v); } catch (NumberFormatException e) { return null; }
+        try { return Integer.parseInt(v.trim()); } catch (NumberFormatException e) { return null; }
+    }
+
+    private int colIntDefault(List<String> row, Map<String, Integer> idx, String colName, int defaultValue) {
+        Integer v = colInt(row, idx, colName);
+        return v != null ? v : defaultValue;
     }
 
     private long hash(String barcode) {

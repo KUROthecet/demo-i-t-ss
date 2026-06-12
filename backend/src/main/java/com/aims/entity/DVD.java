@@ -1,5 +1,6 @@
 package com.aims.entity;
 
+import com.aims.dto.response.MediaResponseDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -40,5 +41,18 @@ public class DVD extends PhysicalMedia {
         if (subtitles != null)       attrs.put("Subtitles", subtitles);
         if (releaseDate != null)     attrs.put("Release Date", releaseDate);
         return attrs;
+    }
+
+    @Override
+    public void populateDto(MediaResponseDto dto) {
+        dto.setType("DVD");
+        dto.setDirector(director);
+        dto.setDiscType(discType);
+        dto.setLanguage(language);
+        dto.setRuntimeMinutes(runtimeMinutes);
+        dto.setStudio(studio);
+        dto.setSubtitles(subtitles);
+        dto.setGenre(genre);
+        dto.setReleaseDate(releaseDate);
     }
 }

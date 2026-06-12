@@ -25,15 +25,9 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
     @Transactional
     public void onApplicationEvent(ApplicationReadyEvent event) {
         seedUsers();
-
-        if (mediaRepository.count() > 0) {
-            log.info("DataInitializer: catalog already seeded ({} items). Skipping.", mediaRepository.count());
-            return;
-        }
-
-        log.info("DataInitializer: seeding catalog from SQL files…");
+        log.info("DataInitializer: syncing catalog from SQL files…");
         sqlCatalogLoader.loadAll();
-        log.info("DataInitializer: seeded {} media items.", mediaRepository.count());
+        log.info("DataInitializer: catalog sync complete ({} items).", mediaRepository.count());
     }
 
     private void seedUsers() {

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { MediaApiService } from '../../../core/services/media-api.service';
 
 @Component({
   selector: 'app-contact',
@@ -19,17 +20,23 @@ export class ContactComponent {
   };
   submitted = false;
   sending = false;
+  submitError = '';
+
+  constructor(private readonly mediaApi: MediaApiService) {}
 
   submit(): void {
-    if (!this.form.name || !this.form.email || !this.form.message) {
-      return;
-    }
+    if (!this.form.name || !this.form.email || !this.form.message) return;
     this.sending = true;
-    setTimeout(this.onSubmitComplete.bind(this), 900);
-  }
-
-  private onSubmitComplete(): void {
-    this.sending   = false;
-    this.submitted = true;
+    this.submitError = '';
+    this.mediaApi.submitContact(this.form).subscribe({
+      next: () => {
+        this.sending = false;
+        this.submitted = true;
+      },
+      error: () => {
+        this.sending = false;
+        this.submitError = 'Failed to send your message. Please try again.';
+      }
+    });
   }
 }
