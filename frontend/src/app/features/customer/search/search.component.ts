@@ -10,6 +10,7 @@ import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 import { FooterComponent } from '../../../shared/footer/footer.component';
 import { AmbientBackgroundComponent } from '../../../shared/ambient-background/ambient-background.component';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
+import { ProductCardComponent } from '../../../shared/product-card/product-card.component';
 
 @Component({
   selector: 'app-search',
@@ -21,7 +22,8 @@ import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
     NavbarComponent,
     FooterComponent,
     AmbientBackgroundComponent,
-    VndCurrencyPipe
+    VndCurrencyPipe,
+    ProductCardComponent
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
@@ -163,6 +165,12 @@ export class SearchComponent implements OnInit {
   protected sortResults(): void {
     if (this.sortOrder === 'asc')  this.results.sort((a, b) => a.currentPrice - b.currentPrice);
     if (this.sortOrder === 'desc') this.results.sort((a, b) => b.currentPrice - a.currentPrice);
+  }
+
+  protected clearQuery(): void {
+    this.query       = '';
+    this.currentPage = 0;
+    this.doSearch();
   }
 
   protected clearFilters(): void {
