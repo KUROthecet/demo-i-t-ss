@@ -37,7 +37,6 @@ export class SearchComponent implements OnInit {
   protected sortOrder: 'asc' | 'desc' | '' = '';
   protected error              = '';
 
-  // Pagination state
   protected currentPage = 0;
   protected pageSize = 20;
   protected totalPages = 0;
@@ -179,8 +178,6 @@ export class SearchComponent implements OnInit {
     event.preventDefault();
     this.cartService.addToCart(product, 1);
   }
-
-  // ===== Creative Price Filter drag handlers =====
 
   protected handleMouseDown(thumb: 'min' | 'max'): void {
     if (thumb === 'min') this.isDraggingMin = true;
