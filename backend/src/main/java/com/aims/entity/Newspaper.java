@@ -34,6 +34,8 @@ public class Newspaper extends PhysicalMedia {
     private String editorInChief;
 
     private String publicationDate;
+
+    @NotBlank(message = "Publisher is required for a newspaper")
     private String publisher;
     private String issn;
     private String issueNumber;

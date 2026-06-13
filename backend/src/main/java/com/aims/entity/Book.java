@@ -26,7 +26,7 @@ public class Book extends PhysicalMedia {
         new FieldSchema("genre",           "Genre",            "Genre",            "text",   null,                             false),
         new FieldSchema("language",        "Language",         "Language",         "text",   null,                             false),
         new FieldSchema("numberOfPages",   "Pages",            "Number of Pages",  "number", null,                             false),
-        new FieldSchema("coverType",       "Cover Type",       "Cover Type",       "select", List.of("Paperback", "Hardcover"), false)
+        new FieldSchema("coverType",       "Cover Type",       "Cover Type",       "select", List.of("Paperback", "Hard Cover"), false)
     );
 
     @NotBlank(message = "Author is required for a book")
@@ -34,6 +34,8 @@ public class Book extends PhysicalMedia {
 
     private String  coverType;
     private String  publicationDate;
+
+    @NotBlank(message = "Publisher is required for a book")
     private String  publisher;
     private String  genre;
     private String  language;

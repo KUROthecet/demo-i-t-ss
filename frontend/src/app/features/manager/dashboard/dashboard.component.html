@@ -44,16 +44,16 @@
       <div class="kpi-card__value tabular-nums">{{ totalOrders }}</div>
     </div>
 
-    <div class="kpi-card" style="--delay: 0.24s" [style.borderColor]="dailyDeleteUsed >= 15 ? 'rgba(239,68,68,0.5)' : ''">
+    <div class="kpi-card" style="--delay: 0.24s" [style.borderColor]="dailyDeleteUsed >= deleteWarningThreshold ? 'rgba(239,68,68,0.5)' : ''">
       <div class="kpi-card__header">
-        <div class="kpi-card__icon" [style.background]="dailyDeleteUsed >= 15 ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.06)'" [style.color]="dailyDeleteUsed >= 15 ? '#f87171' : 'rgba(255,255,255,0.6)'">
+        <div class="kpi-card__icon" [style.background]="dailyDeleteUsed >= deleteWarningThreshold ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.06)'" [style.color]="dailyDeleteUsed >= deleteWarningThreshold ? '#f87171' : 'rgba(255,255,255,0.6)'">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
         </div>
       </div>
       <div class="kpi-card__label">Deletions Today</div>
-      <div class="kpi-card__value tabular-nums">{{ dailyDeleteUsed }}<span style="font-size:16px;font-weight:500;color:rgba(255,255,255,0.35)">/20</span></div>
+      <div class="kpi-card__value tabular-nums">{{ dailyDeleteUsed }}<span style="font-size:16px;font-weight:500;color:rgba(255,255,255,0.35)">/{{ maxDailyDelete }}</span></div>
       <div class="mgr-delete-bar">
-        <div class="mgr-delete-bar__fill" [style.width.%]="(dailyDeleteUsed / 20) * 100" [class.mgr-delete-bar__fill--warn]="dailyDeleteUsed >= 15"></div>
+        <div class="mgr-delete-bar__fill" [style.width.%]="(dailyDeleteUsed / maxDailyDelete) * 100" [class.mgr-delete-bar__fill--warn]="dailyDeleteUsed >= deleteWarningThreshold"></div>
       </div>
     </div>
   </div>

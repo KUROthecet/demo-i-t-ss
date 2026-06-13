@@ -37,6 +37,8 @@ public class DVD extends PhysicalMedia {
     private String  language;
     private Integer runtimeMinutes;
     private String  studio;
+
+    @NotBlank(message = "Subtitles is required for a DVD")
     private String  subtitles;
     private String  genre;
     private String  releaseDate;

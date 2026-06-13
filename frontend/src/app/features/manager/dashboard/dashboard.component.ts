@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { MediaApiService } from '../../../core/services/media-api.service';
 import { OrderApiService } from '../../../core/services/order-api.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AppConstants } from '../../../core/config/app.constants';
 
 @Component({
   selector: 'app-manager-dashboard',
@@ -22,6 +23,8 @@ export class ManagerDashboardComponent implements OnInit {
   loading        = true;
   user           = this.auth.getCurrentUser();
   readonly skeletons = Array(5).fill(0);
+  protected readonly maxDailyDelete         = AppConstants.MAX_DAILY_DELETE;
+  protected readonly deleteWarningThreshold = AppConstants.DAILY_DELETE_WARNING_THRESHOLD;
 
   private readonly C = 239;
 

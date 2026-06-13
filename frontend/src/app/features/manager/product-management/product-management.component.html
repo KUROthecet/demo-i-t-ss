@@ -43,13 +43,13 @@
     <div class="prod-toolbar__quota">
       <span class="prod-toolbar__quota-label">Daily deletions:</span>
       <span class="prod-toolbar__quota-val"
-            [class.prod-toolbar__quota-val--warn]="dailyDeleteInfo.count >= 15">
-        {{ dailyDeleteInfo.count }} / 20
+            [class.prod-toolbar__quota-val--warn]="dailyDeleteInfo.count >= deleteWarningThreshold">
+        {{ dailyDeleteInfo.count }} / {{ maxDailyDelete }}
       </span>
       <div class="prod-toolbar__quota-bar">
         <div class="prod-toolbar__quota-fill"
-             [style.width.%]="(dailyDeleteInfo.count / 20) * 100"
-             [class.prod-toolbar__quota-fill--warn]="dailyDeleteInfo.count >= 15"></div>
+             [style.width.%]="(dailyDeleteInfo.count / maxDailyDelete) * 100"
+             [class.prod-toolbar__quota-fill--warn]="dailyDeleteInfo.count >= deleteWarningThreshold"></div>
       </div>
     </div>
   </div>

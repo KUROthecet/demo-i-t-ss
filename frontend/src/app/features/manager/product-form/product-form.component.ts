@@ -6,6 +6,7 @@ import { MediaApiService, FieldSchema } from '../../../core/services/media-api.s
 import { AuthService } from '../../../core/services/auth.service';
 import { ProductFormModel, createEmptyProductForm } from '../../../core/models/product-form.model';
 import { Media } from '../../../core/models/media.model';
+import { AppConstants } from '../../../core/config/app.constants';
 
 @Component({
   selector: 'app-product-form',
@@ -138,8 +139,8 @@ export class ProductFormComponent implements OnInit {
     return s === 1 ? 'Category' : s === 2 ? 'General Info' : (this.form.category || 'Details');
   }
 
-  protected get priceMin(): number { return Math.round(this.form.originalPrice * 0.3); }
-  protected get priceMax(): number { return Math.round(this.form.originalPrice * 1.5); }
+  protected get priceMin(): number { return Math.round(this.form.originalPrice * AppConstants.PRICE_MIN_RATIO); }
+  protected get priceMax(): number { return Math.round(this.form.originalPrice * AppConstants.PRICE_MAX_RATIO); }
 
   protected onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -158,7 +159,7 @@ export class ProductFormComponent implements OnInit {
       this.error = 'Title, barcode and category are required.';
       return;
     }
-    if (this.isEdit && this.form.originalPrice > 0) {
+    if (this.form.originalPrice > 0) {
       if (this.form.currentPrice < this.priceMin || this.form.currentPrice > this.priceMax) {
         this.error = `Price must be between ${this.priceMin.toLocaleString('vi-VN')} and ${this.priceMax.toLocaleString('vi-VN')} VND (30%–150% of original price).`;
         return;

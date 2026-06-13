@@ -6,6 +6,7 @@ import { MediaApiService } from '../../../core/services/media-api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Media } from '../../../core/models/media.model';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
+import { AppConstants } from '../../../core/config/app.constants';
 
 @Component({
   selector: 'app-product-management',
@@ -19,11 +20,13 @@ export class ProductManagementComponent implements OnInit {
   protected loading             = true;
   protected searchQuery         = '';
   protected selectedIds         = new Set<number>();
-  protected dailyDeleteInfo     = { count: 0, remaining: 20 };
+  protected dailyDeleteInfo     = { count: 0, remaining: AppConstants.MAX_DAILY_DELETE };
   protected deletingConfirm     = false;
   protected error               = '';
   protected successMsg          = '';
   protected readonly performedBy: string;
+  protected readonly maxDailyDelete            = AppConstants.MAX_DAILY_DELETE;
+  protected readonly deleteWarningThreshold    = AppConstants.DAILY_DELETE_WARNING_THRESHOLD;
   readonly skeletons = Array(8).fill(0);
 
   private pendingDeleteIds: number[] = [];
@@ -108,6 +111,10 @@ export class ProductManagementComponent implements OnInit {
 
   protected deleteSelected(): void {
     if (this.selectedIds.size === 0) return;
+    if (this.selectedIds.size > AppConstants.MAX_BATCH_DELETE) {
+      this.error = `Cannot delete more than ${AppConstants.MAX_BATCH_DELETE} products at once. Please deselect some items.`;
+      return;
+    }
     this.pendingDeleteIds = Array.from(this.selectedIds);
     this.mediaApi.deleteMedia(this.pendingDeleteIds).subscribe({
       next:  this.onDeleteSuccess.bind(this),
