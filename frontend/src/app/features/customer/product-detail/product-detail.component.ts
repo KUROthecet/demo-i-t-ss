@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MediaApiService } from '../../../core/services/media-api.service';
 import { MediaDisplayService } from '../../../core/services/media-display.service';
 import { CartService } from '../../../core/services/cart.service';
-import { Media, isBook, isCD, isDVD, isNewspaper } from '../../../core/models/media.model';
+import { Media } from '../../../core/models/media.model';
 import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 import { FooterComponent } from '../../../shared/footer/footer.component';
 import { AmbientBackgroundComponent } from '../../../shared/ambient-background/ambient-background.component';
@@ -48,6 +48,11 @@ export class ProductDetailComponent implements OnInit {
     return (this.product?.currentPrice ?? 0) + this.vatAmount;
   }
 
+  get productAttributes(): [string, string][] {
+    if (!this.product?.attributes) return [];
+    return Object.entries(this.product.attributes).filter(([, v]) => v != null && v !== '');
+  }
+
   constructor(
     private readonly route:        ActivatedRoute,
     private readonly router:       Router,
@@ -74,12 +79,12 @@ export class ProductDetailComponent implements OnInit {
   }
 
   private onProductLoaded(p: Media): void {
-    this.product     = p;
-    this.loading     = false;
+    this.product      = p;
+    this.loading      = false;
     this.isWishlisted = this.readWishlist().includes(p.id);
     this.mediaApi.getSimilarProducts(p.id).subscribe({
       next:  this.onSimilarProductsLoaded.bind(this),
-      error: this.onSimilarProductsError.bind(this)
+      error: () => {}
     });
   }
 
@@ -91,8 +96,6 @@ export class ProductDetailComponent implements OnInit {
   private onSimilarProductsLoaded(similar: Media[]): void {
     this.similarProducts = similar;
   }
-
-  private onSimilarProductsError(): void {}
 
   addToCart(): void {
     if (!this.product) return;
@@ -160,7 +163,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   changeQty(delta: number): void {
-    const max  = this.product?.quantityInStock ?? 99;
+    const max   = this.product?.quantityInStock ?? 99;
     this.quantity = Math.max(1, Math.min(this.quantity + delta, max));
   }
 
@@ -170,55 +173,6 @@ export class ProductDetailComponent implements OnInit {
 
   protected getSubtitle(): string {
     if (!this.product) return '';
-    if (isBook(this.product))      return `By ${this.product.author ?? ''}`;
-    if (isCD(this.product))        return `By ${this.product.artist ?? ''}`;
-    if (isDVD(this.product))       return `Dir. ${this.product.director ?? ''}`;
-    if (isNewspaper(this.product)) return this.product.editorInChief ? `Ed. ${this.product.editorInChief}` : '';
-    return '';
+    return this.mediaDisplay.getSubtitle(this.product);
   }
-
-  protected getAuthor():               string | null { return this.product && isBook(this.product)      ? this.product.author ?? null               : null; }
-  protected getCoverType():            string | null { return this.product && isBook(this.product)      ? this.product.coverType ?? null            : null; }
-  protected getPublisher():            string | null { return this.product && isBook(this.product)      ? this.product.publisher ?? null            : null; }
-  protected getPublicationDate():      string | null {
-    if (!this.product) return null;
-    if (isBook(this.product))      return this.product.publicationDate ?? null;
-    if (isNewspaper(this.product)) return this.product.publicationDate ?? null;
-    return null;
-  }
-  protected getNumberOfPages():        number | null { return this.product && isBook(this.product)      ? this.product.numberOfPages ?? null        : null; }
-  protected getGenre():                string | null {
-    if (!this.product) return null;
-    if (isBook(this.product)) return this.product.genre ?? null;
-    if (isCD(this.product))   return this.product.genre ?? null;
-    if (isDVD(this.product))  return this.product.genre ?? null;
-    return null;
-  }
-  protected getLanguage():             string | null {
-    if (!this.product) return null;
-    if (isBook(this.product))      return this.product.language ?? null;
-    if (isDVD(this.product))       return this.product.language ?? null;
-    if (isNewspaper(this.product)) return this.product.language ?? null;
-    return null;
-  }
-
-  protected getArtist():               string | null { return this.product && isCD(this.product)        ? this.product.artist ?? null               : null; }
-  protected getRecordLabel():          string | null { return this.product && isCD(this.product)        ? this.product.recordLabel ?? null          : null; }
-  protected getTrackList():            string | null { return this.product && isCD(this.product)        ? this.product.trackList ?? null            : null; }
-  protected getCDReleaseDate():        string | null { return this.product && isCD(this.product)        ? this.product.releaseDate ?? null          : null; }
-
-  protected getDirector():             string | null { return this.product && isDVD(this.product)       ? this.product.director ?? null             : null; }
-  protected getDiscType():             string | null { return this.product && isDVD(this.product)       ? this.product.discType ?? null             : null; }
-  protected getRuntimeMinutes():       number | null { return this.product && isDVD(this.product)       ? this.product.runtimeMinutes ?? null       : null; }
-  protected getStudio():               string | null { return this.product && isDVD(this.product)       ? this.product.studio ?? null               : null; }
-  protected getSubtitles():            string | null { return this.product && isDVD(this.product)       ? this.product.subtitles ?? null            : null; }
-  protected getDVDReleaseDate():       string | null { return this.product && isDVD(this.product)       ? this.product.releaseDate ?? null          : null; }
-
-  protected getEditorInChief():        string | null { return this.product && isNewspaper(this.product) ? this.product.editorInChief ?? null        : null; }
-  protected getIssueNumber():          string | null { return this.product && isNewspaper(this.product) ? this.product.issueNumber ?? null          : null; }
-  protected getPublicationFrequency(): string | null { return this.product && isNewspaper(this.product) ? this.product.publicationFrequency ?? null : null; }
-  protected getIssn():                 string | null { return this.product && isNewspaper(this.product) ? this.product.issn ?? null                 : null; }
-  protected getSections():             string | null { return this.product && isNewspaper(this.product) ? this.product.sections ?? null             : null; }
-  protected getNewspaperLanguage():    string | null { return this.product && isNewspaper(this.product) ? this.product.language ?? null             : null; }
-  protected getNewspaperPublisher():   string | null { return this.product && isNewspaper(this.product) ? this.product.publisher ?? null            : null; }
 }

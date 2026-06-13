@@ -3,6 +3,8 @@ package com.aims.dto.response;
 import com.aims.entity.Media;
 import com.aims.entity.PhysicalMedia;
 
+import java.util.Map;
+
 public class MediaResponseDto {
 
     private Long    id;
@@ -45,6 +47,8 @@ public class MediaResponseDto {
     private String  publicationFrequency;
     private String  sections;
 
+    private Map<String, String> attributes;
+
     public MediaResponseDto() {}
 
     public static MediaResponseDto fromEntity(Media media) {
@@ -68,6 +72,7 @@ public class MediaResponseDto {
         }
 
         media.populateDto(dto);
+        dto.setAttributes(media.getTypeSpecificAttributes());
 
         return dto;
     }
@@ -176,4 +181,7 @@ public class MediaResponseDto {
 
     public String getSections() { return sections; }
     public void setSections(String sections) { this.sections = sections; }
+
+    public Map<String, String> getAttributes() { return attributes; }
+    public void setAttributes(Map<String, String> attributes) { this.attributes = attributes; }
 }

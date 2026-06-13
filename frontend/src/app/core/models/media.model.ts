@@ -12,6 +12,7 @@ export interface BaseMedia {
   quantityInStock: number;
   status: 'ACTIVE' | 'DEACTIVATED';
   supportRushDelivery: boolean;
+  attributes?: Record<string, string>;
 }
 
 export interface BookMedia extends BaseMedia {
