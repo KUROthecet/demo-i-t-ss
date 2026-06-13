@@ -1,6 +1,7 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { CartItem, Media } from '../models/media.model';
 import { MediaApiService } from './media-api.service';
+import { AppConstants } from '../config/app.constants';
 import { Observable, tap } from 'rxjs';
 
 const CART_KEY = 'aims_cart';
@@ -90,7 +91,7 @@ export class CartService {
   }
 
   private computeVat(): number {
-    return Math.round(this.subtotal() * 0.1);
+    return Math.round(this.subtotal() * AppConstants.VAT_RATE);
   }
 
   private computeTotal(): number {

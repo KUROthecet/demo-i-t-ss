@@ -1,6 +1,6 @@
 package com.aims.entity;
 
-import com.aims.dto.response.MediaResponseDto;
+import com.aims.dto.FieldSchema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -17,6 +18,16 @@ import java.util.Map;
 @NoArgsConstructor
 @PrimaryKeyJoinColumn(name = "id")
 public class Book extends PhysicalMedia {
+
+    public static final List<FieldSchema> FORM_SCHEMA = List.of(
+        new FieldSchema("author",          "Author",           "Author",           "text",   null,                             true),
+        new FieldSchema("publisher",       "Publisher",        "Publisher",        "text",   null,                             false),
+        new FieldSchema("publicationDate", "Publication Date", "Publication Date", "date",   null,                             false),
+        new FieldSchema("genre",           "Genre",            "Genre",            "text",   null,                             false),
+        new FieldSchema("language",        "Language",         "Language",         "text",   null,                             false),
+        new FieldSchema("numberOfPages",   "Pages",            "Number of Pages",  "number", null,                             false),
+        new FieldSchema("coverType",       "Cover Type",       "Cover Type",       "select", List.of("Paperback", "Hardcover"), false)
+    );
 
     @NotBlank(message = "Author is required for a book")
     private String author;
@@ -39,17 +50,5 @@ public class Book extends PhysicalMedia {
         if (numberOfPages != null)   attrs.put("Pages", String.valueOf(numberOfPages));
         if (coverType != null)       attrs.put("Cover Type", coverType);
         return attrs;
-    }
-
-    @Override
-    public void populateDto(MediaResponseDto dto) {
-        dto.setType("Book");
-        dto.setAuthor(author);
-        dto.setCoverType(coverType);
-        dto.setPublicationDate(publicationDate);
-        dto.setPublisher(publisher);
-        dto.setGenre(genre);
-        dto.setLanguage(language);
-        dto.setNumberOfPages(numberOfPages);
     }
 }

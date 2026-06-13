@@ -1,6 +1,11 @@
 package com.aims.controller;
 
+import com.aims.dto.FieldSchema;
+import com.aims.entity.Book;
+import com.aims.entity.CD;
+import com.aims.entity.DVD;
 import com.aims.entity.Media;
+import com.aims.entity.Newspaper;
 import com.aims.service.MediaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -99,5 +104,15 @@ public class MediaController {
     @PostMapping("/api/products/stock-batch")
     public ResponseEntity<Map<Long, Integer>> getStockBatch(@RequestBody List<Long> ids) {
         return ResponseEntity.ok(mediaService.getStockBatch(ids));
+    }
+
+    @GetMapping("/api/media/schema")
+    public ResponseEntity<Map<String, List<FieldSchema>>> getFormSchema() {
+        return ResponseEntity.ok(Map.of(
+            "Book",      Book.FORM_SCHEMA,
+            "CD",        CD.FORM_SCHEMA,
+            "DVD",       DVD.FORM_SCHEMA,
+            "Newspaper", Newspaper.FORM_SCHEMA
+        ));
     }
 }

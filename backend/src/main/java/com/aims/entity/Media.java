@@ -11,7 +11,6 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.aims.dto.response.MediaResponseDto;
 import java.util.Map;
 
 @JsonTypeInfo(
@@ -71,8 +70,6 @@ public abstract class Media {
     private boolean supportRushDelivery;
 
     public abstract Map<String, String> getTypeSpecificAttributes();
-
-    public abstract void populateDto(MediaResponseDto dto);
 
     public double getShippingWeight() {
         return 0.0;

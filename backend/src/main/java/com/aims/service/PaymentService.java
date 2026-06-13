@@ -5,7 +5,8 @@ import com.aims.entity.PaymentTransaction;
 import com.aims.entity.Transaction;
 import com.aims.enums.PaymentMethod;
 import com.aims.exception.BusinessException;
-import com.aims.payment.PaymentHandler;
+import com.aims.payment.Payable;
+import com.aims.payment.Refundable;
 import com.aims.repository.PaymentTransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,15 +19,18 @@ import java.util.stream.Collectors;
 @Service
 public class PaymentService {
 
-    private final Map<PaymentMethod, PaymentHandler> handlers;
-    private final PaymentTransactionRepository       paymentTransactionRepository;
+    private final Map<PaymentMethod, Payable> handlers;
+    private final PaymentTransactionRepository paymentTransactionRepository;
+    private final NotificationService          notificationService;
 
     public PaymentService(
-            List<PaymentHandler> handlerList,
-            PaymentTransactionRepository paymentTransactionRepository) {
+            List<Payable> handlerList,
+            PaymentTransactionRepository paymentTransactionRepository,
+            NotificationService notificationService) {
         this.handlers = handlerList.stream()
-                .collect(Collectors.toMap(PaymentHandler::supportedMethod, Function.identity()));
+                .collect(Collectors.toMap(Payable::supportedMethod, Function.identity()));
         this.paymentTransactionRepository = paymentTransactionRepository;
+        this.notificationService = notificationService;
     }
 
     public String processPayment(PaymentMethod method, int amount) {
@@ -47,11 +51,17 @@ public class PaymentService {
     }
 
     public boolean processRefund(Order order, String managerEmail) {
-        return resolveHandler(order.getPaymentMethod()).refund(order, managerEmail);
+        Payable handler = resolveHandler(order.getPaymentMethod());
+        if (handler instanceof Refundable refundable) {
+            return refundable.refund(order, managerEmail);
+        }
+        notificationService.sendManagerRefundNotification(
+            managerEmail, order.getOrderCode(), order.getTotalAmount(), order.getCustomerName());
+        return false;
     }
 
-    private PaymentHandler resolveHandler(PaymentMethod method) {
-        PaymentHandler handler = handlers.get(method);
+    private Payable resolveHandler(PaymentMethod method) {
+        Payable handler = handlers.get(method);
         if (handler == null) {
             throw new BusinessException("No payment handler registered for method: " + method);
         }

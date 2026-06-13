@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MediaApiService } from '../../../core/services/media-api.service';
+import { MediaApiService, FieldSchema } from '../../../core/services/media-api.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { ProductFormModel } from '../../../core/models/product-form.model';
+import { ProductFormModel, createEmptyProductForm } from '../../../core/models/product-form.model';
+import { Media } from '../../../core/models/media.model';
 
 @Component({
   selector: 'app-product-form',
@@ -26,7 +27,9 @@ export class ProductFormComponent implements OnInit {
   protected step      = 1;
   protected direction: 'forward' | 'back' = 'forward';
 
-  protected form: ProductFormModel = ProductFormModel.createEmpty();
+  protected form: ProductFormModel = createEmptyProductForm();
+  protected availableCategoryFields: Record<string, FieldSchema[]> = {};
+  protected schemaLoading = true;
 
   readonly categories = [
     { id: 'Book'      as const, label: 'Book',      icon: 'book',      color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  glow: '0 0 30px rgba(96,165,250,0.25)'  },
@@ -48,15 +51,50 @@ export class ProductFormComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.isEdit    = true;
-      this.productId = Number(id);
-      this.loading   = true;
-      this.mediaApi.getProduct(this.productId).subscribe({
-        next:  (p) => { Object.assign(this.form, p); this.loading = false; },
-        error: ()  => { this.error = 'Failed to load product.'; this.loading = false; }
-      });
+    this.mediaApi.getFieldSchema().subscribe({
+      next: (schema) => {
+        this.availableCategoryFields = schema;
+        this.schemaLoading = false;
+        if (id) {
+          this.isEdit    = true;
+          this.productId = Number(id);
+          this.loading   = true;
+          this.mediaApi.getProduct(this.productId).subscribe({
+            next:  (p) => this.onProductLoaded(p),
+            error: ()  => { this.error = 'Failed to load product.'; this.loading = false; }
+          });
+        }
+      },
+      error: () => { this.schemaLoading = false; }
+    });
+  }
+
+  private onProductLoaded(p: Media): void {
+    this.form = createEmptyProductForm();
+    Object.assign(this.form, {
+      barcode:            p.barcode,
+      title:              p.title,
+      category:           p.category as ProductFormModel['category'],
+      originalPrice:      p.originalPrice,
+      currentPrice:       p.currentPrice,
+      generalDescription: p.generalDescription,
+      imageUrl:           p.imageUrl,
+      quantityInStock:    p.quantityInStock,
+      weight:             p.weight,
+      dimensions:         p.dimensions,
+      supportRushDelivery: p.supportRushDelivery
+    });
+    for (const field of this.availableCategoryFields[p.category] ?? []) {
+      const raw = p.attributes?.[field.attributeKey] ?? '';
+      (this.form as any)[field.key] = field.type === 'number'
+        ? (raw ? parseInt(raw, 10) : null)
+        : raw;
     }
+    this.loading = false;
+  }
+
+  get currentCategoryFields(): FieldSchema[] {
+    return this.availableCategoryFields[this.form.category] ?? [];
   }
 
   protected selectCategory(id: 'Book' | 'CD' | 'DVD' | 'Newspaper'): void {

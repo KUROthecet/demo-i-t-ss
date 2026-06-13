@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class EmailService {
+public class EmailNotificationService implements NotificationService {
 
     private final JavaMailSender mailSender;
 
@@ -23,6 +23,7 @@ public class EmailService {
     private String frontendUrl;
 
     @Async
+    @Override
     public void sendOrderConfirmation(String to, String name, String orderCode, long totalAmount) {
         sendHtml(to,
             "Order Confirmed — " + orderCode,
@@ -30,6 +31,7 @@ public class EmailService {
     }
 
     @Async
+    @Override
     public void sendUserBlocked(String to, String username, String reason) {
         sendHtml(to,
             "Your AIMS Account Has Been Suspended",
@@ -37,6 +39,7 @@ public class EmailService {
     }
 
     @Async
+    @Override
     public void sendUserUnblocked(String to, String username) {
         sendHtml(to,
             "Your AIMS Account Has Been Reinstated",
@@ -44,6 +47,7 @@ public class EmailService {
     }
 
     @Async
+    @Override
     public void sendUserDeactivated(String to, String username) {
         sendHtml(to,
             "Your AIMS Account Has Been Deactivated",
@@ -51,6 +55,7 @@ public class EmailService {
     }
 
     @Async
+    @Override
     public void sendRoleChanged(String to, String username, String newRole) {
         sendHtml(to,
             "Your AIMS Account Role Has Changed",
@@ -58,6 +63,7 @@ public class EmailService {
     }
 
     @Async
+    @Override
     public void sendOrderApproved(String to, String name, String orderCode) {
         sendHtml(to,
             "Your Order Has Been Approved — " + orderCode,
@@ -65,6 +71,7 @@ public class EmailService {
     }
 
     @Async
+    @Override
     public void sendOrderRejected(String to, String name, String orderCode, String reason) {
         sendHtml(to,
             "Update on Your Order — " + orderCode,
@@ -72,6 +79,7 @@ public class EmailService {
     }
 
     @Async
+    @Override
     public void sendOrderCancelled(String to, String name, String orderCode, boolean refundIssued) {
         sendHtml(to,
             "Order Cancellation Confirmed — " + orderCode,
@@ -79,6 +87,7 @@ public class EmailService {
     }
 
     @Async
+    @Override
     public void sendPasswordReset(String to, String name, String newPassword) {
         sendHtml(to,
             "Your AIMS Password Has Been Reset",
@@ -86,10 +95,27 @@ public class EmailService {
     }
 
     @Async
+    @Override
     public void sendManagerRefundNotification(String to, String orderCode, long amount, String customerName) {
         sendHtml(to,
             "Manual Refund Required — " + orderCode,
             buildManagerRefundHtml(orderCode, amount, customerName));
+    }
+
+    @Async
+    @Override
+    public void sendNewsletterConfirmation(String to) {
+        sendHtml(to,
+            "You're subscribed to AIMS updates",
+            buildNewsletterConfirmationHtml(to));
+    }
+
+    @Async
+    @Override
+    public void sendContactMessage(String senderName, String senderEmail, String subject, String message) {
+        sendHtml(fromAddress,
+            "[AIMS Contact] " + (subject != null && !subject.isBlank() ? subject : "New message from " + senderName),
+            buildContactMessageHtml(senderName, senderEmail, subject, message));
     }
 
     private void sendHtml(String to, String subject, String htmlBody) {
@@ -119,7 +145,6 @@ public class EmailService {
                "<table width='100%' cellpadding='0' cellspacing='0' role='presentation' style='background:#050505;min-height:100vh'>" +
                "<tr><td align='center' style='padding:48px 16px 64px'>" +
                "<table width='600' cellpadding='0' cellspacing='0' role='presentation' style='max-width:600px;width:100%'>" +
-
                "<tr><td style='padding-bottom:36px;text-align:center'>" +
                "<div style='display:inline-block;background:rgba(29,185,84,0.08);border:1px solid rgba(29,185,84,0.18);border-radius:14px;padding:14px 28px'>" +
                "<span style='font-size:20px;font-weight:800;letter-spacing:-0.04em;color:#fff'>AIMS" +
@@ -127,27 +152,21 @@ public class EmailService {
                "<div style='font-size:9px;letter-spacing:0.22em;color:rgba(255,255,255,0.3);font-weight:600;margin-top:2px'>AN INTERNET MEDIA STORE</div>" +
                "</div>" +
                "</td></tr>" +
-
                "<tr><td style='background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:20px;overflow:hidden'>" +
-
                "<div style='background:linear-gradient(135deg," + accentColor + "22 0%," + accentColor + "08 50%,transparent 100%);" +
                "padding:40px 44px 36px;border-bottom:1px solid rgba(255,255,255,0.06)'>" +
                "<h1 style='margin:0 0 10px;font-size:26px;font-weight:800;letter-spacing:-0.03em;color:#fff;line-height:1.2'>" +
                headerTitle + "</h1>" +
                "<p style='margin:0;font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6'>" + headerSubtitle + "</p>" +
                "</div>" +
-
                "<div style='padding:36px 44px'>" + body + "</div>" +
-
                "</td></tr>" +
-
                "<tr><td style='padding-top:28px;text-align:center'>" +
                "<p style='margin:0 0 6px;font-size:11px;color:rgba(255,255,255,0.2);line-height:1.7'>" +
                "AIMS Media Store &mdash; An Internet Media Store</p>" +
                "<p style='margin:0;font-size:11px;color:rgba(255,255,255,0.14)'>" +
                "School of ICT, HUST &middot; Hanoi, Vietnam</p>" +
                "</td></tr>" +
-
                "</table></td></tr></table>" +
                "</body></html>";
     }
@@ -200,7 +219,6 @@ public class EmailService {
             "Click the button below to view your order details and track its status." +
             "</p>" +
             ctaButton("View my order", frontendUrl + "/order/" + orderCode, "#1DB954", "#000");
-
         return layout("#1DB954", "Order Confirmed", "Thank you for your purchase. We're on it.", body);
     }
 
@@ -222,7 +240,6 @@ public class EmailService {
             "are dispatched same-day or next morning." +
             "</p>" +
             ctaButton("View order", frontendUrl + "/orders", "#1DB954", "#000");
-
         return layout("#1DB954", "Order Approved", "Your order is confirmed and being prepared.", body);
     }
 
@@ -243,7 +260,6 @@ public class EmailService {
             "</div>" +
             "</div>" +
             "</div>";
-
         String body =
             "<p style='margin:0 0 24px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8'>" +
             "Hi <strong style='color:rgba(255,255,255,0.85)'>" + name + "</strong>, " +
@@ -265,7 +281,6 @@ public class EmailService {
             "contact us at <strong style='color:rgba(255,255,255,0.5)'>support@aims.store</strong>." +
             "</p>" +
             ctaButton("Contact support", frontendUrl + "/contact", "rgba(255,255,255,0.08)", "#fff");
-
         return layout("#ef4444", "Order Update", "We have an important update about your recent order.", body);
     }
 
@@ -273,7 +288,6 @@ public class EmailService {
         String refundNote = refundIssued
             ? "Your refund has been processed automatically and should appear within 3–5 business days."
             : "For VietQR payments, our team will contact you to arrange the manual transfer.";
-
         String body =
             "<p style='margin:0 0 24px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8'>" +
             "Hi <strong style='color:rgba(255,255,255,0.85)'>" + name + "</strong>, " +
@@ -289,7 +303,6 @@ public class EmailService {
             "Questions? Write to <strong style='color:rgba(255,255,255,0.5)'>support@aims.store</strong>." +
             "</p>" +
             ctaButton("Browse the catalog", frontendUrl + "/search", "#1DB954", "#000");
-
         return layout("rgba(255,255,255,0.3)", "Order Cancelled", "Your cancellation has been processed.", body);
     }
 
@@ -309,22 +322,7 @@ public class EmailService {
             "<p style='margin:0;font-size:12px;color:rgba(239,68,68,0.75);line-height:1.7;font-weight:500'>" +
             "Change this password immediately after logging in. Do not share it with anyone." +
             "</p>";
-
         return layout("#60a5fa", "Password Reset", "Your AIMS staff account password has been reset.", body);
-    }
-
-    @Async
-    public void sendNewsletterConfirmation(String to) {
-        sendHtml(to,
-            "You're subscribed to AIMS updates",
-            buildNewsletterConfirmationHtml(to));
-    }
-
-    @Async
-    public void sendContactMessage(String senderName, String senderEmail, String subject, String message) {
-        sendHtml(fromAddress,
-            "[AIMS Contact] " + (subject != null && !subject.isBlank() ? subject : "New message from " + senderName),
-            buildContactMessageHtml(senderName, senderEmail, subject, message));
     }
 
     private String buildNewsletterConfirmationHtml(String email) {
@@ -342,7 +340,6 @@ public class EmailService {
             "To unsubscribe, reply to this email with the subject line <strong>UNSUBSCRIBE</strong>." +
             "</p>" +
             ctaButton("Browse the catalog", frontendUrl + "/search", "#1DB954", "#000");
-
         return layout("#1DB954", "You're subscribed", "Welcome to the AIMS mailing list.", body);
     }
 
@@ -364,7 +361,6 @@ public class EmailService {
             "<p style='margin:0;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.8'>" +
             "Reply directly to this email to respond to " + senderName + "." +
             "</p>";
-
         return layout("rgba(255,255,255,0.2)", "New Contact Message", "Submitted via the AIMS contact form.", body);
     }
 
@@ -456,7 +452,6 @@ public class EmailService {
             "VietQR does not support automated refunds. Contact the customer directly, " +
             "process the bank transfer, then mark the refund as complete in the admin dashboard." +
             "</p>";
-
         return layout("#f59e0b", "Manual Refund Required", "Action required — VietQR refund needs processing.", body);
     }
 }

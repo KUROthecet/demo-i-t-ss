@@ -3,6 +3,8 @@ package com.aims.strategy;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 @Qualifier("standardShippingStrategy")
 public class StandardShippingStrategy implements ShippingStrategy {
@@ -15,11 +17,24 @@ public class StandardShippingStrategy implements ShippingStrategy {
     private static final double FREE_SHIPPING_THRESHOLD   = 100_000.0;
     private static final double FREE_SHIPPING_DISCOUNT    = 25_000.0;
 
+    private enum ShippingTier { TIER_1, TIER_2 }
+
+    private static final Map<String, ShippingTier> PROVINCE_TIERS;
+    static {
+        java.util.Map<String, ShippingTier> m = new java.util.HashMap<>();
+        for (String key : java.util.List.of(
+                "hanoi", "ha noi", "hà nội",
+                "ho chi minh", "hồ chí minh", "hcm", "hn", "tp.hcm", "tp hcm")) {
+            m.put(key, ShippingTier.TIER_1);
+        }
+        PROVINCE_TIERS = java.util.Collections.unmodifiableMap(m);
+    }
+
     @Override
     public double calculate(double weightKg, String province, double orderTotal) {
         double fee;
 
-        if (isHanoiOrHCM(province)) {
+        if (getTier(province) == ShippingTier.TIER_1) {
             fee = HANOI_HCM_BASE_FEE;
             if (weightKg > HANOI_HCM_BASE_WEIGHT_KG) {
                 double extraWeight = weightKg - HANOI_HCM_BASE_WEIGHT_KG;
@@ -42,17 +57,8 @@ public class StandardShippingStrategy implements ShippingStrategy {
         return fee;
     }
 
-    private boolean isHanoiOrHCM(String province) {
-        if (province == null) return false;
-        String normalized = province.trim().toLowerCase();
-        return normalized.contains("hanoi")
-                || normalized.contains("ha noi")
-                || normalized.contains("hà nội")
-                || normalized.contains("ho chi minh")
-                || normalized.contains("hồ chí minh")
-                || normalized.contains("hcm")
-                || normalized.equals("hn")
-                || normalized.equals("tp.hcm")
-                || normalized.equals("tp hcm");
+    private ShippingTier getTier(String province) {
+        if (province == null) return ShippingTier.TIER_2;
+        return PROVINCE_TIERS.getOrDefault(province.trim().toLowerCase(), ShippingTier.TIER_2);
     }
 }

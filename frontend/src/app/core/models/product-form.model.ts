@@ -38,25 +38,23 @@ export interface ProductFormModel {
   sections?: string;
 }
 
-export class ProductFormModel {
-  static createEmpty(): ProductFormModel {
-    return {
-      category:          'Book',
-      title:             '',
-      barcode:           '',
-      originalPrice:     0,
-      currentPrice:      0,
-      generalDescription:'',
-      dimensions:        '',
-      weight:            0,
-      imageUrl:          '',
-      quantityInStock:   0,
-      supportRushDelivery: false,
-      author: '', coverType: 'Paperback', publicationDate: '', publisher: '',
-      genre: '', language: '', numberOfPages: 0,
-      artist: '', recordLabel: '', trackList: '', releaseDate: '',
-      director: '', discType: 'Blu-ray', runtimeMinutes: 0, studio: '', subtitles: '',
-      editorInChief: '', issn: '', issueNumber: '', publicationFrequency: '', sections: ''
-    };
-  }
+export function createEmptyProductForm(): ProductFormModel {
+  return {
+    category:           'Book',
+    title:              '',
+    barcode:            '',
+    originalPrice:      0,
+    currentPrice:       0,
+    generalDescription: '',
+    dimensions:         '',
+    weight:             0,
+    imageUrl:           '',
+    quantityInStock:    0,
+    supportRushDelivery: false,
+    author: '', coverType: 'Paperback', publicationDate: '', publisher: '',
+    genre: '', language: '', numberOfPages: 0,
+    artist: '', recordLabel: '', trackList: '', releaseDate: '',
+    director: '', discType: 'Blu-ray', runtimeMinutes: 0, studio: '', subtitles: '',
+    editorInChief: '', issn: '', issueNumber: '', publicationFrequency: '', sections: ''
+  };
 }

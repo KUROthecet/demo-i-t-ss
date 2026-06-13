@@ -20,32 +20,6 @@ public class MediaResponseDto {
     private int     quantityInStock;
     private String  status;
     private boolean supportRushDelivery;
-    private String  type;
-
-    private String  author;
-    private String  coverType;
-    private String  publicationDate;
-    private String  publisher;
-    private String  genre;
-    private String  language;
-    private Integer numberOfPages;
-
-    private String  artist;
-    private String  recordLabel;
-    private String  trackList;
-    private String  releaseDate;
-
-    private String  director;
-    private String  discType;
-    private Integer runtimeMinutes;
-    private String  studio;
-    private String  subtitles;
-
-    private String  editorInChief;
-    private String  issn;
-    private String  issueNumber;
-    private String  publicationFrequency;
-    private String  sections;
 
     private Map<String, String> attributes;
 
@@ -71,7 +45,6 @@ public class MediaResponseDto {
             dto.setDimensions(physical.getDimensions());
         }
 
-        media.populateDto(dto);
         dto.setAttributes(media.getTypeSpecificAttributes());
 
         return dto;
@@ -115,72 +88,6 @@ public class MediaResponseDto {
 
     public boolean isSupportRushDelivery() { return supportRushDelivery; }
     public void setSupportRushDelivery(boolean supportRushDelivery) { this.supportRushDelivery = supportRushDelivery; }
-
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-
-    public String getAuthor() { return author; }
-    public void setAuthor(String author) { this.author = author; }
-
-    public String getCoverType() { return coverType; }
-    public void setCoverType(String coverType) { this.coverType = coverType; }
-
-    public String getPublicationDate() { return publicationDate; }
-    public void setPublicationDate(String publicationDate) { this.publicationDate = publicationDate; }
-
-    public String getPublisher() { return publisher; }
-    public void setPublisher(String publisher) { this.publisher = publisher; }
-
-    public String getGenre() { return genre; }
-    public void setGenre(String genre) { this.genre = genre; }
-
-    public String getLanguage() { return language; }
-    public void setLanguage(String language) { this.language = language; }
-
-    public Integer getNumberOfPages() { return numberOfPages; }
-    public void setNumberOfPages(Integer numberOfPages) { this.numberOfPages = numberOfPages; }
-
-    public String getArtist() { return artist; }
-    public void setArtist(String artist) { this.artist = artist; }
-
-    public String getRecordLabel() { return recordLabel; }
-    public void setRecordLabel(String recordLabel) { this.recordLabel = recordLabel; }
-
-    public String getTrackList() { return trackList; }
-    public void setTrackList(String trackList) { this.trackList = trackList; }
-
-    public String getReleaseDate() { return releaseDate; }
-    public void setReleaseDate(String releaseDate) { this.releaseDate = releaseDate; }
-
-    public String getDirector() { return director; }
-    public void setDirector(String director) { this.director = director; }
-
-    public String getDiscType() { return discType; }
-    public void setDiscType(String discType) { this.discType = discType; }
-
-    public Integer getRuntimeMinutes() { return runtimeMinutes; }
-    public void setRuntimeMinutes(Integer runtimeMinutes) { this.runtimeMinutes = runtimeMinutes; }
-
-    public String getStudio() { return studio; }
-    public void setStudio(String studio) { this.studio = studio; }
-
-    public String getSubtitles() { return subtitles; }
-    public void setSubtitles(String subtitles) { this.subtitles = subtitles; }
-
-    public String getEditorInChief() { return editorInChief; }
-    public void setEditorInChief(String editorInChief) { this.editorInChief = editorInChief; }
-
-    public String getIssn() { return issn; }
-    public void setIssn(String issn) { this.issn = issn; }
-
-    public String getIssueNumber() { return issueNumber; }
-    public void setIssueNumber(String issueNumber) { this.issueNumber = issueNumber; }
-
-    public String getPublicationFrequency() { return publicationFrequency; }
-    public void setPublicationFrequency(String publicationFrequency) { this.publicationFrequency = publicationFrequency; }
-
-    public String getSections() { return sections; }
-    public void setSections(String sections) { this.sections = sections; }
 
     public Map<String, String> getAttributes() { return attributes; }
     public void setAttributes(Map<String, String> attributes) { this.attributes = attributes; }

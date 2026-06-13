@@ -3,6 +3,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Media, PaginatedResponse } from '../models/media.model';
 
+export interface FieldSchema {
+  readonly key: string;
+  readonly attributeKey: string;
+  readonly label: string;
+  readonly type: 'text' | 'number' | 'date' | 'textarea' | 'select';
+  readonly options?: string[] | null;
+  readonly required: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class MediaApiService {
   private readonly baseUrl = 'http://localhost:8080/api';
@@ -103,5 +112,9 @@ export class MediaApiService {
 
   subscribeNewsletter(email: string): Observable<void> {
     return this.http.post<void>(`${this.baseUrl}/newsletter/subscribe`, { email });
+  }
+
+  getFieldSchema(): Observable<Record<string, FieldSchema[]>> {
+    return this.http.get<Record<string, FieldSchema[]>>(`${this.baseUrl}/media/schema`);
   }
 }

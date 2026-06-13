@@ -1,6 +1,6 @@
 package com.aims.entity;
 
-import com.aims.dto.response.MediaResponseDto;
+import com.aims.dto.FieldSchema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -17,6 +18,17 @@ import java.util.Map;
 @NoArgsConstructor
 @PrimaryKeyJoinColumn(name = "id")
 public class DVD extends PhysicalMedia {
+
+    public static final List<FieldSchema> FORM_SCHEMA = List.of(
+        new FieldSchema("director",       "Director",    "Director",      "text",   null,                                       true),
+        new FieldSchema("studio",         "Studio",      "Studio",        "text",   null,                                       false),
+        new FieldSchema("genre",          "Genre",       "Genre",         "text",   null,                                       false),
+        new FieldSchema("language",       "Language",    "Language",      "text",   null,                                       false),
+        new FieldSchema("discType",       "Disc Type",   "Disc Type",     "select", List.of("Blu-ray", "HD-DVD", "Standard DVD"), false),
+        new FieldSchema("runtimeMinutes", "Runtime",     "Runtime (min)", "number", null,                                       false),
+        new FieldSchema("subtitles",      "Subtitles",   "Subtitles",     "text",   null,                                       false),
+        new FieldSchema("releaseDate",    "Release Date","Release Date",  "date",   null,                                       false)
+    );
 
     @NotBlank(message = "Director is required for a DVD")
     private String director;
@@ -41,18 +53,5 @@ public class DVD extends PhysicalMedia {
         if (subtitles != null)       attrs.put("Subtitles", subtitles);
         if (releaseDate != null)     attrs.put("Release Date", releaseDate);
         return attrs;
-    }
-
-    @Override
-    public void populateDto(MediaResponseDto dto) {
-        dto.setType("DVD");
-        dto.setDirector(director);
-        dto.setDiscType(discType);
-        dto.setLanguage(language);
-        dto.setRuntimeMinutes(runtimeMinutes);
-        dto.setStudio(studio);
-        dto.setSubtitles(subtitles);
-        dto.setGenre(genre);
-        dto.setReleaseDate(releaseDate);
     }
 }

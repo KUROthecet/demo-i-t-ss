@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PaypalPaymentHandler implements PaymentHandler {
+public class PaypalPaymentHandler implements Payable, Refundable {
 
     private final PaypalService paypalService;
 

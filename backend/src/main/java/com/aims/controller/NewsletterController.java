@@ -1,6 +1,6 @@
 package com.aims.controller;
 
-import com.aims.service.EmailService;
+import com.aims.service.NotificationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class NewsletterController {
 
-    private final EmailService emailService;
+    private final NotificationService notificationService;
 
     @PostMapping("/subscribe")
     public ResponseEntity<Void> subscribe(@Valid @RequestBody SubscribeRequest req) {
-        emailService.sendNewsletterConfirmation(req.getEmail());
+        notificationService.sendNewsletterConfirmation(req.getEmail());
         return ResponseEntity.ok().build();
     }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Media, BookMedia, CDMedia, DVDMedia, NewspaperMedia } from '../models/media.model';
+import { Media } from '../models/media.model';
 
 type SubtitleExtractor = (m: Media) => string;
 
@@ -7,11 +7,11 @@ type SubtitleExtractor = (m: Media) => string;
 export class MediaDisplayService {
 
   private readonly subtitleExtractors: Record<string, SubtitleExtractor> = {
-    Book:      (m) => (m as BookMedia).author ?? '',
-    CD:        (m) => (m as CDMedia).artist ?? '',
-    DVD:       (m) => `Dir. ${(m as DVDMedia).director ?? ''}`,
+    Book:      (m) => m.attributes?.['Author'] ?? '',
+    CD:        (m) => m.attributes?.['Artist'] ?? '',
+    DVD:       (m) => `Dir. ${m.attributes?.['Director'] ?? ''}`,
     Newspaper: (m) => {
-      const chief = (m as NewspaperMedia).editorInChief;
+      const chief = m.attributes?.['Editor-in-Chief'];
       return chief ? `Ed. ${chief}` : '';
     }
   };
@@ -30,7 +30,8 @@ export class MediaDisplayService {
 
   getSubtitle(media: Media): string {
     const extractor = this.subtitleExtractors[media.category];
-    return extractor ? extractor(media) : '';
+    if (extractor) return extractor(media);
+    return Object.values(media.attributes ?? {})[0] ?? '';
   }
 
   getFallbackImage(category: string): string {

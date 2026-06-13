@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AppConstants } from '../../../core/config/app.constants';
 import { MediaApiService } from '../../../core/services/media-api.service';
 import { MediaDisplayService } from '../../../core/services/media-display.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -41,7 +42,7 @@ export class ProductDetailComponent implements OnInit {
   error                      = '';
 
   get vatAmount(): number {
-    return (this.product?.currentPrice ?? 0) * 0.1;
+    return (this.product?.currentPrice ?? 0) * AppConstants.VAT_RATE;
   }
 
   get totalAmount(): number {

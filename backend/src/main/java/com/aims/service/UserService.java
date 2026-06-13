@@ -21,7 +21,7 @@ public class UserService {
 
     private final UserRepository    userRepository;
     private final PasswordEncoder   passwordEncoder;
-    private final EmailService      emailService;
+    private final NotificationService notificationService;
     private final HistoryLogService historyLogService;
 
     @Transactional(readOnly = true)
@@ -87,7 +87,7 @@ public class UserService {
         historyLogService.log("USER_BLOCKED", user.getUsername(), performedBy,
                 "User '" + user.getUsername() + "' blocked. Reason: " + reason);
         if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            emailService.sendUserBlocked(user.getEmail(), user.getUsername(), reason);
+            notificationService.sendUserBlocked(user.getEmail(), user.getUsername(), reason);
         }
         return saved;
     }
@@ -99,7 +99,7 @@ public class UserService {
         historyLogService.log("USER_UNBLOCKED", user.getUsername(), performedBy,
                 "User '" + user.getUsername() + "' unblocked");
         if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            emailService.sendUserUnblocked(user.getEmail(), user.getUsername());
+            notificationService.sendUserUnblocked(user.getEmail(), user.getUsername());
         }
         return saved;
     }
@@ -111,7 +111,7 @@ public class UserService {
         historyLogService.log("USER_DEACTIVATED", user.getUsername(), performedBy,
                 "User '" + user.getUsername() + "' deactivated");
         if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            emailService.sendUserDeactivated(user.getEmail(), user.getUsername());
+            notificationService.sendUserDeactivated(user.getEmail(), user.getUsername());
         }
         return saved;
     }
@@ -121,7 +121,7 @@ public class UserService {
         String tempPassword = "AIMS@" + String.format("%06d", new Random().nextInt(999_999));
         user.setPasswordHash(passwordEncoder.encode(tempPassword));
         User saved = userRepository.save(user);
-        emailService.sendPasswordReset(user.getEmail(), user.getFullName(), tempPassword);
+        notificationService.sendPasswordReset(user.getEmail(), user.getFullName(), tempPassword);
         return saved;
     }
 
@@ -133,7 +133,7 @@ public class UserService {
         historyLogService.log("USER_ROLE_CHANGED", user.getUsername(), performedBy,
                 "User '" + user.getUsername() + "' role changed: " + oldRole + " → " + newRole);
         if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            emailService.sendRoleChanged(user.getEmail(), user.getUsername(), newRole);
+            notificationService.sendRoleChanged(user.getEmail(), user.getUsername(), newRole);
         }
         return saved;
     }

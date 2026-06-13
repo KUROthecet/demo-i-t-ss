@@ -1,16 +1,10 @@
 package com.aims.payment;
 
-import com.aims.entity.Order;
 import com.aims.enums.PaymentMethod;
-import com.aims.service.EmailService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
-public class VietQrPaymentHandler implements PaymentHandler {
-
-    private final EmailService emailService;
+public class VietQrPaymentHandler implements Payable {
 
     @Override
     public PaymentMethod supportedMethod() {
@@ -20,12 +14,5 @@ public class VietQrPaymentHandler implements PaymentHandler {
     @Override
     public String initiate(int totalAmount) {
         return "";
-    }
-
-    @Override
-    public boolean refund(Order order, String managerEmail) {
-        emailService.sendManagerRefundNotification(
-                managerEmail, order.getOrderCode(), order.getTotalAmount(), order.getCustomerName());
-        return false;
     }
 }

@@ -192,135 +192,29 @@
               </h2>
 
               <div class="form-grid form-grid--2col">
-                                @if (form.category === 'Book') {
-                  <div class="form-group form-group--full">
-                    <label class="form-group__label">Author(s) *</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.author" placeholder="e.g. J.K. Rowling" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Publisher</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.publisher" placeholder="Publisher name" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Cover Type</label>
-                    <select class="form-group__select" [(ngModel)]="form.coverType">
-                      <option value="Paperback">Paperback</option>
-                      <option value="Hardcover">Hardcover</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Publication Date</label>
-                    <input class="form-group__input" type="date" [(ngModel)]="form.publicationDate" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Number of Pages</label>
-                    <input class="form-group__input" type="number" [(ngModel)]="form.numberOfPages" placeholder="0" min="1" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Genre</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.genre" placeholder="e.g. Fiction, Science" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Language</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.language" placeholder="e.g. English, Vietnamese" />
-                  </div>
-                }
-
-                                @if (form.category === 'CD') {
-                  <div class="form-group form-group--full">
-                    <label class="form-group__label">Artist *</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.artist" placeholder="e.g. The Beatles" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Record Label</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.recordLabel" placeholder="Record label" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Release Date</label>
-                    <input class="form-group__input" type="date" [(ngModel)]="form.releaseDate" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Genre</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.genre" placeholder="e.g. Rock, Pop, Jazz" />
-                  </div>
-                  <div class="form-group form-group--full">
-                    <label class="form-group__label">Track List (comma separated)</label>
-                    <textarea class="form-group__textarea" [(ngModel)]="form.trackList" rows="3" placeholder="Track 1, Track 2, Track 3..."></textarea>
-                  </div>
-                }
-
-                                @if (form.category === 'DVD') {
-                  <div class="form-group form-group--full">
-                    <label class="form-group__label">Director *</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.director" placeholder="Director name" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Studio</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.studio" placeholder="Production studio" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Disc Type</label>
-                    <select class="form-group__select" [(ngModel)]="form.discType">
-                      <option value="Blu-ray">Blu-ray</option>
-                      <option value="HD-DVD">HD-DVD</option>
-                      <option value="Standard">Standard DVD</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Runtime (minutes)</label>
-                    <input class="form-group__input" type="number" [(ngModel)]="form.runtimeMinutes" placeholder="0" min="1" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Genre</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.genre" placeholder="e.g. Action, Drama" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Language</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.language" placeholder="e.g. English" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Subtitles</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.subtitles" placeholder="e.g. English, Vietnamese" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Release Date</label>
-                    <input class="form-group__input" type="date" [(ngModel)]="form.releaseDate" />
-                  </div>
-                }
-
-                                @if (form.category === 'Newspaper') {
-                  <div class="form-group">
-                    <label class="form-group__label">Publisher *</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.publisher" placeholder="Publisher name" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Editor in Chief</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.editorInChief" placeholder="Editor name" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Publication Date</label>
-                    <input class="form-group__input" type="date" [(ngModel)]="form.publicationDate" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">ISSN</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.issn" placeholder="ISSN number" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Issue Number</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.issueNumber" placeholder="Issue #" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Language</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.language" placeholder="e.g. Vietnamese" />
-                  </div>
-                  <div class="form-group">
-                    <label class="form-group__label">Publication Frequency</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.publicationFrequency" placeholder="e.g. Daily, Weekly" />
-                  </div>
-                  <div class="form-group form-group--full">
-                    <label class="form-group__label">Sections</label>
-                    <input class="form-group__input" type="text" [(ngModel)]="form.sections" placeholder="e.g. News, Sports, Business" />
-                  </div>
+                @if (schemaLoading) {
+                  <p style="color: var(--text-muted, #888); grid-column: 1 / -1;">Loading fields…</p>
+                } @else {
+                  @for (field of currentCategoryFields; track field.key) {
+                    <div class="form-group" [class.form-group--full]="field.type === 'textarea'">
+                      <label class="form-group__label" [for]="field.key">
+                        {{ field.label }}
+                        @if (field.required) { <span style="color: #ef4444; margin-left: 2px;">*</span> }
+                      </label>
+                      @if (field.type === 'select') {
+                        <select class="form-group__select" [id]="field.key" [name]="field.key" [(ngModel)]="$any(form)[field.key]">
+                          <option value="">— select —</option>
+                          @for (opt of (field.options ?? []); track opt) {
+                            <option [value]="opt">{{ opt }}</option>
+                          }
+                        </select>
+                      } @else if (field.type === 'textarea') {
+                        <textarea class="form-group__textarea" [id]="field.key" [name]="field.key" rows="4" [(ngModel)]="$any(form)[field.key]"></textarea>
+                      } @else {
+                        <input class="form-group__input" [id]="field.key" [name]="field.key" [type]="field.type" [(ngModel)]="$any(form)[field.key]" [required]="field.required">
+                      }
+                    </div>
+                  }
                 }
               </div>
 

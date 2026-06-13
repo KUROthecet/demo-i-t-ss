@@ -27,7 +27,7 @@ public class OrderService {
 
     private final OrderRepository           orderRepository;
     private final MediaService              mediaService;
-    private final EmailService              emailService;
+    private final NotificationService       notificationService;
     private final PaymentService            paymentService;
     private final InvoiceService            invoiceService;
     private final ShippingCalculatorService shippingCalculatorService;
@@ -73,7 +73,7 @@ public class OrderService {
 
         if (savedOrder.getPaymentMethod() != PaymentMethod.PAYPAL) {
             invoiceService.generateInvoiceFromOrder(savedOrder.getId());
-            emailService.sendOrderConfirmation(dto.getCustomerEmail(), dto.getCustomerName(), order.getOrderCode(), total);
+            notificationService.sendOrderConfirmation(dto.getCustomerEmail(), dto.getCustomerName(), order.getOrderCode(), total);
         }
 
         historyLogService.log("ORDER_CREATED", savedOrder.getId().toString(), "SYSTEM",
@@ -179,7 +179,7 @@ public class OrderService {
         Order order = getOrderById(id);
         order.approve();
         Order saved = orderRepository.save(order);
-        emailService.sendOrderApproved(order.getCustomerEmail(), order.getCustomerName(), order.getOrderCode());
+        notificationService.sendOrderApproved(order.getCustomerEmail(), order.getCustomerName(), order.getOrderCode());
         historyLogService.log("ORDER_APPROVED", order.getOrderCode(), performedBy,
                 "Order " + order.getOrderCode() + " approved");
         return saved;
@@ -191,7 +191,7 @@ public class OrderService {
         restoreInventory(order);
         paymentService.processRefund(order, managerEmail);
         Order saved = orderRepository.save(order);
-        emailService.sendOrderRejected(order.getCustomerEmail(), order.getCustomerName(), order.getOrderCode(), reason);
+        notificationService.sendOrderRejected(order.getCustomerEmail(), order.getCustomerName(), order.getOrderCode(), reason);
         historyLogService.log("ORDER_REJECTED", order.getOrderCode(), performedBy,
                 "Order " + order.getOrderCode() + " rejected. Reason: " + reason);
         return saved;
@@ -203,7 +203,7 @@ public class OrderService {
         restoreInventory(order);
         paymentService.processRefund(order, managerEmail);
         Order saved = orderRepository.save(order);
-        emailService.sendOrderCancelled(
+        notificationService.sendOrderCancelled(
                 order.getCustomerEmail(), order.getCustomerName(), order.getOrderCode(),
                 order.getPaymentStatus() == com.aims.enums.PaymentStatus.REFUNDED);
         historyLogService.log("ORDER_CANCELLED", order.getOrderCode(), "CUSTOMER",
@@ -218,7 +218,7 @@ public class OrderService {
             order.markAsPaid(paypalOrderId, captureId);
             orderRepository.save(order);
             invoiceService.generateInvoiceFromOrder(order.getId());
-            emailService.sendOrderConfirmation(
+            notificationService.sendOrderConfirmation(
                     order.getCustomerEmail(), order.getCustomerName(),
                     order.getOrderCode(), order.getTotalAmount());
             historyLogService.log("PAYPAL_CAPTURED", order.getOrderCode(), "SYSTEM",
