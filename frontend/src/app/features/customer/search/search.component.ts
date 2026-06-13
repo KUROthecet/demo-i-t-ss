@@ -2,7 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../../core/services/api.service';
+import { MediaApiService } from '../../../core/services/media-api.service';
 import { CartService } from '../../../core/services/cart.service';
 import { MediaDisplayService } from '../../../core/services/media-display.service';
 import { Media } from '../../../core/models/media.model';
@@ -70,7 +70,6 @@ export class SearchComponent implements OnInit {
   readonly categories = ['Book', 'CD', 'DVD', 'Newspaper'];
   readonly skeletons  = Array(6).fill(0);
 
-  /** Category counts from API facets. */
   private categoryCounts: Record<string, number> = {
     Book: 0, CD: 0, DVD: 0, Newspaper: 0
   };
@@ -78,19 +77,19 @@ export class SearchComponent implements OnInit {
   constructor(
     private readonly route:        ActivatedRoute,
     private readonly router:       Router,
-    private readonly api:          ApiService,
+    private readonly mediaApi:     MediaApiService,
     private readonly cartService:  CartService,
     private readonly mediaDisplay: MediaDisplayService
   ) {}
 
   ngOnInit(): void {
-    this.api.getCatalogStats().subscribe(stats => {
+    this.mediaApi.getCatalogStats().subscribe(stats => {
       if (stats) {
         this.categoryCounts = stats;
       }
     });
 
-    this.api.getProducts(1000).subscribe(products => {
+    this.mediaApi.getProducts(1000).subscribe(products => {
       if (products?.length > 0) {
         const highestPrice       = Math.max(...products.map(p => p.currentPrice || 0));
         this.MAX_PRICE_VALUE     = highestPrice + 2_000_000;
@@ -128,7 +127,7 @@ export class SearchComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.api.searchProducts(this.query, this.selectedCategories, this.minPrice, this.maxPrice, this.currentPage, this.pageSize).subscribe({
+    this.mediaApi.searchProducts(this.query, this.selectedCategories, this.minPrice, this.maxPrice, this.currentPage, this.pageSize).subscribe({
       next: (res: any) => {
         this.results = res.content;
         this.totalFilteredElements = res.totalElements;

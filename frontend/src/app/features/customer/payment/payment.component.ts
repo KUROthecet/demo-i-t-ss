@@ -23,6 +23,8 @@ export class PaymentComponent implements OnInit {
   protected paypalError       = '';
   protected loading           = false;
 
+  private static readonly ORDER_SESSION_KEY = 'aims_payment_order';
+
   constructor(
     private readonly router:   Router,
     private readonly route:    ActivatedRoute,
@@ -35,6 +37,7 @@ export class PaymentComponent implements OnInit {
         ? JSON.parse(state.orderData)
         : state.orderData;
       this.paymentMethod = this.order.paymentMethod;
+      sessionStorage.setItem(PaymentComponent.ORDER_SESSION_KEY, JSON.stringify(this.order));
     }
   }
 
@@ -45,15 +48,20 @@ export class PaymentComponent implements OnInit {
         this.router.navigate(['/home']);
         return;
       }
-      this.loading = true;
-      try {
-        this.order         = await lastValueFrom(this.orderApi.getOrderById(orderId));
-        this.paymentMethod = this.order.paymentMethod;
-      } catch {
-        this.router.navigate(['/home']);
-        return;
-      } finally {
-        this.loading = false;
+
+      const restored = this.restoreFromSession(orderId);
+      if (!restored) {
+        this.loading = true;
+        try {
+          this.order         = await lastValueFrom(this.orderApi.getOrderById(orderId));
+          this.paymentMethod = this.order.paymentMethod;
+          sessionStorage.setItem(PaymentComponent.ORDER_SESSION_KEY, JSON.stringify(this.order));
+        } catch {
+          this.router.navigate(['/home']);
+          return;
+        } finally {
+          this.loading = false;
+        }
       }
     }
 
@@ -64,6 +72,22 @@ export class PaymentComponent implements OnInit {
     ) {
       await this.initPaypalContinueButton();
     }
+  }
+
+  private restoreFromSession(orderId: number): boolean {
+    const stored = sessionStorage.getItem(PaymentComponent.ORDER_SESSION_KEY);
+    if (!stored) return false;
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed.id === orderId) {
+        this.order         = parsed;
+        this.paymentMethod = this.order.paymentMethod;
+        return true;
+      }
+    } catch {
+      sessionStorage.removeItem(PaymentComponent.ORDER_SESSION_KEY);
+    }
+    return false;
   }
 
   private async onPaypalContinueCreateOrder(_data: any, _actions: any): Promise<string> {
@@ -77,6 +101,7 @@ export class PaymentComponent implements OnInit {
       await lastValueFrom(this.orderApi.captureOrder(data.orderID));
       this.order      = { ...this.order, paymentStatus: 'PAID' };
       this.paypalDone = true;
+      sessionStorage.removeItem(PaymentComponent.ORDER_SESSION_KEY);
     } catch {
       this.paypalError = 'Payment capture failed. Please contact support.';
     } finally {

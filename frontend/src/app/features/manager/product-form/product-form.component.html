@@ -114,6 +114,11 @@
                 <div class="form-group">
                   <label class="form-group__label">Current Price (VND)</label>
                   <input class="form-group__input" type="number" [(ngModel)]="form.currentPrice" placeholder="Leave 0 for same as original" min="0" />
+                  @if (isEdit && form.originalPrice > 0) {
+                    <p style="font-size:11px;color:rgba(255,255,255,0.40);margin-top:4px;line-height:1.4;">
+                      Allowed range: {{ priceMin | number }} – {{ priceMax | number }} VND (30%–150% of original)
+                    </p>
+                  }
                 </div>
                 <div class="form-group">
                   <label class="form-group__label">Initial Quantity *</label>

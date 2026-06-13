@@ -77,6 +77,7 @@ export class CheckoutComponent implements OnInit {
         paypal.Buttons({
           createOrder: this.onPaypalCreateOrder.bind(this),
           onApprove:   this.onPaypalApprove.bind(this),
+          onCancel:    this.onPaypalCancel.bind(this),
           onError:     this.onPaypalError.bind(this)
         }).render('#paypal-button-container');
       }
@@ -122,6 +123,10 @@ export class CheckoutComponent implements OnInit {
       this.error      = 'Payment capture failed. Please contact support.';
       this.submitting = false;
     }
+  }
+
+  private onPaypalCancel(_data: any): void {
+    this.submitting = false;
   }
 
   private onPaypalError(_err: any): void {

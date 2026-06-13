@@ -51,7 +51,7 @@
 
   &__disc {
     position: relative;
-    width: min(420px, 88%);
+    width: min(360px, 82%);
     aspect-ratio: 1;
     border-radius: 50%;
     cursor: pointer;
@@ -291,8 +291,8 @@
 
   &__book {
     position: relative;
-    width: min(340px, 55vw);
-    height: min(480px, 77vw);
+    width: min(290px, 52vw);
+    height: min(410px, 73vw);
     animation: bookFloat 6s ease-in-out infinite;
     transition: filter 0.5s ease;
     filter: drop-shadow(18px 40px 36px rgba(0,0,0,0.62));

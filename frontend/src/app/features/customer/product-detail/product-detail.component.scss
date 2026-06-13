@@ -175,13 +175,13 @@
   &__frame-wrap {
     position: relative;
     width: 100%;
-    height: clamp(320px, 75vw, 480px);
+    height: clamp(260px, 58vw, 420px);
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
 
-    @media (min-width: 1024px) { height: 520px; overflow: visible; }
+    @media (min-width: 1024px) { height: 440px; overflow: visible; }
   }
 
   &__image-actions {

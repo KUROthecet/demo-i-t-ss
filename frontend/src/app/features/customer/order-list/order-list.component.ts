@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { ApiService } from '../../../core/services/api.service';
+import { OrderApiService } from '../../../core/services/order-api.service';
 import { Order } from '../../../core/models/order.model';
 import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 import { FooterComponent } from '../../../shared/footer/footer.component';
@@ -24,7 +24,7 @@ export class OrderListComponent implements OnInit {
   protected searched = false;
   protected error    = '';
 
-  constructor(private readonly api: ApiService) {}
+  constructor(private readonly orderApi: OrderApiService) {}
 
   ngOnInit(): void {}
 
@@ -32,7 +32,7 @@ export class OrderListComponent implements OnInit {
     if (!this.email.trim()) return;
     this.loading  = true;
     this.searched = false;
-    this.api.getOrdersByEmail(this.email.trim()).subscribe({
+    this.orderApi.getOrdersByEmail(this.email.trim()).subscribe({
       next:  (orders) => { this.orders = orders; this.searched = true; this.loading = false; },
       error: ()       => { this.error = 'Failed to retrieve orders.'; this.loading = false; }
     });

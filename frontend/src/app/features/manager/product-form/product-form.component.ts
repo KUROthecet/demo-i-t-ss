@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../../core/services/api.service';
+import { MediaApiService } from '../../../core/services/media-api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ProductFormModel } from '../../../core/models/product-form.model';
 
@@ -14,12 +14,14 @@ import { ProductFormModel } from '../../../core/models/product-form.model';
   styleUrl: './product-form.component.scss'
 })
 export class ProductFormComponent implements OnInit {
-  protected isEdit    = false;
+  protected isEdit       = false;
   protected productId: number | null = null;
-  protected loading   = false;
-  protected saving    = false;
-  protected error     = '';
-  protected successMsg = '';
+  protected loading      = false;
+  protected saving       = false;
+  protected error        = '';
+  protected successMsg   = '';
+  protected uploadMode   = false;
+  protected uploadingImage = false;
 
   protected step      = 1;
   protected direction: 'forward' | 'back' = 'forward';
@@ -36,10 +38,10 @@ export class ProductFormComponent implements OnInit {
   protected readonly performedBy: string;
 
   constructor(
-    private readonly api:   ApiService,
-    private readonly auth:  AuthService,
-    private readonly route: ActivatedRoute,
-    private readonly router: Router
+    private readonly mediaApi: MediaApiService,
+    private readonly auth:     AuthService,
+    private readonly route:    ActivatedRoute,
+    private readonly router:   Router
   ) {
     this.performedBy = this.auth.getCurrentUser()?.username ?? 'Manager';
   }
@@ -50,7 +52,7 @@ export class ProductFormComponent implements OnInit {
       this.isEdit    = true;
       this.productId = Number(id);
       this.loading   = true;
-      this.api.getProduct(this.productId).subscribe({
+      this.mediaApi.getProduct(this.productId).subscribe({
         next:  (p) => { Object.assign(this.form, p); this.loading = false; },
         error: ()  => { this.error = 'Failed to load product.'; this.loading = false; }
       });
@@ -98,16 +100,37 @@ export class ProductFormComponent implements OnInit {
     return s === 1 ? 'Category' : s === 2 ? 'General Info' : (this.form.category || 'Details');
   }
 
+  protected get priceMin(): number { return Math.round(this.form.originalPrice * 0.3); }
+  protected get priceMax(): number { return Math.round(this.form.originalPrice * 1.5); }
+
+  protected onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    const formData = new FormData();
+    formData.append('file', input.files[0]);
+    this.uploadingImage = true;
+    this.mediaApi.uploadImage(formData).subscribe({
+      next:  (res) => { this.form.imageUrl = res.url; this.uploadingImage = false; },
+      error: ()    => { this.error = 'Image upload failed.'; this.uploadingImage = false; }
+    });
+  }
+
   protected save(): void {
     if (!this.form.title || !this.form.barcode || !this.form.category) {
       this.error = 'Title, barcode and category are required.';
       return;
     }
+    if (this.isEdit && this.form.originalPrice > 0) {
+      if (this.form.currentPrice < this.priceMin || this.form.currentPrice > this.priceMax) {
+        this.error = `Price must be between ${this.priceMin.toLocaleString('vi-VN')} and ${this.priceMax.toLocaleString('vi-VN')} VND (30%–150% of original price).`;
+        return;
+      }
+    }
     this.saving = true;
     this.error  = '';
     const obs = this.isEdit
-      ? this.api.updateMedia(this.productId!, this.form)
-      : this.api.addMedia(this.form);
+      ? this.mediaApi.updateMedia(this.productId!, this.form)
+      : this.mediaApi.addMedia(this.form);
 
     obs.subscribe({
       next:  () => {
