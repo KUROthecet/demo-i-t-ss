@@ -1,5 +1,6 @@
 import { Injectable, computed, signal, OnDestroy } from '@angular/core';
 import { OrderApiService } from './order-api.service';
+import { AppConstants } from '../config/app.constants';
 import { Subscription, interval } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -12,8 +13,7 @@ export interface NotificationItem {
   read:         boolean;
 }
 
-const READ_KEY     = 'aims_notif_read';
-const POLL_INTERVAL = 30_000;
+const READ_KEY = 'aims_notif_read';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService implements OnDestroy {
@@ -28,7 +28,7 @@ export class NotificationService implements OnDestroy {
   startPolling(): void {
     if (this._pollSub) return;
     this.fetchOnce();
-    this._pollSub = interval(POLL_INTERVAL)
+    this._pollSub = interval(AppConstants.NOTIFICATION_POLL_INTERVAL_MS)
       .pipe(switchMap(() => this.orderApi.getPendingOrders(0, 10)))
       .subscribe({ next: page => this.handlePage(page) });
   }

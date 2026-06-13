@@ -134,7 +134,7 @@ export class PaymentComponent implements OnInit {
 
   get vietQrLink(): string {
     if (!this.order) return '';
-    const memo = 'DH' + this.order.id;
-    return `https://img.vietqr.io/image/${VIETQR.bankId}-${VIETQR.accountNo}-qr_only.png?amount=${this.order.totalAmount}&addInfo=${memo}&accountName=${VIETQR.accountName}`;
+    const memo = encodeURIComponent('DH' + this.order.id);
+    return `https://img.vietqr.io/image/${VIETQR.bankId}-${VIETQR.accountNo}-qr_only.png?amount=${this.order.totalAmount}&addInfo=${memo}&accountName=${encodeURIComponent(VIETQR.accountName)}`;
   }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { UserApiService } from '../../../core/services/user-api.service';
 import { OrderApiService } from '../../../core/services/order-api.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -33,9 +34,9 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     Promise.all([
-      this.userApi.getUsers().toPromise(),
-      this.orderApi.getOrders().toPromise(),
-      this.orderApi.getPendingOrders().toPromise()
+      firstValueFrom(this.userApi.getUsers()),
+      firstValueFrom(this.orderApi.getOrders()),
+      firstValueFrom(this.orderApi.getPendingOrders())
     ]).then(this.onDashboardDataLoaded.bind(this))
       .catch(this.onDashboardError.bind(this));
   }

@@ -55,7 +55,7 @@
       </a>
 
             @if (currentUser()) {
-        <div class="navbar__user" (click)="showUserMenu = !showUserMenu" (clickOutside)="showUserMenu = false">
+        <div class="navbar__user" (click)="showUserMenu = !showUserMenu">
           <button class="navbar__user-btn" (click)="toggleUserMenu($event)">
               <div class="navbar__user-avatar" [class.no-image]="!currentUser()?.avatarUrl">
                 @if (currentUser()?.avatarUrl) {
