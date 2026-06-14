@@ -41,6 +41,18 @@ public class CD extends PhysicalMedia {
     private String releaseDate;
 
     @Override
+    public void updateDetails(Media updated) {
+        super.updateDetails(updated);
+        if (updated instanceof CD other) {
+            this.artist      = other.getArtist();
+            this.genre       = other.getGenre();
+            this.recordLabel = other.getRecordLabel();
+            this.trackList   = other.getTrackList();
+            this.releaseDate = other.getReleaseDate();
+        }
+    }
+
+    @Override
     public Map<String, String> getTypeSpecificAttributes() {
         Map<String, String> attrs = new LinkedHashMap<>();
         if (artist != null)      attrs.put("Artist", artist);

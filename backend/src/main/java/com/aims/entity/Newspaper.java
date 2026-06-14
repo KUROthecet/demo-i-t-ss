@@ -46,6 +46,21 @@ public class Newspaper extends PhysicalMedia {
     private String sections;
 
     @Override
+    public void updateDetails(Media updated) {
+        super.updateDetails(updated);
+        if (updated instanceof Newspaper other) {
+            this.editorInChief        = other.getEditorInChief();
+            this.publicationDate      = other.getPublicationDate();
+            this.publisher            = other.getPublisher();
+            this.issn                 = other.getIssn();
+            this.issueNumber          = other.getIssueNumber();
+            this.language             = other.getLanguage();
+            this.publicationFrequency = other.getPublicationFrequency();
+            this.sections             = other.getSections();
+        }
+    }
+
+    @Override
     public Map<String, String> getTypeSpecificAttributes() {
         Map<String, String> attrs = new LinkedHashMap<>();
         if (editorInChief != null)        attrs.put("Editor-in-Chief", editorInChief);

@@ -9,7 +9,7 @@ export class MediaDisplayService {
   private readonly subtitleExtractors: Record<string, SubtitleExtractor> = {
     Book:      (m) => m.attributes?.['Author'] ?? '',
     CD:        (m) => m.attributes?.['Artist'] ?? '',
-    DVD:       (m) => `Dir. ${m.attributes?.['Director'] ?? ''}`,
+    DVD:       (m) => { const d = m.attributes?.['Director']; return d ? `Dir. ${d}` : ''; },
     Newspaper: (m) => {
       const chief = m.attributes?.['Editor-in-Chief'];
       return chief ? `Ed. ${chief}` : '';

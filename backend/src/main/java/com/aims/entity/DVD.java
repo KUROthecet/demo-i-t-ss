@@ -44,6 +44,21 @@ public class DVD extends PhysicalMedia {
     private String  releaseDate;
 
     @Override
+    public void updateDetails(Media updated) {
+        super.updateDetails(updated);
+        if (updated instanceof DVD other) {
+            this.director       = other.getDirector();
+            this.discType       = other.getDiscType();
+            this.language       = other.getLanguage();
+            this.runtimeMinutes = other.getRuntimeMinutes();
+            this.studio         = other.getStudio();
+            this.subtitles      = other.getSubtitles();
+            this.genre          = other.getGenre();
+            this.releaseDate    = other.getReleaseDate();
+        }
+    }
+
+    @Override
     public Map<String, String> getTypeSpecificAttributes() {
         Map<String, String> attrs = new LinkedHashMap<>();
         if (director != null)        attrs.put("Director", director);

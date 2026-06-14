@@ -42,6 +42,20 @@ public class Book extends PhysicalMedia {
     private Integer numberOfPages;
 
     @Override
+    public void updateDetails(Media updated) {
+        super.updateDetails(updated);
+        if (updated instanceof Book other) {
+            this.author          = other.getAuthor();
+            this.coverType       = other.getCoverType();
+            this.publicationDate = other.getPublicationDate();
+            this.publisher       = other.getPublisher();
+            this.genre           = other.getGenre();
+            this.language        = other.getLanguage();
+            this.numberOfPages   = other.getNumberOfPages();
+        }
+    }
+
+    @Override
     public Map<String, String> getTypeSpecificAttributes() {
         Map<String, String> attrs = new LinkedHashMap<>();
         if (author != null)          attrs.put("Author", author);
