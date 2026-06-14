@@ -159,10 +159,6 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
-  protected getFallbackImage(category: string): string {
-    return this.mediaDisplay.getFallbackImage(category);
-  }
-
   changeQty(delta: number): void {
     const max   = this.product?.quantityInStock ?? 99;
     this.quantity = Math.max(1, Math.min(this.quantity + delta, max));

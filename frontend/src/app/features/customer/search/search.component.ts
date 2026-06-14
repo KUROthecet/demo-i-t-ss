@@ -222,7 +222,4 @@ export class SearchComponent implements OnInit {
     return this.mediaDisplay.getSubtitle(media);
   }
 
-  protected getFallbackImage(category: string): string {
-    return this.mediaDisplay.getFallbackImage(category);
-  }
 }

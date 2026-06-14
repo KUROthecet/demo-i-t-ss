@@ -32,12 +32,14 @@ export class ProductFormComponent implements OnInit {
   protected availableCategoryFields: Record<string, FieldSchema[]> = {};
   protected schemaLoading = true;
 
-  readonly categories = [
-    { id: 'Book'      as const, label: 'Book',      icon: 'book',      color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  glow: '0 0 30px rgba(96,165,250,0.25)'  },
-    { id: 'CD'        as const, label: 'CD',        icon: 'disc',      color: '#fb923c', bg: 'rgba(251,146,60,0.12)',  glow: '0 0 30px rgba(251,146,60,0.25)'  },
-    { id: 'DVD'       as const, label: 'DVD',       icon: 'film',      color: '#c084fc', bg: 'rgba(192,132,252,0.12)', glow: '0 0 30px rgba(192,132,252,0.25)' },
-    { id: 'Newspaper' as const, label: 'Newspaper', icon: 'newspaper', color: '#1DB954', bg: 'rgba(29,185,84,0.12)',   glow: '0 0 30px rgba(29,185,84,0.25)'   }
-  ];
+  private static readonly KNOWN_CATEGORY_DEFS: Record<string, { label: string; icon: string; color: string; bg: string; glow: string }> = {
+    Book:      { label: 'Book',      icon: 'book',      color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  glow: '0 0 30px rgba(96,165,250,0.25)'  },
+    CD:        { label: 'CD',        icon: 'disc',      color: '#fb923c', bg: 'rgba(251,146,60,0.12)',  glow: '0 0 30px rgba(251,146,60,0.25)'  },
+    DVD:       { label: 'DVD',       icon: 'film',      color: '#c084fc', bg: 'rgba(192,132,252,0.12)', glow: '0 0 30px rgba(192,132,252,0.25)' },
+    Newspaper: { label: 'Newspaper', icon: 'newspaper', color: '#1DB954', bg: 'rgba(29,185,84,0.12)',   glow: '0 0 30px rgba(29,185,84,0.25)'   }
+  };
+
+  protected categories: { id: string; label: string; icon: string; color: string; bg: string; glow: string }[] = [];
 
   protected readonly performedBy: string;
 
@@ -50,11 +52,28 @@ export class ProductFormComponent implements OnInit {
     this.performedBy = this.auth.getCurrentUser()?.username ?? 'Manager';
   }
 
+  private categoryColor(label: string): string {
+    let h = 0;
+    for (let i = 0; i < label.length; i++) {
+      h = (Math.imul(31, h) + label.charCodeAt(i)) | 0;
+    }
+    return `oklch(72% 0.17 ${Math.abs(h) % 360})`;
+  }
+
+  private buildCategoryDef(id: string): { id: string; label: string; icon: string; color: string; bg: string; glow: string } {
+    const known = ProductFormComponent.KNOWN_CATEGORY_DEFS[id];
+    if (known) return { id, ...known };
+    const color = this.categoryColor(id);
+    const base  = color.slice(0, -1);
+    return { id, label: id, icon: 'tag', color, bg: `${base} / 12%)`, glow: `0 0 30px ${base} / 25%)` };
+  }
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.mediaApi.getFieldSchema().subscribe({
       next: (schema) => {
         this.availableCategoryFields = schema;
+        this.categories = Object.keys(schema).map(k => this.buildCategoryDef(k));
         this.schemaLoading = false;
         if (id) {
           this.isEdit    = true;
@@ -98,7 +117,7 @@ export class ProductFormComponent implements OnInit {
     return this.availableCategoryFields[this.form.category] ?? [];
   }
 
-  protected selectCategory(id: 'Book' | 'CD' | 'DVD' | 'Newspaper'): void {
+  protected selectCategory(id: string): void {
     this.form.category = id;
   }
 
@@ -131,8 +150,8 @@ export class ProductFormComponent implements OnInit {
     return true;
   }
 
-  protected getCategoryDef() {
-    return this.categories.find(c => c.id === this.form.category) ?? this.categories[0];
+  protected getCategoryDef(): { id: string; label: string; icon: string; color: string; bg: string; glow: string } {
+    return this.categories.find(c => c.id === this.form.category) ?? this.buildCategoryDef(this.form.category);
   }
 
   protected getStepLabel(s: number): string {

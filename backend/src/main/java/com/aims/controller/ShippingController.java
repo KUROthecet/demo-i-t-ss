@@ -2,6 +2,7 @@ package com.aims.controller;
 
 import com.aims.dto.request.ShippingRequestDto;
 import com.aims.service.ShippingCalculatorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class ShippingController {
     private final ShippingCalculatorService shippingCalculatorService;
 
     @PostMapping("/calculate")
-    public ResponseEntity<Map<String, Object>> calculateShipping(@RequestBody ShippingRequestDto dto) {
+    public ResponseEntity<Map<String, Object>> calculateShipping(@Valid @RequestBody ShippingRequestDto dto) {
         double standardFee = shippingCalculatorService.calculateStandardFee(
                 dto.getWeight(), dto.getProvince(), dto.getOrderTotal());
         double rushFee = 0;
