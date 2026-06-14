@@ -28,9 +28,19 @@ export class ManagerDashboardComponent implements OnInit {
 
   private readonly C = 239;
 
-  private static readonly CATALOG_COLORS: Record<string, string> = {
-    Book: '#60a5fa', CD: '#fb923c', DVD: '#c084fc', Newspaper: '#1DB954'
-  };
+  private static readonly PALETTE: readonly string[] = [
+    '#60a5fa', '#fb923c', '#c084fc', '#1DB954',
+    '#f472b6', '#34d399', '#fbbf24', '#38bdf8',
+    '#a78bfa', '#f87171', '#4ade80', '#e879f9',
+  ];
+
+  private categoryColor(label: string): string {
+    let h = 0;
+    for (let i = 0; i < label.length; i++) {
+      h = (Math.imul(31, h) + label.charCodeAt(i)) | 0;
+    }
+    return ManagerDashboardComponent.PALETTE[Math.abs(h) % ManagerDashboardComponent.PALETTE.length];
+  }
 
   constructor(
     private readonly mediaApi: MediaApiService,
@@ -101,7 +111,7 @@ export class ManagerDashboardComponent implements OnInit {
 
   private buildCatalogItem(label: string, max: number): { label: string; count: number; color: string; pct: number } {
     const count = this.catalogStats[label] || 0;
-    const color = ManagerDashboardComponent.CATALOG_COLORS[label] ?? '#888';
+    const color = this.categoryColor(label);
     return { label, count, color, pct: Math.round((count / max) * 100) };
   }
 
