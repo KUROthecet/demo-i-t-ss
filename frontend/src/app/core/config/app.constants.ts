@@ -20,4 +20,5 @@ export class AppConstants {
   static readonly PRICE_MAX_RATIO                 = 1.50;
   static readonly FREE_SHIPPING_THRESHOLD         = 100_000;
   static readonly FREE_SHIPPING_CAP               = 25_000;
+  static readonly RUSH_ELIGIBLE_PROVINCES: readonly string[] = ['Hanoi', 'Ho Chi Minh City'];
 }

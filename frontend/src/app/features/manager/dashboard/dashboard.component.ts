@@ -108,7 +108,7 @@ export class ManagerDashboardComponent implements OnInit {
   get catalogItems(): { label: string; count: number; color: string; pct: number }[] {
     const max    = this.getMaxCatalogCount();
     const result: { label: string; count: number; color: string; pct: number }[] = [];
-    for (const label of ['Book', 'CD', 'DVD', 'Newspaper']) {
+    for (const label of Object.keys(this.catalogStats)) {
       result.push(this.buildCatalogItem(label, max));
     }
     return result;

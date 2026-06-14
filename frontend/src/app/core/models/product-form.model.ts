@@ -1,5 +1,5 @@
 export interface ProductFormModel {
-  category: 'Book' | 'CD' | 'DVD' | 'Newspaper';
+  category: string;
 
   title: string;
   barcode: string;

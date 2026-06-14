@@ -37,7 +37,6 @@ export class CheckoutComponent implements OnInit {
   private   placedOrder: any  = null;
   private   pendingPaypalId   = '';
 
-  private static readonly RUSH_ELIGIBLE_PROVINCES: string[] = ['Hanoi', 'Ho Chi Minh City'];
 
   readonly freeShippingThreshold = AppConstants.FREE_SHIPPING_THRESHOLD;
   readonly freeShippingCap       = AppConstants.FREE_SHIPPING_CAP;
@@ -151,7 +150,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   protected isRushEligibleProvince(): boolean {
-    for (const eligible of CheckoutComponent.RUSH_ELIGIBLE_PROVINCES) {
+    for (const eligible of AppConstants.RUSH_ELIGIBLE_PROVINCES) {
       if (eligible === this.province) return true;
     }
     return false;
