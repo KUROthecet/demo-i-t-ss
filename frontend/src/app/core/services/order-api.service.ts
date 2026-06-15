@@ -3,10 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Order, ShippingRequest, ShippingResponse } from '../models/order.model';
 import { PaginatedResponse } from '../models/media.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class OrderApiService {
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = environment.apiUrl;
 
   constructor(private readonly http: HttpClient) {}
 

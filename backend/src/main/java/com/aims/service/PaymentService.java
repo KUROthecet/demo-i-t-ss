@@ -4,6 +4,7 @@ import com.aims.entity.Order;
 import com.aims.entity.PaymentTransaction;
 import com.aims.entity.Transaction;
 import com.aims.enums.PaymentMethod;
+import com.aims.enums.PaymentStatus;
 import com.aims.exception.BusinessException;
 import com.aims.payment.Payable;
 import com.aims.payment.Refundable;
@@ -51,6 +52,9 @@ public class PaymentService {
     }
 
     public boolean processRefund(Order order, String managerEmail) {
+        if (order.getPaymentStatus() != PaymentStatus.PAID) {
+            return true;
+        }
         Payable handler = resolveHandler(order.getPaymentMethod());
         if (handler instanceof Refundable refundable) {
             return refundable.refund(order, managerEmail);

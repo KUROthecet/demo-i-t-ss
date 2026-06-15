@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Media, PaginatedResponse } from '../models/media.model';
+import { environment } from '../../../environments/environment';
 
 export interface FieldSchema {
   readonly key: string;
@@ -14,7 +15,7 @@ export interface FieldSchema {
 
 @Injectable({ providedIn: 'root' })
 export class MediaApiService {
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = environment.apiUrl;
 
   constructor(private readonly http: HttpClient) {}
 

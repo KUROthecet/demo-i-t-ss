@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { LoginRequest, LoginResponse } from '../models/user.model';
+import { environment } from '../../../environments/environment';
 
 const TOKEN_KEY = 'aims_token';
 const USER_KEY  = 'aims_user';
@@ -10,7 +11,7 @@ const CART_KEY  = 'aims_cart';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = environment.apiUrl;
 
   private readonly _currentUser = signal<LoginResponse | null>(this.loadUserFromStorage());
 

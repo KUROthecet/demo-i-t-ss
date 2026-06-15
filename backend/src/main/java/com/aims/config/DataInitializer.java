@@ -5,6 +5,7 @@ import com.aims.repository.MediaRepository;
 import com.aims.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,12 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
     private final PasswordEncoder  passwordEncoder;
     private final SqlCatalogLoader sqlCatalogLoader;
 
+    @Value("${app.admin.password:admin123}")
+    private String adminPassword;
+
+    @Value("${app.manager-account.password:manager123}")
+    private String managerPassword;
+
     @Override
     @Transactional
     public void onApplicationEvent(ApplicationReadyEvent event) {
@@ -35,7 +42,7 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
 
         User admin = new User();
         admin.setUsername("admin");
-        admin.setPasswordHash(passwordEncoder.encode("admin123"));
+        admin.setPasswordHash(passwordEncoder.encode(adminPassword));
         admin.setEmail("admin@aims.vn");
         admin.setRole("ADMIN");
         admin.setFullName("AIMS Administrator");
@@ -45,7 +52,7 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
 
         User manager = new User();
         manager.setUsername("manager");
-        manager.setPasswordHash(passwordEncoder.encode("manager123"));
+        manager.setPasswordHash(passwordEncoder.encode(managerPassword));
         manager.setEmail("manager@aims.vn");
         manager.setRole("PRODUCT_MANAGER");
         manager.setFullName("Product Manager");

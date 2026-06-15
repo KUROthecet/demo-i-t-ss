@@ -3,6 +3,8 @@ package com.aims.payment;
 import com.aims.enums.PaymentMethod;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class VietQrPaymentHandler implements Payable {
 
@@ -13,6 +15,6 @@ public class VietQrPaymentHandler implements Payable {
 
     @Override
     public String initiate(int totalAmount) {
-        return "";
+        return "VQR-" + UUID.randomUUID().toString().replace("-", "").substring(0, 10).toUpperCase();
     }
 }
