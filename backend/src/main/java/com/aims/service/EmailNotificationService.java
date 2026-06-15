@@ -18,9 +18,16 @@ public class EmailNotificationService implements NotificationService {
     private String fromAddress;
 
     @Override
-    public void sendOrderConfirmation(String to, String name, String orderCode, long totalAmount) {
+    public void sendOrderConfirmation(String to, String name, String orderCode, long totalAmount, String transactionRef) {
         dispatch(to, "Order Confirmed — " + orderCode,
-            templateBuilder.buildOrderConfirmationHtml(name, orderCode, totalAmount));
+            templateBuilder.buildOrderConfirmationHtml(name, orderCode, totalAmount, transactionRef));
+    }
+
+    @Override
+    public void sendPaymentConfirmation(String to, String name, String orderCode, long totalAmount,
+                                         String transactionId, String captureId, String paidAt) {
+        dispatch(to, "Payment Confirmed — " + orderCode,
+            templateBuilder.buildPaymentConfirmationHtml(name, orderCode, totalAmount, transactionId, captureId, paidAt));
     }
 
     @Override

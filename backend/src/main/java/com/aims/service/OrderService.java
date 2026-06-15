@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
+import java.time.LocalDateTime;
 import java.time.Year;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,7 +75,8 @@ public class OrderService {
 
         if (savedOrder.getPaymentMethod() != PaymentMethod.PAYPAL) {
             invoiceService.generateInvoiceFromOrder(savedOrder.getId());
-            notificationService.sendOrderConfirmation(dto.getCustomerEmail(), dto.getCustomerName(), order.getOrderCode(), total);
+            notificationService.sendOrderConfirmation(dto.getCustomerEmail(), dto.getCustomerName(),
+                    order.getOrderCode(), total, savedOrder.getPaymentTransactionId());
         }
 
         historyLogService.log("ORDER_CREATED", savedOrder.getId().toString(), "SYSTEM",
@@ -218,9 +221,11 @@ public class OrderService {
             order.markAsPaid(paypalOrderId, captureId);
             orderRepository.save(order);
             invoiceService.generateInvoiceFromOrder(order.getId());
-            notificationService.sendOrderConfirmation(
+            String paidAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+            notificationService.sendPaymentConfirmation(
                     order.getCustomerEmail(), order.getCustomerName(),
-                    order.getOrderCode(), order.getTotalAmount());
+                    order.getOrderCode(), order.getTotalAmount(),
+                    paypalOrderId, captureId, paidAt);
             historyLogService.log("PAYPAL_CAPTURED", order.getOrderCode(), "SYSTEM",
                     "PayPal capture " + captureId + " confirmed for order " + order.getOrderCode());
         }

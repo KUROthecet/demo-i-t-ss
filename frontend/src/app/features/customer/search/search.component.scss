@@ -455,6 +455,40 @@
       font-weight: 500;
     }
 
+    &__presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 0 4px;
+    }
+
+    &__preset-btn {
+      padding: 6px 14px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      &:hover {
+        border-color: rgba(126, 217, 87, 0.4);
+        background: rgba(126, 217, 87, 0.08);
+        color: #7ED957;
+      }
+
+      &--active {
+        border-color: rgba(126, 217, 87, 0.6);
+        background: rgba(126, 217, 87, 0.15);
+        color: #7ED957;
+        box-shadow: 0 0 12px rgba(126, 217, 87, 0.2);
+      }
+    }
+
     &__apply-btn {
       position: relative;
       z-index: 10;

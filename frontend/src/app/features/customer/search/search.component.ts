@@ -68,8 +68,14 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  readonly categories = ['Book', 'CD', 'DVD', 'Newspaper'];
-  readonly skeletons  = Array(6).fill(0);
+  readonly categories   = ['Book', 'CD', 'DVD', 'Newspaper'];
+  readonly skeletons    = Array(6).fill(0);
+  readonly pricePresets = [
+    { label: 'Under 100k',       min: 0,          max: 100_000   },
+    { label: '100k – 200k',      min: 100_000,    max: 200_000   },
+    { label: '200k – 300k',      min: 200_000,    max: 300_000   },
+    { label: 'Above 300k',       min: 300_000,    max: 0         },
+  ];
 
   private categoryCounts: Record<string, number> = {
     Book: 0, CD: 0, DVD: 0, Newspaper: 0
@@ -212,6 +218,18 @@ export class SearchComponent implements OnInit {
   handleMouseUp(): void {
     this.isDraggingMin = false;
     this.isDraggingMax = false;
+  }
+
+  protected applyPricePreset(min: number, max: number): void {
+    this.minPrice    = min;
+    this.maxPrice    = max === 0 ? this.MAX_PRICE_VALUE : max;
+    this.currentPage = 0;
+    this.doSearch();
+  }
+
+  protected isPresetActive(min: number, max: number): boolean {
+    const effectiveMax = max === 0 ? this.MAX_PRICE_VALUE : max;
+    return this.minPrice === min && this.maxPrice === effectiveMax;
   }
 
   protected getSinValue(index: number): number {

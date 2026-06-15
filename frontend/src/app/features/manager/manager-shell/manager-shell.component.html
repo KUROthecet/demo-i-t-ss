@@ -101,6 +101,13 @@
           </div>
         </div>
       }
+      <button class="sidebar__signout" (click)="openChangePw()" [title]="sidebarCollapsed ? 'Change Password' : ''">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        @if (!sidebarCollapsed) { <span>Change Password</span> }
+      </button>
       <button class="sidebar__signout" (click)="logout()" [title]="sidebarCollapsed ? 'Sign Out' : ''">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -154,3 +161,39 @@
 
   </main>
 </div>
+
+@if (showChangePw) {
+  <div class="cpw-overlay" (click)="closeChangePw()">
+    <div class="cpw-modal" (click)="$event.stopPropagation()">
+      <div class="cpw-modal__header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <h2>Change Password</h2>
+      </div>
+
+      @if (cpSuccess) {
+        <p class="cpw-modal__success">Password changed successfully.</p>
+      } @else {
+        @if (cpError) {
+          <p class="cpw-modal__error">{{ cpError }}</p>
+        }
+        <div class="cpw-modal__field">
+          <label>Current Password</label>
+          <input type="password" [(ngModel)]="cpCurrentPw" placeholder="Enter current password" autocomplete="current-password" />
+        </div>
+        <div class="cpw-modal__field">
+          <label>New Password</label>
+          <input type="password" [(ngModel)]="cpNewPw" placeholder="At least 6 characters" autocomplete="new-password" />
+        </div>
+        <div class="cpw-modal__actions">
+          <button class="cpw-modal__btn cpw-modal__btn--cancel" (click)="closeChangePw()">Cancel</button>
+          <button class="cpw-modal__btn cpw-modal__btn--submit" [disabled]="cpLoading" (click)="submitChangePw()">
+            {{ cpLoading ? 'Saving…' : 'Change Password' }}
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+}

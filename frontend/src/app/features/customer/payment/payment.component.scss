@@ -393,6 +393,14 @@
 
     span { font-size: 0.75rem; font-weight: 600; margin-left: 4px; color: rgba(29, 185, 84, 0.65); }
   }
+
+  &__code {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.55);
+    word-break: break-all;
+    text-align: right;
+  }
 }
 
 .pay-actions {

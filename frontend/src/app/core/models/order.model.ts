@@ -26,6 +26,7 @@ export interface Order {
   rejectionReason: string;
   paymentMethod: 'VIETQR' | 'PAYPAL';
   paymentTransactionId: string;
+  paymentCaptureId: string;
   paymentStatus: 'PENDING' | 'PAID' | 'REFUNDED';
   orderDate: string;
   lastUpdated: string;

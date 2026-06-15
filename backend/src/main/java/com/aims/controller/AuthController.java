@@ -1,5 +1,6 @@
 package com.aims.controller;
 
+import com.aims.dto.request.ChangePasswordDto;
 import com.aims.dto.request.LoginRequestDto;
 import com.aims.dto.response.LoginResponseDto;
 import com.aims.entity.User;
@@ -8,6 +9,7 @@ import com.aims.security.TokenBlacklist;
 import com.aims.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,5 +57,19 @@ public class AuthController {
             }
         }
         return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<Map<String, String>> changePassword(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @Valid @RequestBody ChangePasswordDto dto) {
+        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
+            throw new AccessDeniedException("Authentication required");
+        }
+        String token    = authHeader.substring(7);
+        String username = jwtTokenProvider.getUsernameFromToken(token);
+        User   user     = userService.getUserByUsername(username);
+        userService.changePassword(user.getId(), dto.getCurrentPassword(), dto.getNewPassword());
+        return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
     }
 }

@@ -142,6 +142,14 @@
           <h2 class="pay-details__title">Order Summary</h2>
           <div class="pay-details__rows">
             <div class="pay-details__row">
+              <span class="pay-details__label">Customer</span>
+              <span class="pay-details__value">{{ order.customerName }}</span>
+            </div>
+            <div class="pay-details__row">
+              <span class="pay-details__label">Phone</span>
+              <span class="pay-details__value">{{ order.customerPhone }}</span>
+            </div>
+            <div class="pay-details__row">
               <span class="pay-details__label">Status</span>
               @if (isPaid) {
                 <span class="badge badge--success">Paid</span>
@@ -154,11 +162,33 @@
               <strong class="pay-details__amount">{{ order.totalAmount | vndCurrency }} <span>VND</span></strong>
             </div>
             <div class="pay-details__row">
-              <span class="pay-details__label">Deliver to</span>
-              <span class="pay-details__value">{{ order.deliveryAddress }}, {{ order.province }}</span>
+              <span class="pay-details__label">Province</span>
+              <span class="pay-details__value">{{ order.province }}</span>
             </div>
             <div class="pay-details__row">
-              <span class="pay-details__label">Confirmation sent to</span>
+              <span class="pay-details__label">Address</span>
+              <span class="pay-details__value">{{ order.deliveryAddress }}</span>
+            </div>
+            @if (isPaid && order.paymentTransactionId) {
+              <div class="pay-details__row">
+                <span class="pay-details__label">Transaction ID</span>
+                <code class="pay-details__code">{{ order.paymentTransactionId }}</code>
+              </div>
+            }
+            @if (isPaid && order.paymentCaptureId) {
+              <div class="pay-details__row">
+                <span class="pay-details__label">Transaction Content</span>
+                <code class="pay-details__code">{{ order.paymentCaptureId }}</code>
+              </div>
+            }
+            @if (isPaid && order.lastUpdated) {
+              <div class="pay-details__row">
+                <span class="pay-details__label">Payment Date</span>
+                <span class="pay-details__value">{{ formatDate(order.lastUpdated) }}</span>
+              </div>
+            }
+            <div class="pay-details__row">
+              <span class="pay-details__label">Confirmation to</span>
               <span class="pay-details__value pay-details__value--email">{{ order.customerEmail }}</span>
             </div>
           </div>

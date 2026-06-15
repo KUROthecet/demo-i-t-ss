@@ -53,6 +53,17 @@
             </div>
           </div>
 
+                    <div class="creative-filter__presets">
+            @for (preset of pricePresets; track preset.label) {
+              <button
+                class="creative-filter__preset-btn"
+                [class.creative-filter__preset-btn--active]="isPresetActive(preset.min, preset.max)"
+                (click)="applyPricePreset(preset.min, preset.max)">
+                {{ preset.label }}
+              </button>
+            }
+          </div>
+
                     <div class="creative-filter__vu-meter">
             @for (bar of vuBars; track bar.index) {
               <div

@@ -28,6 +28,7 @@ public class OrderResponseDto {
     private String        rejectionReason;
     private String        paymentMethod;
     private String        paymentTransactionId;
+    private String        paymentCaptureId;
     private String        paymentStatus;
     private LocalDateTime orderDate;
     private LocalDateTime lastUpdated;
@@ -56,6 +57,7 @@ public class OrderResponseDto {
         dto.setRejectionReason(order.getRejectionReason());
         dto.setPaymentMethod(order.getPaymentMethod() != null ? order.getPaymentMethod().name() : null);
         dto.setPaymentTransactionId(order.getPaymentTransactionId());
+        dto.setPaymentCaptureId(order.getPaymentCaptureId());
         dto.setPaymentStatus(order.getPaymentStatus() != null ? order.getPaymentStatus().name() : null);
         dto.setOrderDate(order.getOrderDate());
         dto.setLastUpdated(order.getLastUpdated());
@@ -157,6 +159,9 @@ public class OrderResponseDto {
 
     public String getPaymentTransactionId() { return paymentTransactionId; }
     public void setPaymentTransactionId(String paymentTransactionId) { this.paymentTransactionId = paymentTransactionId; }
+
+    public String getPaymentCaptureId() { return paymentCaptureId; }
+    public void setPaymentCaptureId(String paymentCaptureId) { this.paymentCaptureId = paymentCaptureId; }
 
     public String getPaymentStatus() { return paymentStatus; }
     public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { OrderApiService } from '../../../core/services/order-api.service';
+import { Order } from '../../../core/models/order.model';
 import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 import { loadScript } from '@paypal/paypal-js';
@@ -16,7 +17,7 @@ import { PAYPAL_CLIENT_ID, VIETQR } from '../../../core/config/app.constants';
   styleUrl: './payment.component.scss'
 })
 export class PaymentComponent implements OnInit {
-  protected order: any | null = null;
+  protected order: Order | null = null;
   protected paymentMethod     = '';
   protected paypalCapturing   = false;
   protected paypalDone        = false;
@@ -130,6 +131,10 @@ export class PaymentComponent implements OnInit {
 
   get isPaid(): boolean {
     return this.order?.paymentStatus === 'PAID' || this.paypalDone;
+  }
+
+  formatDate(d: string): string {
+    return new Date(d).toLocaleString('vi-VN');
   }
 
   get vietQrLink(): string {

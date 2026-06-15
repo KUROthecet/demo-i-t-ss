@@ -9,24 +9,56 @@ public class EmailTemplateBuilder {
     @Value("${app.frontend.url:http://localhost:4200}")
     private String frontendUrl;
 
-    public String buildOrderConfirmationHtml(String name, String orderCode, long totalAmount) {
+    public String buildOrderConfirmationHtml(String name, String orderCode, long totalAmount, String transactionRef) {
+        String txRows = (transactionRef != null && !transactionRef.isBlank())
+            ? infoRow("VQR Reference",    "<code style='font-family:monospace;color:#1DB954'>" + transactionRef + "</code>") +
+              infoRow("Transfer Content", "<code style='font-family:monospace;color:rgba(255,255,255,0.7)'>ORDER " + orderCode + "</code>")
+            : "";
         String body =
             "<p style='margin:0 0 24px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8'>" +
-            "Hi <strong style='color:rgba(255,255,255,0.85)'>" + name + "</strong>, your order has been placed " +
-            "and is now pending review by our product team. You'll hear from us shortly once it's approved." +
+            "Hi <strong style='color:rgba(255,255,255,0.85)'>" + name + "</strong>, your order has been placed. " +
+            "Please scan the QR code in your order to complete payment." +
             "</p>" +
             infoBox("#1DB954",
                 infoRow("Order Reference", "<code style='font-family:monospace;color:#1DB954'>" + orderCode + "</code>") +
-                infoRow("Status", badge("PENDING REVIEW", "#f59e0b")) +
-                infoRow("Total", "<strong style='color:#1DB954;font-size:15px'>" +
-                    String.format("%,d", totalAmount).replace(",", ".") + " VND</strong>")
+                infoRow("Status",          badge("PENDING PAYMENT", "#f59e0b")) +
+                infoRow("Total",           "<strong style='color:#1DB954;font-size:15px'>" +
+                    String.format("%,d", totalAmount).replace(",", ".") + " VND</strong>") +
+                txRows
             ) +
             divider() +
             "<p style='margin:0;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.8'>" +
-            "Click the button below to view your order details and track its status." +
+            "Click the button below to view your order and complete payment." +
             "</p>" +
             ctaButton("View my order", frontendUrl + "/order/" + orderCode, "#1DB954", "#000");
         return layout("#1DB954", "Order Confirmed", "Thank you for your purchase. We're on it.", body);
+    }
+
+    public String buildPaymentConfirmationHtml(String name, String orderCode, long totalAmount,
+                                                String transactionId, String captureId, String paidAt) {
+        String captureRow = (captureId != null && !captureId.isBlank())
+            ? infoRow("Capture ID", "<code style='font-family:monospace;color:rgba(255,255,255,0.7)'>" + captureId + "</code>")
+            : "";
+        String body =
+            "<p style='margin:0 0 24px;font-size:14px;color:rgba(255,255,255,0.6);line-height:1.8'>" +
+            "Hi <strong style='color:rgba(255,255,255,0.85)'>" + name + "</strong>, " +
+            "your payment has been received and your order is now pending review by our team." +
+            "</p>" +
+            infoBox("#1DB954",
+                infoRow("Order Reference", "<code style='font-family:monospace;color:#1DB954'>" + orderCode + "</code>") +
+                infoRow("Status",          badge("PAID — PENDING REVIEW", "#1DB954")) +
+                infoRow("Total",           "<strong style='color:#1DB954;font-size:15px'>" +
+                    String.format("%,d", totalAmount).replace(",", ".") + " VND</strong>") +
+                infoRow("Transaction ID",  "<code style='font-family:monospace;color:rgba(255,255,255,0.7)'>" + transactionId + "</code>") +
+                captureRow +
+                infoRow("Payment Date",    "<span style='color:rgba(255,255,255,0.6)'>" + paidAt + "</span>")
+            ) +
+            divider() +
+            "<p style='margin:0;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.8'>" +
+            "Your order will be reviewed shortly. You'll receive another email once it is approved or rejected." +
+            "</p>" +
+            ctaButton("View my order", frontendUrl + "/order/" + orderCode, "#1DB954", "#000");
+        return layout("#1DB954", "Payment Confirmed", "Your payment was received successfully.", body);
     }
 
     public String buildOrderApprovedHtml(String name, String orderCode) {

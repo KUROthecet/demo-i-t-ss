@@ -28,6 +28,13 @@ export class AuthService {
     private readonly router: Router
   ) {}
 
+  changePassword(currentPassword: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}/auth/change-password`, {
+      currentPassword,
+      newPassword
+    });
+  }
+
   login(data: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.baseUrl}/auth/login`, data).pipe(
       tap(this.saveSession.bind(this))

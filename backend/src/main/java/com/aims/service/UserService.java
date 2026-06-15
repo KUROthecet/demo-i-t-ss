@@ -125,6 +125,15 @@ public class UserService {
         return saved;
     }
 
+    public void changePassword(Long userId, String currentPassword, String newPassword) {
+        User user = getUserById(userId);
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+            throw new BusinessException("Current password is incorrect.");
+        }
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
     public User changeRole(Long id, String newRole, String performedBy) {
         User user = getUserById(id);
         String oldRole = user.getRole();
