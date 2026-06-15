@@ -22,6 +22,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
+    private final TokenBlacklist tokenBlacklist;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -29,7 +30,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = extractBearerToken(request);
 
-        if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
+        if (StringUtils.hasText(token)
+                && jwtTokenProvider.validateToken(token)
+                && !tokenBlacklist.contains(token)) {
             String username = jwtTokenProvider.getUsernameFromToken(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 

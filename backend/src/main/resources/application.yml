@@ -12,6 +12,11 @@ spring:
       minimum-idle: 2
       connection-timeout: 30000
 
+  data:
+    redis:
+      url: ${REDIS_URL:redis://localhost:6379}
+      timeout: 2000ms
+
   jpa:
     hibernate:
       ddl-auto: update

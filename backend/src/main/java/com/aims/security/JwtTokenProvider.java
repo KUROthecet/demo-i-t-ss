@@ -69,4 +69,14 @@ public class JwtTokenProvider {
                 .getBody()
                 .get("role");
     }
+
+    public long getRemainingExpiryMs(String token) {
+        Date expiry = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+        return Math.max(0L, expiry.getTime() - System.currentTimeMillis());
+    }
 }

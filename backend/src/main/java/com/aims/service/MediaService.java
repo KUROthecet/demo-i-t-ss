@@ -9,37 +9,61 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class MediaService {
 
+    private static final String RANDOM_CACHE_PREFIX = "media:random:";
+
     private final MediaRepository       mediaRepository;
     private final HistoryLogService     historyLogService;
     private final StockHistoryService   stockHistoryService;
+    private final StringRedisTemplate   redisTemplate;
 
     private static final int MAX_BATCH_DELETE = 10;
     private static final int MAX_DAILY_DELETE = 20;
 
     @Transactional(readOnly = true)
     public List<Media> getRandomMedia(int limit) {
+        String cacheKey = RANDOM_CACHE_PREFIX + limit;
+        String cached   = redisTemplate.opsForValue().get(cacheKey);
+
+        if (cached != null) {
+            List<Long> ids = Arrays.stream(cached.split(","))
+                    .map(Long::parseLong)
+                    .collect(Collectors.toList());
+            List<Media> result = new ArrayList<>(mediaRepository.findAllById(ids));
+            if (!result.isEmpty()) return result;
+        }
+
         List<Media> available = mediaRepository.findByStatus(MediaStatus.ACTIVE)
                 .stream()
                 .filter(Media::isAvailable)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
         Collections.shuffle(available);
-        int end = Math.min(limit, available.size());
-        return new ArrayList<>(available.subList(0, end));
+        List<Media> result = available.subList(0, Math.min(limit, available.size()));
+
+        String idsCsv = result.stream()
+                .map(m -> m.getId().toString())
+                .collect(Collectors.joining(","));
+        redisTemplate.opsForValue().set(cacheKey, idsCsv, 60, TimeUnit.SECONDS);
+
+        return new ArrayList<>(result);
     }
 
     @Transactional(readOnly = true)
