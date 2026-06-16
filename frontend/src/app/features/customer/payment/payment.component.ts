@@ -32,13 +32,14 @@ export class PaymentComponent implements OnInit {
     private readonly orderApi: OrderApiService
   ) {
     const nav   = this.router.getCurrentNavigation();
-    const state = nav?.extras?.state as { orderData: any } | undefined;
+    const state = nav?.extras?.state as { orderData: Order | string } | undefined;
     if (state?.orderData) {
-      this.order         = typeof state.orderData === 'string'
+      const parsedOrder: Order = typeof state.orderData === 'string'
         ? JSON.parse(state.orderData)
         : state.orderData;
-      this.paymentMethod = this.order.paymentMethod;
-      sessionStorage.setItem(PaymentComponent.ORDER_SESSION_KEY, JSON.stringify(this.order));
+      this.order         = parsedOrder;
+      this.paymentMethod = parsedOrder.paymentMethod;
+      sessionStorage.setItem(PaymentComponent.ORDER_SESSION_KEY, JSON.stringify(parsedOrder));
     }
   }
 
@@ -54,9 +55,10 @@ export class PaymentComponent implements OnInit {
       if (!restored) {
         this.loading = true;
         try {
-          this.order         = await lastValueFrom(this.orderApi.getOrderById(orderId));
-          this.paymentMethod = this.order.paymentMethod;
-          sessionStorage.setItem(PaymentComponent.ORDER_SESSION_KEY, JSON.stringify(this.order));
+          const fetchedOrder = await lastValueFrom(this.orderApi.getOrderById(orderId));
+          this.order         = fetchedOrder;
+          this.paymentMethod = fetchedOrder.paymentMethod;
+          sessionStorage.setItem(PaymentComponent.ORDER_SESSION_KEY, JSON.stringify(fetchedOrder));
         } catch {
           this.router.navigate(['/home']);
           return;
@@ -66,10 +68,13 @@ export class PaymentComponent implements OnInit {
       }
     }
 
+    const order = this.order;
+    if (!order) return;
+
     if (
       this.paymentMethod === 'PAYPAL' &&
-      this.order.paymentStatus === 'PENDING' &&
-      this.order.paymentTransactionId
+      order.paymentStatus === 'PENDING' &&
+      order.paymentTransactionId
     ) {
       await this.initPaypalContinueButton();
     }
@@ -79,10 +84,10 @@ export class PaymentComponent implements OnInit {
     const stored = sessionStorage.getItem(PaymentComponent.ORDER_SESSION_KEY);
     if (!stored) return false;
     try {
-      const parsed = JSON.parse(stored);
+      const parsed: Order = JSON.parse(stored);
       if (parsed.id === orderId) {
         this.order         = parsed;
-        this.paymentMethod = this.order.paymentMethod;
+        this.paymentMethod = parsed.paymentMethod;
         return true;
       }
     } catch {
@@ -92,15 +97,19 @@ export class PaymentComponent implements OnInit {
   }
 
   private async onPaypalContinueCreateOrder(_data: any, _actions: any): Promise<string> {
+    if (!this.order) throw new Error('Order not loaded');
     return this.order.paymentTransactionId;
   }
 
   private async onPaypalContinueApprove(data: any, _actions: any): Promise<void> {
+    const currentOrder = this.order;
+    if (!currentOrder) return;
+
     this.paypalCapturing = true;
     this.paypalError     = '';
     try {
       await lastValueFrom(this.orderApi.captureOrder(data.orderID));
-      this.order      = { ...this.order, paymentStatus: 'PAID' };
+      this.order      = { ...currentOrder, paymentStatus: 'PAID' };
       this.paypalDone = true;
       sessionStorage.removeItem(PaymentComponent.ORDER_SESSION_KEY);
     } catch {
