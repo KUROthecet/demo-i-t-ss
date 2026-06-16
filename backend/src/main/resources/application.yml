@@ -48,7 +48,7 @@ server:
 
 app:
   jwt:
-    secret: ${JWT_SECRET:AIMSShopSecretKeyForJWTTokenGeneration2026MustBe256BitsLong!}
+    secret: ${JWT_SECRET}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   frontend:
     url: ${FRONTEND_URL:http://localhost:4200}
@@ -67,13 +67,13 @@ logging:
 
 paypal:
   client:
-    id: ${PAYPAL_CLIENT_ID:AS80_ZkaQeM3a3jW8ymmla5sNV-j0j5wiyh2nvRfhtFn5x1dFZ26UgpWL7yB6eJMW-FUc1-3LQr3LRVB}
-    secret: ${PAYPAL_CLIENT_SECRET:EKuym3PlkXCGFh42z5PqEexVgxkj7fOGKW94YM0aA0gVqQNglqIvm3-ul0ibcY5_02uqaw-OTtmHCtqX}
+    id: ${PAYPAL_CLIENT_ID}
+    secret: ${PAYPAL_CLIENT_SECRET}
   api:
     url: https://api-m.sandbox.paypal.com
   vnd-to-usd-rate: 25000
 
 cloudinary:
-  cloud_name: ${CLOUDINARY_CLOUD_NAME:dlm4q57tz}
-  api_key: ${CLOUDINARY_API_KEY:243414491124122}
-  api_secret: ${CLOUDINARY_API_SECRET:KCwmgHgBrqvunuCLXwtGSytKGRM}
+  cloud_name: ${CLOUDINARY_CLOUD_NAME}
+  api_key: ${CLOUDINARY_API_KEY}
+  api_secret: ${CLOUDINARY_API_SECRET}

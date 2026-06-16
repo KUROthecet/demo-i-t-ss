@@ -5,6 +5,16 @@ echo "AIMS Shop - One-Click Start Script"
 echo "======================================================="
 echo
 
+if [ -f .env ]; then
+    set -a
+    source .env
+    set +a
+else
+    echo "ERROR: .env not found."
+    echo "  Copy .env.example to .env and fill in real values first."
+    exit 1
+fi
+
 echo "[1/3] Starting Infrastructure (PostgreSQL, Redis)..."
 if docker compose version &>/dev/null 2>&1; then
     docker compose up -d
