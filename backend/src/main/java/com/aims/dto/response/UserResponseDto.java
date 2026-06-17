@@ -2,12 +2,14 @@ package com.aims.dto.response;
 
 import com.aims.entity.User;
 
+import java.util.Set;
+
 public class UserResponseDto {
 
     private Long   id;
     private String username;
     private String email;
-    private String role;
+    private Set<String> roles;
     private String status;
     private String fullName;
     private String phone;
@@ -21,7 +23,7 @@ public class UserResponseDto {
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
-        dto.setRole(user.getRole());
+        dto.setRoles(user.getRoles());
         dto.setStatus(user.getStatus());
         dto.setFullName(user.getFullName());
         dto.setPhone(user.getPhone());
@@ -39,8 +41,8 @@ public class UserResponseDto {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Set<String> getRoles() { return roles; }
+    public void setRoles(Set<String> roles) { this.roles = roles; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

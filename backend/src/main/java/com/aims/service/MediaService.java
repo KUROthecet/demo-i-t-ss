@@ -88,6 +88,12 @@ public class MediaService {
     }
 
     @Transactional(readOnly = true)
+    public Map<String, Integer> getPriceRange() {
+        int max = mediaRepository.findMaxPrice().orElse(10_000_000);
+        return Map.of("minPrice", 0, "maxPrice", max);
+    }
+
+    @Transactional(readOnly = true)
     public Map<String, Long> getCatalogStats() {
         Map<String, Long> stats = new HashMap<>();
         List<Object[]> results = mediaRepository.countByCategory();

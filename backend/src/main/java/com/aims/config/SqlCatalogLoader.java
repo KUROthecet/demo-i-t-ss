@@ -92,13 +92,13 @@ public class SqlCatalogLoader {
             int    qty      = meta != null && meta.quantity()      > 0   ? meta.quantity()                : stock(barcode);
 
             media.add(new Object[]{barcode, title, "Book", orig, curr, desc, imageUrl, qty, rushDelivery(barcode)});
-            sub.add(new Object[]{author, cover, pubDate, pub, genre, lang, pages, bookDims(pages), bookWeight(pages), barcode});
+            sub.add(new Object[]{author, cover, pubDate, pub, genre, lang, pages, 21.0, 14.0, bookDepthCm(pages), bookWeight(pages), barcode});
         }
 
         batchMedia(media);
         batchExec(
-            "INSERT INTO book (id,author,cover_type,publication_date,publisher,genre,language,number_of_pages,dimensions,weight) " +
-            "SELECT m.id,?,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
+            "INSERT INTO book (id,author,cover_type,publication_date,publisher,genre,language,number_of_pages,height_cm,width_cm,length_cm,weight) " +
+            "SELECT m.id,?,?,?,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
             sub
         );
         log.info("SqlCatalogLoader: {} book rows processed", p.rows().size());
@@ -109,8 +109,9 @@ public class SqlCatalogLoader {
         if (p == null) return;
         Map<String, Integer> idx = buildIndex(p.columns());
 
-        List<Object[]> media = new ArrayList<>(p.rows().size());
-        List<Object[]> sub   = new ArrayList<>(p.rows().size());
+        List<Object[]> media      = new ArrayList<>(p.rows().size());
+        List<Object[]> sub        = new ArrayList<>(p.rows().size());
+        List<Object[]> trackRows  = new ArrayList<>(p.rows().size());
 
         for (List<String> row : p.rows()) {
             String barcode = col(row, idx, "productId");
@@ -131,14 +132,22 @@ public class SqlCatalogLoader {
             int    qty      = meta != null && meta.quantity()      > 0   ? meta.quantity()           : stock(barcode);
 
             media.add(new Object[]{barcode, title, "CD", orig, curr, desc, imageUrl, qty, true});
-            sub.add(new Object[]{artist, genre, label, tracks, relDate, "14×12×0.5 cm", 0.1, barcode});
+            sub.add(new Object[]{artist, genre, label, relDate, 14.0, 12.0, 0.5, 0.1, barcode});
+            if (tracks != null && !tracks.isBlank()) {
+                trackRows.add(new Object[]{trunc(tracks, 255), barcode});
+            }
         }
 
         batchMedia(media);
         batchExec(
-            "INSERT INTO cd (id,artist,genre,record_label,track_list,release_date,dimensions,weight) " +
-            "SELECT m.id,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
+            "INSERT INTO cd (id,artist,genre,record_label,release_date,height_cm,width_cm,length_cm,weight) " +
+            "SELECT m.id,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
             sub
+        );
+        batchExec(
+            "INSERT INTO cd_track (cd_id,title,length,track_order) " +
+            "SELECT m.id,?,'',0 FROM media m WHERE m.barcode=? ON CONFLICT (cd_id,track_order) DO NOTHING",
+            trackRows
         );
         log.info("SqlCatalogLoader: {} CD rows processed", p.rows().size());
     }
@@ -175,13 +184,13 @@ public class SqlCatalogLoader {
             int    qty      = meta != null && meta.quantity()      > 0   ? meta.quantity()                : stock(barcode);
 
             media.add(new Object[]{barcode, title, "DVD", orig, curr, desc, imageUrl, qty, rush});
-            sub.add(new Object[]{director, disc, lang, runtime, studio, subs, genre, relDate, "19×13×1.5 cm", 0.15, barcode});
+            sub.add(new Object[]{director, disc, lang, runtime, studio, subs, genre, relDate, 19.0, 13.0, 1.5, 0.15, barcode});
         }
 
         batchMedia(media);
         batchExec(
-            "INSERT INTO dvd (id,director,disc_type,language,runtime_minutes,studio,subtitles,genre,release_date,dimensions,weight) " +
-            "SELECT m.id,?,?,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
+            "INSERT INTO dvd (id,director,disc_type,language,runtime_minutes,studio,subtitles,genre,release_date,height_cm,width_cm,length_cm,weight) " +
+            "SELECT m.id,?,?,?,?,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
             sub
         );
         log.info("SqlCatalogLoader: {} DVD rows processed", p.rows().size());
@@ -216,14 +225,14 @@ public class SqlCatalogLoader {
             int    qty      = meta != null && meta.quantity()      > 0   ? meta.quantity()           : stock(barcode);
 
             media.add(new Object[]{barcode, title, "Newspaper", orig, curr, desc, imageUrl, qty, false});
-            sub.add(new Object[]{editor, pubDate, pub, issn, issueNum, lang, "Daily", sections, "40×30×0.2 cm", 0.3, barcode});
+            sub.add(new Object[]{editor, pubDate, pub, issn, issueNum, lang, "Daily", sections, 40.0, 30.0, 0.2, 0.3, barcode});
         }
 
         batchMedia(media);
         batchExec(
             "INSERT INTO newspaper " +
-            "(id,editor_in_chief,publication_date,publisher,issn,issue_number,language,publication_frequency,sections,dimensions,weight) " +
-            "SELECT m.id,?,?,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
+            "(id,editor_in_chief,publication_date,publisher,issn,issue_number,language,publication_frequency,sections,height_cm,width_cm,length_cm,weight) " +
+            "SELECT m.id,?,?,?,?,?,?,?,?,?,?,?,? FROM media m WHERE m.barcode=? ON CONFLICT (id) DO NOTHING",
             sub
         );
         log.info("SqlCatalogLoader: {} Newspaper rows processed", p.rows().size());
@@ -434,9 +443,9 @@ public class SqlCatalogLoader {
         return Math.round((0.05 + pages * 0.001) * 100.0) / 100.0;
     }
 
-    private String bookDims(Integer pages) {
-        if (pages == null || pages <= 0) return "21×14×2 cm";
-        return "21×14×" + Math.max(1, pages / 150) + " cm";
+    private double bookDepthCm(Integer pages) {
+        if (pages == null || pages <= 0) return 2.0;
+        return Math.max(1, pages / 150);
     }
 
     private String bookTitle(String author, String genre) {

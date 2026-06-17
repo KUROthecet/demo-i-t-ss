@@ -27,13 +27,13 @@ public class JwtTokenProvider {
     }
 
     public String generateToken(UserDetails userDetails) {
-        String role = userDetails.getAuthorities().stream()
+        String roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-                .claim("role", role)
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -59,15 +59,6 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-    }
-
-    public String getRoleFromToken(String token) {
-        return (String) Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("role");
     }
 
     public long getRemainingExpiryMs(String token) {

@@ -10,9 +10,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +61,7 @@ public class UserService {
         user.setUsername(dto.getUsername());
         user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
         user.setEmail(dto.getEmail());
-        user.setRole(dto.getRole());
+        user.setRoles(dto.getRoles());
         user.setFullName(dto.getFullName());
         user.setPhone(dto.getPhone());
         user.setAvatarUrl(dto.getAvatarUrl());
@@ -134,15 +136,15 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User changeRole(Long id, String newRole, String performedBy) {
+    public User updateRoles(Long id, Set<String> newRoles, String performedBy) {
         User user = getUserById(id);
-        String oldRole = user.getRole();
-        user.changeRole(newRole);
+        Set<String> oldRoles = new HashSet<>(user.getRoles());
+        user.setRoles(newRoles);
         User saved = userRepository.save(user);
-        historyLogService.log("USER_ROLE_CHANGED", user.getUsername(), performedBy,
-                "User '" + user.getUsername() + "' role changed: " + oldRole + " → " + newRole);
+        historyLogService.log("USER_ROLES_CHANGED", user.getUsername(), performedBy,
+                "User '" + user.getUsername() + "' roles changed: " + oldRoles + " → " + newRoles);
         if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            notificationService.sendRoleChanged(user.getEmail(), user.getUsername(), newRole);
+            notificationService.sendRoleChanged(user.getEmail(), user.getUsername(), String.join(", ", newRoles));
         }
         return saved;
     }

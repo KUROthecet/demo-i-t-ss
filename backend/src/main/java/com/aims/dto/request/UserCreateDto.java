@@ -1,6 +1,9 @@
 package com.aims.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
+import java.util.Set;
 
 public class UserCreateDto {
 
@@ -13,8 +16,8 @@ public class UserCreateDto {
     @NotBlank(message = "Email must not be blank")
     private String email;
 
-    @NotBlank(message = "Role must not be blank")
-    private String role;
+    @NotEmpty(message = "At least one role must be assigned")
+    private Set<String> roles;
 
     private String fullName;
     private String phone;
@@ -31,8 +34,8 @@ public class UserCreateDto {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public Set<String> getRoles() { return roles; }
+    public void setRoles(Set<String> roles) { this.roles = roles; }
 
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }

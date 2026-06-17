@@ -64,7 +64,9 @@
                 <td class="admin-table__muted">{{ user.email }}</td>
                 <td class="admin-table__muted">{{ user.phone || '—' }}</td>
                 <td>
-                  <span class="role-pill" [class.role-pill--admin]="user.role === 'ADMIN'">{{ user.role }}</span>
+                  @for (role of user.roles; track role) {
+                    <span class="role-pill" [class.role-pill--admin]="role === 'ADMIN'">{{ role }}</span>
+                  }
                 </td>
                 <td>
                   <div class="user-status">
@@ -173,15 +175,20 @@
             <input type="tel" [(ngModel)]="createForm.phone" placeholder="0901 234 567" />
           </div>
           <div class="form-group-premium">
-            <label>Role <span class="text-danger">*</span></label>
-            <div class="select-wrapper">
-              <select [(ngModel)]="createForm.role">
-                <option value="PRODUCT_MANAGER">Product Manager</option>
-                <option value="ADMIN">Admin</option>
-              </select>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
+            <label>Roles <span class="text-danger">*</span></label>
+            <div class="role-checkbox-group">
+              <label class="role-checkbox">
+                <input type="checkbox"
+                       [checked]="createForm.roles.includes('PRODUCT_MANAGER')"
+                       (change)="toggleCreateRole('PRODUCT_MANAGER')" />
+                Product Manager
+              </label>
+              <label class="role-checkbox">
+                <input type="checkbox"
+                       [checked]="createForm.roles.includes('ADMIN')"
+                       (change)="toggleCreateRole('ADMIN')" />
+                Admin
+              </label>
             </div>
           </div>
         </div>
@@ -254,7 +261,7 @@
             <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
           </svg>
         </div>
-        <h2 class="modal__title">Change Role</h2>
+        <h2 class="modal__title">Change Roles</h2>
         <button class="modal__close" (click)="showRoleModal = false">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -263,21 +270,26 @@
       </div>
       <div class="modal__body">
         <div class="form-group">
-          <label class="form-group__label">New Role</label>
-          <div class="form-group">
-            <select class="form-group__select" [(ngModel)]="newRole">
-              <option value="PRODUCT_MANAGER">Product Manager</option>
-              <option value="ADMIN">Admin</option>
-            </select>
-            <svg class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="6 9 12 15 18 9"/>
-            </svg>
+          <label class="form-group__label">Roles</label>
+          <div class="role-checkbox-group">
+            <label class="role-checkbox">
+              <input type="checkbox"
+                     [checked]="selectedRoles.includes('PRODUCT_MANAGER')"
+                     (change)="toggleSelectedRole('PRODUCT_MANAGER')" />
+              Product Manager
+            </label>
+            <label class="role-checkbox">
+              <input type="checkbox"
+                     [checked]="selectedRoles.includes('ADMIN')"
+                     (change)="toggleSelectedRole('ADMIN')" />
+              Admin
+            </label>
           </div>
         </div>
       </div>
       <div class="modal__footer">
         <button class="btn btn--ghost" (click)="showRoleModal = false">Cancel</button>
-        <button class="btn btn--primary" style="background:#60A5FA;color:#000;" (click)="confirmChangeRole()">Update Role</button>
+        <button class="btn btn--primary" style="background:#60A5FA;color:#000;" (click)="confirmChangeRole()">Update Roles</button>
       </div>
     </div>
   </div>

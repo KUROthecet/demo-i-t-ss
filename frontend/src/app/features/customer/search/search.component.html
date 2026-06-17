@@ -48,9 +48,6 @@
               <div class="creative-filter__header-line"></div>
               <h3 class="creative-filter__title">Price Range</h3>
             </div>
-                        <div class="creative-filter__indicator">
-              <span class="creative-filter__indicator-text">Active</span>
-            </div>
           </div>
 
                     <div class="creative-filter__presets">
@@ -72,7 +69,7 @@
                 [class.creative-filter__vu-bar--green]="bar.index < 14"
                 [class.creative-filter__vu-bar--yellow]="bar.index >= 14 && bar.index < 17"
                 [class.creative-filter__vu-bar--red]="bar.index >= 17"
-                [style.height]="(20 + getSinValue(bar.index) * 15) + '%'"
+                [style.height]="bar.height + '%'"
               ></div>
             }
           </div>

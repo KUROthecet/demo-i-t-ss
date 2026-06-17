@@ -1,8 +1,10 @@
+export type UserRole = 'ADMIN' | 'PRODUCT_MANAGER';
+
 export interface User {
   id: number;
   username: string;
   email: string;
-  role: 'ADMIN' | 'PRODUCT_MANAGER';
+  roles: UserRole[];
   status: 'ACTIVE' | 'BLOCKED' | 'DEACTIVATED';
   fullName: string;
   phone: string;
@@ -19,7 +21,7 @@ export interface LoginResponse {
   token: string;
   userId: number;
   username: string;
-  role: 'ADMIN' | 'PRODUCT_MANAGER';
+  roles: UserRole[];
   fullName: string;
   avatarUrl?: string;
 }
@@ -28,7 +30,7 @@ export interface UserCreateRequest {
   username: string;
   password: string;
   email: string;
-  role: 'ADMIN' | 'PRODUCT_MANAGER';
+  roles: UserRole[];
   fullName: string;
   phone: string;
   avatarUrl?: string;

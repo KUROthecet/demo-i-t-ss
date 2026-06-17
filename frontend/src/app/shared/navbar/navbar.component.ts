@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { filter } from 'rxjs';
 import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/services/auth.service';
+import { UserRole } from '../../core/models/user.model';
 
-const ROLE_DASHBOARD_MAP: Record<string, string> = {
-  ADMIN:           '/admin/dashboard',
-  PRODUCT_MANAGER: '/manager/dashboard'
-};
+const ROLE_PRIORITY: { role: UserRole; dashboard: string }[] = [
+  { role: 'ADMIN',           dashboard: '/admin/dashboard' },
+  { role: 'PRODUCT_MANAGER', dashboard: '/manager/dashboard' }
+];
 
 @Component({
   selector: 'app-navbar',
@@ -116,11 +117,11 @@ export class NavbarComponent implements AfterViewInit {
   }
 
   goToDashboard(): void {
-    const role  = this.currentUser()?.role ?? '';
-    const route = ROLE_DASHBOARD_MAP[role];
+    const roles = this.currentUser()?.roles ?? [];
+    const match = ROLE_PRIORITY.find(entry => roles.includes(entry.role));
     this.showUserMenu = false;
-    if (route) {
-      this.router.navigate([route]);
+    if (match) {
+      this.router.navigate([match.dashboard]);
     }
   }
 }

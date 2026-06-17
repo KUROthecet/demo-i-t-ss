@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterLink, Params } from '@angular/router';
 import { UserApiService } from '../../../core/services/user-api.service';
 import { MediaApiService } from '../../../core/services/media-api.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { User, UserCreateRequest } from '../../../core/models/user.model';
+import { User, UserCreateRequest, UserRole } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-user-management',
@@ -24,7 +24,7 @@ export class UserManagementComponent implements OnInit {
   showCreateModal = false;
   creating        = false;
   uploadingAvatar = false;
-  createForm: UserCreateRequest = { username: '', password: '', email: '', role: 'PRODUCT_MANAGER', fullName: '', phone: '', avatarUrl: '' };
+  createForm: UserCreateRequest = { username: '', password: '', email: '', roles: ['PRODUCT_MANAGER'], fullName: '', phone: '', avatarUrl: '' };
 
   showBlockModal   = false;
   blockingUserId: number | null = null;
@@ -33,10 +33,10 @@ export class UserManagementComponent implements OnInit {
 
   showRoleModal    = false;
   roleUserId: number | null = null;
-  newRole: 'ADMIN' | 'PRODUCT_MANAGER' = 'PRODUCT_MANAGER';
+  selectedRoles: UserRole[] = [];
 
   private static readonly EMPTY_CREATE_FORM: UserCreateRequest = {
-    username: '', password: '', email: '', role: 'PRODUCT_MANAGER', fullName: '', phone: '', avatarUrl: ''
+    username: '', password: '', email: '', roles: ['PRODUCT_MANAGER'], fullName: '', phone: '', avatarUrl: ''
   };
 
   constructor(
@@ -77,6 +77,10 @@ export class UserManagementComponent implements OnInit {
   }
 
   createUser(): void {
+    if (this.createForm.roles.length === 0) {
+      this.error = 'Select at least one role.';
+      return;
+    }
     this.creating = true;
     this.userApi.createUser(this.createForm).subscribe({
       next:  this.onUserCreated.bind(this),
@@ -201,12 +205,34 @@ export class UserManagementComponent implements OnInit {
 
   openRoleModal(user: User): void {
     this.roleUserId    = user.id;
-    this.newRole       = user.role === 'ADMIN' ? 'PRODUCT_MANAGER' : 'ADMIN';
+    this.selectedRoles = [...user.roles];
     this.showRoleModal = true;
   }
 
+  toggleSelectedRole(role: UserRole): void {
+    const idx = this.selectedRoles.indexOf(role);
+    if (idx === -1) {
+      this.selectedRoles.push(role);
+    } else {
+      this.selectedRoles.splice(idx, 1);
+    }
+  }
+
+  toggleCreateRole(role: UserRole): void {
+    const idx = this.createForm.roles.indexOf(role);
+    if (idx === -1) {
+      this.createForm.roles.push(role);
+    } else {
+      this.createForm.roles.splice(idx, 1);
+    }
+  }
+
   confirmChangeRole(): void {
-    this.userApi.changeUserRole(this.roleUserId!, this.newRole).subscribe({
+    if (this.selectedRoles.length === 0) {
+      this.error = 'Select at least one role.';
+      return;
+    }
+    this.userApi.updateUserRoles(this.roleUserId!, this.selectedRoles).subscribe({
       next:  this.onRoleChanged.bind(this),
       error: this.onRoleChangeError.bind(this)
     });

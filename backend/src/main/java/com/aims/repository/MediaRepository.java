@@ -45,6 +45,9 @@ public interface MediaRepository extends JpaRepository<Media, Long> {
     @Query("SELECT m.category, COUNT(m) FROM Media m WHERE m.status = com.aims.enums.MediaStatus.ACTIVE GROUP BY m.category")
     List<Object[]> countByCategory();
 
+    @Query("SELECT MAX(m.currentPrice) FROM Media m WHERE m.status = com.aims.enums.MediaStatus.ACTIVE AND m.quantityInStock > 0")
+    Optional<Integer> findMaxPrice();
+
     List<Media> findByStatus(MediaStatus status);
 
     Optional<Media> findByBarcode(String barcode);

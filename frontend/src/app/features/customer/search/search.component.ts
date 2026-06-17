@@ -29,26 +29,25 @@ import { ProductCardComponent } from '../../../shared/product-card/product-card.
   styleUrl: './search.component.scss'
 })
 export class SearchComponent implements OnInit {
-  protected query              = '';
-  protected minPrice           = 0;
-  protected maxPrice           = 10_000_000;
+  protected query               = '';
+  protected minPrice            = 0;
+  protected maxPrice            = 10_000_000;
   protected selectedCategories: string[] = [];
-  protected results: Media[]   = [];
-  protected loading            = false;
-  protected searched           = false;
+  protected results: Media[]    = [];
+  protected loading             = false;
+  protected searched            = false;
   protected sortOrder: 'asc' | 'desc' | '' = '';
-  protected error              = '';
+  protected error               = '';
 
-  protected currentPage = 0;
-  protected pageSize = 20;
-  protected totalPages = 0;
+  protected currentPage         = 0;
+  protected pageSize            = 20;
+  protected totalPages          = 0;
   protected totalFilteredElements = 0;
 
-  protected isDraggingMin = false;
-  protected isDraggingMax = false;
+  protected isDraggingMin       = false;
+  protected isDraggingMax       = false;
 
-  protected MAX_PRICE_VALUE = 10_000_000;
-  readonly PRICE_STEP       = 100_000;
+  protected MAX_PRICE_VALUE     = 10_000_000;
 
   @ViewChild('sliderRef') sliderRef!: ElementRef<HTMLDivElement>;
 
@@ -60,22 +59,61 @@ export class SearchComponent implements OnInit {
     return (this.maxPrice / this.MAX_PRICE_VALUE) * 100;
   }
 
-  protected get vuBars(): Array<{ isActive: boolean; index: number }> {
+  private allPrices: number[]     = [];
+  private priceBuckets: number[]  = Array(20).fill(0);
+
+  protected get vuBars(): Array<{ isActive: boolean; index: number; height: number }> {
+    const maxCount = Math.max(1, ...this.priceBuckets);
     return Array.from({ length: 20 }, (_, i) => {
       const barPercent = (i / 19) * 100;
-      const isActive = barPercent >= this.minPercent && barPercent <= this.maxPercent;
-      return { isActive, index: i };
+      const isActive   = barPercent >= this.minPercent && barPercent <= this.maxPercent;
+      const height     = 10 + (this.priceBuckets[i] / maxCount) * 90;
+      return { isActive, index: i, height };
     });
   }
 
-  readonly categories   = ['Book', 'CD', 'DVD', 'Newspaper'];
-  readonly skeletons    = Array(6).fill(0);
-  readonly pricePresets = [
-    { label: 'Under 100k',       min: 0,          max: 100_000   },
-    { label: '100k – 200k',      min: 100_000,    max: 200_000   },
-    { label: '200k – 300k',      min: 200_000,    max: 300_000   },
-    { label: 'Above 300k',       min: 300_000,    max: 0         },
-  ];
+  protected get pricePresets(): { label: string; min: number; max: number }[] {
+    const step   = this.priceStep;
+    const bucket = Math.ceil(this.MAX_PRICE_VALUE / 4 / step) * step;
+    return [
+      { label: `Under ${this.formatCompact(bucket)}`,                                          min: 0,          max: bucket },
+      { label: `${this.formatCompact(bucket)} – ${this.formatCompact(bucket * 2)}`,            min: bucket,     max: bucket * 2 },
+      { label: `${this.formatCompact(bucket * 2)} – ${this.formatCompact(bucket * 3)}`,        min: bucket * 2, max: bucket * 3 },
+      { label: `Above ${this.formatCompact(bucket * 3)}`,                                      min: bucket * 3, max: 0 },
+    ];
+  }
+
+  private get priceStep(): number {
+    const raw       = this.MAX_PRICE_VALUE / 20;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(Math.max(1, raw))));
+    const n         = raw / magnitude;
+    if (n <= 1) return magnitude;
+    if (n <= 2) return 2 * magnitude;
+    if (n <= 5) return 5 * magnitude;
+    return 10 * magnitude;
+  }
+
+  private formatCompact(value: number): string {
+    if (value >= 1_000_000) {
+      const m = value / 1_000_000;
+      return (Number.isInteger(m) ? String(m) : m.toFixed(1)) + 'M';
+    }
+    if (value >= 1_000) return Math.round(value / 1_000) + 'k';
+    return value.toLocaleString();
+  }
+
+  private computePriceHistogram(): void {
+    const buckets = Array(20).fill(0);
+    const max     = this.MAX_PRICE_VALUE;
+    for (const price of this.allPrices) {
+      const idx = Math.min(19, Math.floor((price / max) * 20));
+      buckets[idx]++;
+    }
+    this.priceBuckets = buckets;
+  }
+
+  readonly categories = ['Book', 'CD', 'DVD', 'Newspaper'];
+  readonly skeletons  = Array(6).fill(0);
 
   private categoryCounts: Record<string, number> = {
     Book: 0, CD: 0, DVD: 0, Newspaper: 0
@@ -91,26 +129,36 @@ export class SearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.mediaApi.getCatalogStats().subscribe(stats => {
-      if (stats) {
-        this.categoryCounts = stats;
+      if (stats) this.categoryCounts = stats;
+    });
+
+    this.mediaApi.getPriceRange().subscribe(range => {
+      if (range?.maxPrice > 0) {
+        const highest    = range.maxPrice;
+        const buffer     = Math.max(highest * 0.2, 200_000);
+        const newMax     = Math.ceil((highest + buffer) / 100_000) * 100_000;
+        const wasAtMax   = this.maxPrice >= this.MAX_PRICE_VALUE;
+        this.MAX_PRICE_VALUE = newMax;
+        if (wasAtMax) this.maxPrice = newMax;
+        this.computePriceHistogram();
       }
     });
 
-    this.mediaApi.getProducts(1000).subscribe(products => {
+    this.mediaApi.getProducts(300).subscribe(products => {
       if (products?.length > 0) {
-        const highestPrice       = Math.max(...products.map(p => p.currentPrice || 0));
-        this.MAX_PRICE_VALUE     = highestPrice + 2_000_000;
-        this.maxPrice            = this.MAX_PRICE_VALUE;
+        this.allPrices = products.map(p => p.currentPrice || 0).filter(p => p > 0);
+        this.computePriceHistogram();
       }
-      this.route.queryParams.subscribe(params => {
-        this.query = params['q'] ?? '';
-        if (params['category']) {
-          this.selectedCategories = params['category'].split(',');
-        } else {
-          this.selectedCategories = [];
-        }
-        this.doSearch();
-      });
+    });
+
+    this.route.queryParams.subscribe(params => {
+      this.query = params['q'] ?? '';
+      if (params['category']) {
+        this.selectedCategories = params['category'].split(',');
+      } else {
+        this.selectedCategories = [];
+      }
+      this.doSearch();
     });
   }
 
@@ -132,26 +180,25 @@ export class SearchComponent implements OnInit {
 
   protected doSearch(): void {
     this.loading = true;
-    this.error = '';
+    this.error   = '';
 
-    this.mediaApi.searchProducts(this.query, this.selectedCategories, this.minPrice, this.maxPrice, this.currentPage, this.pageSize).subscribe({
+    this.mediaApi.searchProducts(
+      this.query, this.selectedCategories, this.minPrice, this.maxPrice,
+      this.currentPage, this.pageSize
+    ).subscribe({
       next: (res: any) => {
-        this.results = res.content;
+        this.results               = res.content;
         this.totalFilteredElements = res.totalElements;
-        this.totalPages = res.totalPages;
-        
+        this.totalPages            = res.totalPages;
+        this.sortResults();
         this.searched = true;
-        this.loading = false;
+        this.loading  = false;
 
         const queryParams: Record<string, string> = {};
         if (this.query) queryParams['q'] = this.query;
         if (this.selectedCategories.length > 0) queryParams['category'] = this.selectedCategories.join(',');
 
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams,
-          replaceUrl: true
-        });
+        this.router.navigate([], { relativeTo: this.route, queryParams, replaceUrl: true });
       },
       error: () => {
         this.results = [];
@@ -184,6 +231,7 @@ export class SearchComponent implements OnInit {
     this.maxPrice           = this.MAX_PRICE_VALUE;
     this.selectedCategories = [];
     this.sortOrder          = '';
+    this.currentPage        = 0;
     this.doSearch();
   }
 
@@ -205,19 +253,25 @@ export class SearchComponent implements OnInit {
 
     const rect    = this.sliderRef.nativeElement.getBoundingClientRect();
     const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-    const value   = Math.round((percent / 100) * this.MAX_PRICE_VALUE / this.PRICE_STEP) * this.PRICE_STEP;
+    const step    = this.priceStep;
+    const value   = Math.round((percent / 100) * this.MAX_PRICE_VALUE / step) * step;
 
     if (this.isDraggingMin) {
-      this.minPrice = Math.min(value, this.maxPrice - this.PRICE_STEP);
+      this.minPrice = Math.min(value, this.maxPrice - step);
     } else if (this.isDraggingMax) {
-      this.maxPrice = Math.max(value, this.minPrice + this.PRICE_STEP);
+      this.maxPrice = Math.max(value, this.minPrice + step);
     }
   }
 
   @HostListener('document:mouseup')
   handleMouseUp(): void {
+    const wasDragging = this.isDraggingMin || this.isDraggingMax;
     this.isDraggingMin = false;
     this.isDraggingMax = false;
+    if (wasDragging) {
+      this.currentPage = 0;
+      this.doSearch();
+    }
   }
 
   protected applyPricePreset(min: number, max: number): void {
@@ -232,12 +286,7 @@ export class SearchComponent implements OnInit {
     return this.minPrice === min && this.maxPrice === effectiveMax;
   }
 
-  protected getSinValue(index: number): number {
-    return Math.sin(index * 0.5);
-  }
-
   protected getSubtitle(media: Media): string {
     return this.mediaDisplay.getSubtitle(media);
   }
-
 }

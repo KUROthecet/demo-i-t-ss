@@ -6,11 +6,17 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 @Data
 @NoArgsConstructor
 public class User {
+
+    public static final String ROLE_ADMIN           = "ADMIN";
+    public static final String ROLE_PRODUCT_MANAGER = "PRODUCT_MANAGER";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +32,10 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @NotBlank
-    private String role;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private Set<String> roles = new HashSet<>();
 
     private String status = "ACTIVE";
     private String fullName;
@@ -56,17 +64,22 @@ public class User {
     }
 
     public boolean isAdmin() {
-        return "ADMIN".equals(this.role);
+        return this.roles.contains(ROLE_ADMIN);
     }
 
     public boolean isManager() {
-        return "PRODUCT_MANAGER".equals(this.role);
+        return this.roles.contains(ROLE_PRODUCT_MANAGER);
     }
 
-    public void changeRole(String newRole) {
-        if (!"ADMIN".equals(newRole) && !"PRODUCT_MANAGER".equals(newRole)) {
-            throw new BusinessException("Invalid role: " + newRole + ". Must be ADMIN or PRODUCT_MANAGER.");
+    public void setRoles(Set<String> newRoles) {
+        if (newRoles == null || newRoles.isEmpty()) {
+            throw new BusinessException("A user must have at least one role.");
         }
-        this.role = newRole;
+        for (String r : newRoles) {
+            if (!ROLE_ADMIN.equals(r) && !ROLE_PRODUCT_MANAGER.equals(r)) {
+                throw new BusinessException("Invalid role: " + r + ". Must be ADMIN or PRODUCT_MANAGER.");
+            }
+        }
+        this.roles = new HashSet<>(newRoles);
     }
 }

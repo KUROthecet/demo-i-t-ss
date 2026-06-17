@@ -17,11 +17,12 @@ export class AuthService {
 
   readonly currentUser = this._currentUser.asReadonly();
   readonly isLoggedIn  = computed(() => !!this._currentUser());
-  readonly isAdmin     = computed(() => this._currentUser()?.role === 'ADMIN');
-  readonly isManager   = computed(() => {
-    const role = this._currentUser()?.role;
-    return role === 'PRODUCT_MANAGER' || role === 'ADMIN';
-  });
+  readonly isAdmin     = computed(() => this.hasRole('ADMIN'));
+  readonly isManager   = computed(() => this.hasRole('PRODUCT_MANAGER') || this.hasRole('ADMIN'));
+
+  private hasRole(role: 'ADMIN' | 'PRODUCT_MANAGER'): boolean {
+    return this._currentUser()?.roles?.includes(role) ?? false;
+  }
 
   constructor(
     private readonly http:   HttpClient,

@@ -72,6 +72,11 @@ public class MediaController {
         return ResponseEntity.ok(mediaService.getCatalogStats());
     }
 
+    @GetMapping("/api/products/price-range")
+    public ResponseEntity<Map<String, Integer>> getPriceRange() {
+        return ResponseEntity.ok(mediaService.getPriceRange());
+    }
+
     @PostMapping("/api/products")
     public ResponseEntity<MediaResponseDto> addMedia(
             @Valid @RequestBody Media media,

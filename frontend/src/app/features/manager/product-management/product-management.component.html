@@ -2,7 +2,9 @@
     <div class="admin-main__header">
     <div>
       <h1 class="admin-main__title">Product Management</h1>
-      <p class="admin-main__subtitle">{{ products.length }} products in catalog</p>
+      <p class="admin-main__subtitle">
+        {{ products.length }}{{ statusFilter !== 'ALL' ? ' of ' + allProducts.length : '' }} products in catalog
+      </p>
     </div>
     <a class="btn btn--primary btn--liquid" routerLink="/manager/product-form">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px;">
@@ -52,6 +54,21 @@
              [class.prod-toolbar__quota-fill--warn]="dailyDeleteInfo.count >= deleteWarningThreshold"></div>
       </div>
     </div>
+  </div>
+
+  <div class="status-tabs">
+    <button class="status-tab" [class.status-tab--active]="statusFilter === 'ALL'" (click)="setStatusFilter('ALL')">
+      All
+      <span class="status-tab__badge">{{ allProducts.length }}</span>
+    </button>
+    <button class="status-tab" [class.status-tab--active]="statusFilter === 'ACTIVE'" (click)="setStatusFilter('ACTIVE')">
+      Active
+      <span class="status-tab__badge status-tab__badge--active">{{ activeCount }}</span>
+    </button>
+    <button class="status-tab" [class.status-tab--active]="statusFilter === 'DEACTIVATED'" (click)="setStatusFilter('DEACTIVATED')">
+      Deactivated
+      <span class="status-tab__badge status-tab__badge--inactive">{{ deactivatedCount }}</span>
+    </button>
   </div>
 
     @if (selectedIds.size > 0) {

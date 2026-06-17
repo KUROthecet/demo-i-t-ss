@@ -71,6 +71,10 @@ export class MediaApiService {
     return this.http.get<Record<string, number>>(`${this.baseUrl}/products/stats`);
   }
 
+  getPriceRange(): Observable<{ minPrice: number; maxPrice: number }> {
+    return this.http.get<{ minPrice: number; maxPrice: number }>(`${this.baseUrl}/products/price-range`);
+  }
+
   addMedia(media: Partial<Media>): Observable<Media> {
     return this.http.post<Media>(`${this.baseUrl}/products`, media);
   }

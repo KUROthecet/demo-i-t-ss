@@ -61,7 +61,7 @@
                 @if (currentUser()?.avatarUrl) {
                   <img [src]="currentUser()!.avatarUrl" alt="Avatar" class="avatar-img" />
                 } @else {
-                  <span class="avatar-text">{{ currentUser()!.role === 'ADMIN' ? 'Admin' : 'PM' }}</span>
+                  <span class="avatar-text">{{ currentUser()!.roles?.includes('ADMIN') ? 'Admin' : 'PM' }}</span>
                 }
               </div>
             </button>
@@ -70,7 +70,7 @@
             <div class="navbar__dropdown">
               <div class="navbar__dropdown-header">
                 <span class="navbar__dropdown-name">{{ currentUser()!.fullName }}</span>
-                <span class="navbar__dropdown-role">{{ currentUser()!.role }}</span>
+                <span class="navbar__dropdown-role">{{ currentUser()!.roles?.join(' · ') }}</span>
               </div>
               <div class="navbar__dropdown-divider"></div>
               <button class="navbar__dropdown-item" (click)="goToDashboard()">

@@ -13,8 +13,6 @@ import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 import { ProductCardComponent } from '../../../shared/product-card/product-card.component';
 import { ProductImageFrameComponent } from './product-image-frame/product-image-frame.component';
 
-const WISHLIST_KEY = 'aims_wishlist';
-
 @Component({
   selector: 'app-product-detail',
   standalone: true,
@@ -37,8 +35,6 @@ export class ProductDetailComponent implements OnInit {
   loading                    = true;
   quantity                   = 1;
   addedToCart                = false;
-  isWishlisted               = false;
-  shareCopied                = false;
   error                      = '';
 
   get vatAmount(): number {
@@ -80,9 +76,8 @@ export class ProductDetailComponent implements OnInit {
   }
 
   private onProductLoaded(p: Media): void {
-    this.product      = p;
-    this.loading      = false;
-    this.isWishlisted = this.readWishlist().includes(p.id);
+    this.product = p;
+    this.loading = false;
     this.mediaApi.getSimilarProducts(p.id).subscribe({
       next:  this.onSimilarProductsLoaded.bind(this),
       error: () => {}
@@ -119,44 +114,6 @@ export class ProductDetailComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/']);
-  }
-
-  toggleWishlist(): void {
-    if (!this.product) return;
-    const ids = this.readWishlist();
-    const idx = ids.indexOf(this.product.id);
-    if (idx === -1) {
-      ids.push(this.product.id);
-      this.isWishlisted = true;
-    } else {
-      ids.splice(idx, 1);
-      this.isWishlisted = false;
-    }
-    try {
-      localStorage.setItem(WISHLIST_KEY, JSON.stringify(ids));
-    } catch {}
-  }
-
-  shareProduct(): void {
-    const url   = window.location.href;
-    const title = this.product?.title ?? 'Check this out on AIMS';
-    if (navigator.share) {
-      navigator.share({ title, url }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(url).then(() => {
-        this.shareCopied = true;
-        setTimeout(() => { this.shareCopied = false; }, 2000);
-      }).catch(() => {});
-    }
-  }
-
-  private readWishlist(): number[] {
-    try {
-      const raw = localStorage.getItem(WISHLIST_KEY);
-      return raw ? (JSON.parse(raw) as number[]) : [];
-    } catch {
-      return [];
-    }
   }
 
   changeQty(delta: number): void {

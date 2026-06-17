@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -72,12 +73,12 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "Password reset. New password sent via email."));
     }
 
-    @PostMapping("/{id}/change-role")
-    public ResponseEntity<UserResponseDto> changeRole(
+    @PutMapping("/{id}/roles")
+    public ResponseEntity<UserResponseDto> updateRoles(
             @PathVariable Long id,
-            @RequestBody Map<String, String> body,
+            @RequestBody Map<String, Set<String>> body,
             @RequestHeader(value = "X-Performed-By", defaultValue = "Admin") String performedBy) {
-        String role = body.getOrDefault("role", "PRODUCT_MANAGER");
-        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.changeRole(id, role, performedBy)));
+        Set<String> roles = body.getOrDefault("roles", Set.of());
+        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.updateRoles(id, roles, performedBy)));
     }
 }

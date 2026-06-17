@@ -16,17 +16,19 @@ import { AppConstants } from '../../../core/config/app.constants';
   styleUrl: './product-management.component.scss'
 })
 export class ProductManagementComponent implements OnInit {
-  protected products: Media[]   = [];
-  protected loading             = true;
-  protected searchQuery         = '';
-  protected selectedIds         = new Set<number>();
-  protected dailyDeleteInfo     = { count: 0, remaining: AppConstants.MAX_DAILY_DELETE };
-  protected deletingConfirm     = false;
-  protected error               = '';
-  protected successMsg          = '';
+  protected products: Media[]        = [];
+  protected allProducts: Media[]     = [];
+  protected statusFilter: 'ALL' | 'ACTIVE' | 'DEACTIVATED' = 'ALL';
+  protected loading                  = true;
+  protected searchQuery              = '';
+  protected selectedIds              = new Set<number>();
+  protected dailyDeleteInfo          = { count: 0, remaining: AppConstants.MAX_DAILY_DELETE };
+  protected deletingConfirm          = false;
+  protected error                    = '';
+  protected successMsg               = '';
   protected readonly performedBy: string;
-  protected readonly maxDailyDelete            = AppConstants.MAX_DAILY_DELETE;
-  protected readonly deleteWarningThreshold    = AppConstants.DAILY_DELETE_WARNING_THRESHOLD;
+  protected readonly maxDailyDelete           = AppConstants.MAX_DAILY_DELETE;
+  protected readonly deleteWarningThreshold   = AppConstants.DAILY_DELETE_WARNING_THRESHOLD;
   readonly skeletons = Array(8).fill(0);
 
   private pendingDeleteIds: number[] = [];
@@ -56,12 +58,35 @@ export class ProductManagementComponent implements OnInit {
   }
 
   private onProductsLoaded(data: any): void {
-    this.products = data.content;
-    this.loading  = false;
+    this.allProducts = data.content;
+    this.applyStatusFilter();
+    this.loading = false;
   }
 
   private onProductsError(): void {
     this.loading = false;
+  }
+
+  protected applyStatusFilter(): void {
+    if (this.statusFilter === 'ALL') {
+      this.products = [...this.allProducts];
+    } else {
+      this.products = this.allProducts.filter(p => p.status === this.statusFilter);
+    }
+  }
+
+  protected get activeCount(): number {
+    return this.allProducts.filter(p => p.status === 'ACTIVE').length;
+  }
+
+  protected get deactivatedCount(): number {
+    return this.allProducts.filter(p => p.status === 'DEACTIVATED').length;
+  }
+
+  protected setStatusFilter(f: 'ALL' | 'ACTIVE' | 'DEACTIVATED'): void {
+    this.statusFilter = f;
+    this.selectedIds.clear();
+    this.applyStatusFilter();
   }
 
   protected toggleSelect(id: number): void {

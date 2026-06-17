@@ -38,7 +38,7 @@ export class UserApiService {
     return this.http.post(`${this.baseUrl}/users/${id}/reset-password`, {});
   }
 
-  changeUserRole(id: number, role: string): Observable<User> {
-    return this.http.post<User>(`${this.baseUrl}/users/${id}/change-role`, { role });
+  updateUserRoles(id: number, roles: string[]): Observable<User> {
+    return this.http.put<User>(`${this.baseUrl}/users/${id}/roles`, { roles });
   }
 }

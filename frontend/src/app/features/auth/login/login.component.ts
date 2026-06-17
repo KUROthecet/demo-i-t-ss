@@ -46,7 +46,7 @@ export class LoginComponent {
   }
 
   private onLoginSuccess(res: any): void {
-    if (res.role === 'ADMIN') {
+    if (res.roles?.includes('ADMIN')) {
       this.router.navigate(['/admin/dashboard']);
     } else {
       this.router.navigate(['/manager/dashboard']);

@@ -1,16 +1,23 @@
 package com.aims.entity;
 
 import com.aims.dto.FieldSchema;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+@JsonIgnoreProperties({"tracks"})
 @Entity
 @Table(name = "cd")
 @Data
@@ -35,10 +42,30 @@ public class CD extends PhysicalMedia {
 
     private String recordLabel;
 
-    @Column(columnDefinition = "TEXT")
-    private String trackList;
+    @ElementCollection
+    @CollectionTable(name = "cd_track", joinColumns = @JoinColumn(name = "cd_id"))
+    @OrderColumn(name = "track_order")
+    private List<CdTrack> tracks = new ArrayList<>();
 
     private String releaseDate;
+
+    @JsonSetter("trackList")
+    public void parseTrackList(String raw) {
+        if (raw == null || raw.isBlank()) {
+            this.tracks = new ArrayList<>();
+            return;
+        }
+        this.tracks = Arrays.stream(raw.split("\n"))
+            .map(String::trim)
+            .filter(line -> !line.isBlank())
+            .map(line -> {
+                int sep = line.indexOf('|');
+                return sep >= 0
+                    ? new CdTrack(line.substring(0, sep).trim(), line.substring(sep + 1).trim())
+                    : new CdTrack(line, "");
+            })
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
 
     @Override
     public void updateDetails(Media updated) {
@@ -47,7 +74,7 @@ public class CD extends PhysicalMedia {
             this.artist      = other.getArtist();
             this.genre       = other.getGenre();
             this.recordLabel = other.getRecordLabel();
-            this.trackList   = other.getTrackList();
+            this.tracks      = other.getTracks() != null ? new ArrayList<>(other.getTracks()) : new ArrayList<>();
             this.releaseDate = other.getReleaseDate();
         }
     }
@@ -59,7 +86,18 @@ public class CD extends PhysicalMedia {
         if (genre != null)       attrs.put("Genre", genre);
         if (recordLabel != null) attrs.put("Record Label", recordLabel);
         if (releaseDate != null) attrs.put("Release Date", releaseDate);
-        if (trackList != null)   attrs.put("Track List", trackList);
+        if (tracks != null && !tracks.isEmpty()) {
+            String formatted = IntStream.range(0, tracks.size())
+                .mapToObj(i -> {
+                    CdTrack t = tracks.get(i);
+                    String entry = t.getTitle();
+                    return (t.getLength() != null && !t.getLength().isBlank())
+                        ? entry + " | " + t.getLength()
+                        : entry;
+                })
+                .collect(Collectors.joining("\n"));
+            attrs.put("Track List", formatted);
+        }
         return attrs;
     }
 }
