@@ -46,9 +46,22 @@ export class LoginComponent {
   }
 
   private onLoginSuccess(res: any): void {
-    if (res.roles?.includes('ADMIN')) {
+    const roles: string[] = res.roles ?? [];
+    if (this.selectedRole === 'admin') {
+      if (!roles.includes('ADMIN')) {
+        this.auth.clearSession();
+        this.error   = 'This account does not have Administrator access.';
+        this.loading = false;
+        return;
+      }
       this.router.navigate(['/admin/dashboard']);
     } else {
+      if (!roles.includes('PRODUCT_MANAGER')) {
+        this.auth.clearSession();
+        this.error   = 'This account does not have Product Manager access.';
+        this.loading = false;
+        return;
+      }
       this.router.navigate(['/manager/dashboard']);
     }
   }

@@ -58,6 +58,12 @@ export class AuthService {
     return this._currentUser();
   }
 
+  clearSession(): void {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    this._currentUser.set(null);
+  }
+
   private reloadPage(): void {
     window.location.reload();
   }
