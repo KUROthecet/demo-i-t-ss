@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { OrderApiService } from '../../../core/services/order-api.service';
 import { Order } from '../../../core/models/order.model';
-import { NavbarComponent } from '../../../shared/navbar/navbar.component';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 import { loadScript } from '@paypal/paypal-js';
 import { lastValueFrom } from 'rxjs';
@@ -12,7 +11,7 @@ import { PAYPAL_CLIENT_ID, VIETQR } from '../../../core/config/app.constants';
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent, VndCurrencyPipe],
+  imports: [CommonModule, RouterLink, VndCurrencyPipe],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.scss'
 })

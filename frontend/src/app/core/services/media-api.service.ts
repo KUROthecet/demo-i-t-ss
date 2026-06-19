@@ -39,7 +39,8 @@ export class MediaApiService {
     minPrice = 0,
     maxPrice = 2147483647,
     page = 0,
-    size = 20
+    size = 20,
+    sort: 'asc' | 'desc' | '' = ''
   ): Observable<PaginatedResponse<Media>> {
     let params = new HttpParams()
       .set('query', query)
@@ -47,6 +48,9 @@ export class MediaApiService {
       .set('maxPrice', maxPrice)
       .set('page', page)
       .set('size', size);
+    if (sort) {
+      params = params.set('sort', `currentPrice,${sort}`);
+    }
     if (categories && categories.length > 0) {
       for (const cat of categories) {
         params = params.append('category', cat);

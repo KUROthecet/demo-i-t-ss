@@ -194,7 +194,7 @@ export class SearchComponent implements OnInit {
 
     this.mediaApi.searchProducts(
       this.query, this.selectedCategories, this.minPrice, this.maxPrice,
-      this.currentPage, this.pageSize
+      this.currentPage, this.pageSize, this.sortOrder
     ).subscribe({
       next: (res: any) => {
         this.results               = res.content;
