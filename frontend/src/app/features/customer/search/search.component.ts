@@ -226,6 +226,11 @@ export class SearchComponent implements OnInit {
     this.doSearch();
   }
 
+  protected onSortChange(): void {
+    this.currentPage = 0;
+    this.doSearch();
+  }
+
   protected clearFilters(): void {
     this.minPrice           = 0;
     this.maxPrice           = this.MAX_PRICE_VALUE;

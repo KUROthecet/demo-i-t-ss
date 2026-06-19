@@ -187,8 +187,8 @@ export class ProductFormComponent implements OnInit {
     this.saving = true;
     this.error  = '';
     const obs = this.isEdit
-      ? this.mediaApi.updateMedia(this.productId!, this.form)
-      : this.mediaApi.addMedia(this.form);
+      ? this.mediaApi.updateMedia(this.productId!, this.form, this.performedBy)
+      : this.mediaApi.addMedia(this.form, this.performedBy);
 
     obs.subscribe({
       next:  () => {

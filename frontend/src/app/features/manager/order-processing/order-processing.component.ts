@@ -77,7 +77,7 @@ export class OrderProcessingComponent implements OnInit {
 
   protected approve(id: number): void {
     this.processing = true;
-    this.orderApi.approveOrder(id).subscribe({
+    this.orderApi.approveOrder(id, this.performedBy).subscribe({
       next:  () =>  { this.loadOrders(); this.processing = false; },
       error: (e) => { this.error = e.error?.message ?? 'Failed to approve.'; this.processing = false; }
     });
@@ -92,7 +92,7 @@ export class OrderProcessingComponent implements OnInit {
   protected confirmReject(): void {
     if (!this.rejectionReason.trim()) { this.error = 'Please provide a rejection reason.'; return; }
     this.processing = true;
-    this.orderApi.rejectOrder(this.actionOrderId!, this.rejectionReason).subscribe({
+    this.orderApi.rejectOrder(this.actionOrderId!, this.rejectionReason, this.performedBy).subscribe({
       next:  () =>  { this.showRejectModal = false; this.loadOrders(); this.processing = false; },
       error: (e) => { this.error = e.error?.message ?? 'Failed to reject.'; this.processing = false; }
     });

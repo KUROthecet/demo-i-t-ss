@@ -51,7 +51,7 @@ export class ProductManagementComponent implements OnInit {
 
   protected loadProducts(): void {
     this.loading = true;
-    this.mediaApi.getManagerProducts(this.searchQuery, [], 0, 9999999).subscribe({
+    this.mediaApi.getManagerProducts(this.searchQuery, [], 0, 2147483647, 0, 1000).subscribe({
       next:  this.onProductsLoaded.bind(this),
       error: this.onProductsError.bind(this)
     });
@@ -122,7 +122,7 @@ export class ProductManagementComponent implements OnInit {
   }
 
   protected reactivateProduct(id: number): void {
-    this.mediaApi.reactivateMedia(id).subscribe({
+    this.mediaApi.reactivateMedia(id, this.performedBy).subscribe({
       next:  this.onReactivateSuccess.bind(this),
       error: (err: any) => { this.error = err.error?.message ?? 'Re-activation failed.'; }
     });
@@ -141,7 +141,7 @@ export class ProductManagementComponent implements OnInit {
       return;
     }
     this.pendingDeleteIds = Array.from(this.selectedIds);
-    this.mediaApi.deleteMedia(this.pendingDeleteIds).subscribe({
+    this.mediaApi.deleteMedia(this.pendingDeleteIds, this.performedBy).subscribe({
       next:  this.onDeleteSuccess.bind(this),
       error: this.onDeleteError.bind(this)
     });

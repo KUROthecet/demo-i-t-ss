@@ -225,7 +225,7 @@
               <select
                 class="results__sort-select"
                 [(ngModel)]="sortOrder"
-                (ngModelChange)="doSearch()">
+                (ngModelChange)="onSortChange()">
                 <option value="">Relevance</option>
                 <option value="asc">Price: Low to High</option>
                 <option value="desc">Price: High to Low</option>

@@ -79,20 +79,29 @@ export class MediaApiService {
     return this.http.get<{ minPrice: number; maxPrice: number }>(`${this.baseUrl}/products/price-range`);
   }
 
-  addMedia(media: Partial<Media>): Observable<Media> {
-    return this.http.post<Media>(`${this.baseUrl}/products`, media);
+  addMedia(media: Partial<Media>, performedBy: string): Observable<Media> {
+    return this.http.post<Media>(`${this.baseUrl}/products`, media, {
+      headers: { 'X-Performed-By': performedBy }
+    });
   }
 
-  updateMedia(id: number, media: Partial<Media>): Observable<Media> {
-    return this.http.put<Media>(`${this.baseUrl}/products/${id}`, media);
+  updateMedia(id: number, media: Partial<Media>, performedBy: string): Observable<Media> {
+    return this.http.put<Media>(`${this.baseUrl}/products/${id}`, media, {
+      headers: { 'X-Performed-By': performedBy }
+    });
   }
 
-  deleteMedia(ids: number[]): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/products`, { body: ids });
+  deleteMedia(ids: number[], performedBy: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/products`, {
+      body: ids,
+      headers: { 'X-Performed-By': performedBy }
+    });
   }
 
-  reactivateMedia(id: number): Observable<Media> {
-    return this.http.patch<Media>(`${this.baseUrl}/products/${id}/activate`, {});
+  reactivateMedia(id: number, performedBy: string): Observable<Media> {
+    return this.http.patch<Media>(`${this.baseUrl}/products/${id}/activate`, {}, {
+      headers: { 'X-Performed-By': performedBy }
+    });
   }
 
   getDailyDeleteCount(): Observable<{ count: number; remaining: number }> {
