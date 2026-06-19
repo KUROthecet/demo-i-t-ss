@@ -1,5 +1,6 @@
 package com.aims.controller;
 
+import com.aims.config.BusinessConstants;
 import com.aims.dto.FieldSchema;
 import com.aims.dto.response.MediaResponseDto;
 import com.aims.media.MediaTypeDefinition;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import com.aims.entity.Media;
@@ -100,31 +103,31 @@ public class MediaController {
     @PostMapping("/api/products")
     public ResponseEntity<MediaResponseDto> addMedia(
             @Valid @RequestBody Media media,
-            @RequestHeader(value = "X-Performed-By", defaultValue = "System") String performedBy) {
-        return ResponseEntity.ok(MediaResponseDto.fromEntity(mediaService.addMedia(media, performedBy)));
+            @AuthenticationPrincipal UserDetails principal) {
+        return ResponseEntity.ok(MediaResponseDto.fromEntity(mediaService.addMedia(media, principal.getUsername())));
     }
 
     @PutMapping("/api/products/{id}")
     public ResponseEntity<MediaResponseDto> updateMedia(
             @PathVariable Long id,
             @Valid @RequestBody Media media,
-            @RequestHeader(value = "X-Performed-By", defaultValue = "System") String performedBy) {
-        return ResponseEntity.ok(MediaResponseDto.fromEntity(mediaService.updateMedia(id, media, performedBy)));
+            @AuthenticationPrincipal UserDetails principal) {
+        return ResponseEntity.ok(MediaResponseDto.fromEntity(mediaService.updateMedia(id, media, principal.getUsername())));
     }
 
     @DeleteMapping("/api/products")
     public ResponseEntity<Map<String, String>> deleteMedia(
             @RequestBody List<Long> ids,
-            @RequestHeader(value = "X-Performed-By", defaultValue = "System") String performedBy) {
-        mediaService.deleteMedia(ids, performedBy);
+            @AuthenticationPrincipal UserDetails principal) {
+        mediaService.deleteMedia(ids, principal.getUsername());
         return ResponseEntity.ok(Map.of("message", "Products processed successfully"));
     }
 
     @PatchMapping("/api/products/{id}/activate")
     public ResponseEntity<MediaResponseDto> activateMedia(
             @PathVariable Long id,
-            @RequestHeader(value = "X-Performed-By", defaultValue = "System") String performedBy) {
-        return ResponseEntity.ok(MediaResponseDto.fromEntity(mediaService.reactivateMedia(id, performedBy)));
+            @AuthenticationPrincipal UserDetails principal) {
+        return ResponseEntity.ok(MediaResponseDto.fromEntity(mediaService.reactivateMedia(id, principal.getUsername())));
     }
 
     @GetMapping("/api/products/{id}/similar")
@@ -139,7 +142,7 @@ public class MediaController {
     @GetMapping("/api/media/daily-delete-count")
     public ResponseEntity<Map<String, Integer>> getDailyDeleteCount() {
         int count = mediaService.getDailyDeleteCount();
-        return ResponseEntity.ok(Map.of("count", count, "remaining", 20 - count));
+        return ResponseEntity.ok(Map.of("count", count, "remaining", BusinessConstants.MAX_DAILY_DELETE - count));
     }
 
     @PostMapping("/api/products/stock-batch")

@@ -1,5 +1,6 @@
 package com.aims.service;
 
+import com.aims.config.BusinessConstants;
 import com.aims.entity.Media;
 import com.aims.enums.MediaStatus;
 import com.aims.exception.BusinessException;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -30,17 +32,14 @@ import java.util.stream.Collectors;
 @Transactional
 public class MediaService {
 
-    private static final String RANDOM_CACHE_PREFIX    = "media:random:";
-    private static final String HISTOGRAM_CACHE_KEY    = "media:prices:histogram";
-    private static final String STATS_CACHE_KEY        = "media:manager:stats";
+    private static final String RANDOM_CACHE_PREFIX = "media:random:";
+    private static final String HISTOGRAM_CACHE_KEY = "media:prices:histogram";
+    private static final String STATS_CACHE_KEY     = "media:manager:stats";
 
     private final MediaRepository       mediaRepository;
     private final HistoryLogService     historyLogService;
     private final StockHistoryService   stockHistoryService;
     private final StringRedisTemplate   redisTemplate;
-
-    private static final int MAX_BATCH_DELETE = 10;
-    private static final int MAX_DAILY_DELETE = 20;
 
     @Transactional(readOnly = true)
     public List<Media> getRandomMedia(int limit) {
@@ -201,15 +200,15 @@ public class MediaService {
     }
 
     public void deleteMedia(List<Long> ids, String performedBy) {
-        if (ids.size() > MAX_BATCH_DELETE) {
+        if (ids.size() > BusinessConstants.MAX_BATCH_DELETE) {
             throw new BusinessException(
-                    "Cannot process more than " + MAX_BATCH_DELETE + " items at once. Got: " + ids.size());
+                    "Cannot process more than " + BusinessConstants.MAX_BATCH_DELETE + " items at once. Got: " + ids.size());
         }
         int currentDailyCount = getDailyDeleteCount();
-        if (currentDailyCount + ids.size() > MAX_DAILY_DELETE) {
+        if (currentDailyCount + ids.size() > BusinessConstants.MAX_DAILY_DELETE) {
             throw new BusinessException(
                     String.format("Daily deletion limit exceeded. Already processed %d today, limit is %d.",
-                            currentDailyCount, MAX_DAILY_DELETE));
+                            currentDailyCount, BusinessConstants.MAX_DAILY_DELETE));
         }
         for (Long id : ids) {
             Media media = getMediaById(id);
@@ -283,5 +282,9 @@ public class MediaService {
     private void evictManagerCaches() {
         redisTemplate.delete(STATS_CACHE_KEY);
         redisTemplate.delete(HISTOGRAM_CACHE_KEY);
+        Set<String> randomKeys = redisTemplate.keys(RANDOM_CACHE_PREFIX + "*");
+        if (randomKeys != null && !randomKeys.isEmpty()) {
+            redisTemplate.delete(randomKeys);
+        }
     }
 }

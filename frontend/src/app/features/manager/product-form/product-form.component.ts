@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MediaApiService, FieldSchema } from '../../../core/services/media-api.service';
-import { AuthService } from '../../../core/services/auth.service';
 import { AppConfigService } from '../../../core/services/app-config.service';
 import { ProductFormModel, createEmptyProductForm } from '../../../core/models/product-form.model';
 import { Media } from '../../../core/models/media.model';
@@ -41,17 +40,12 @@ export class ProductFormComponent implements OnInit {
 
   protected categories: { id: string; label: string; icon: string; color: string; bg: string; glow: string }[] = [];
 
-  protected readonly performedBy: string;
-
   constructor(
     private readonly mediaApi:   MediaApiService,
-    private readonly auth:       AuthService,
     private readonly route:      ActivatedRoute,
     private readonly router:     Router,
     private readonly appConfig:  AppConfigService
-  ) {
-    this.performedBy = this.auth.getCurrentUser()?.username ?? 'Manager';
-  }
+  ) {}
 
   private categoryColor(label: string): string {
     let h = 0;
@@ -190,8 +184,8 @@ export class ProductFormComponent implements OnInit {
     this.saving = true;
     this.error  = '';
     const obs = this.isEdit
-      ? this.mediaApi.updateMedia(this.productId!, this.form, this.performedBy)
-      : this.mediaApi.addMedia(this.form, this.performedBy);
+      ? this.mediaApi.updateMedia(this.productId!, this.form)
+      : this.mediaApi.addMedia(this.form);
 
     obs.subscribe({
       next:  () => {

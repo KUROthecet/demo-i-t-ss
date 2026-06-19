@@ -5,7 +5,6 @@ import { RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { StockApiService } from '../../../core/services/stock-api.service';
-import { AuthService } from '../../../core/services/auth.service';
 import { MediaApiService } from '../../../core/services/media-api.service';
 
 @Component({
@@ -23,7 +22,6 @@ export class StockHistoryComponent implements OnInit {
   adjusting       = false;
   error           = '';
   successMsg      = '';
-  performedBy     = this.auth.getCurrentUser()?.username || 'Manager';
   readonly skeletons = Array(6).fill(0);
 
   productQuery    = '';
@@ -35,7 +33,6 @@ export class StockHistoryComponent implements OnInit {
 
   constructor(
     private readonly stockApi:  StockApiService,
-    private readonly auth:      AuthService,
     private readonly mediaApi:  MediaApiService
   ) {}
 
@@ -114,8 +111,7 @@ export class StockHistoryComponent implements OnInit {
     this.stockApi.adjustStock({
       mediaId:       this.adjustForm.mediaId!,
       quantityDelta: this.adjustForm.quantityDelta,
-      reason:        this.adjustForm.reason,
-      performedBy:   this.performedBy
+      reason:        this.adjustForm.reason
     }).subscribe({
       next:  this.onAdjustSuccess.bind(this),
       error: this.onAdjustError.bind(this)

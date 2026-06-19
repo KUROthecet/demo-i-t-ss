@@ -6,6 +6,8 @@ import com.aims.service.StockHistoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +30,10 @@ public class StockHistoryController {
     }
 
     @PostMapping("/adjust")
-    public ResponseEntity<StockHistory> adjustStock(@Valid @RequestBody StockAdjustmentDto dto) {
+    public ResponseEntity<StockHistory> adjustStock(
+            @Valid @RequestBody StockAdjustmentDto dto,
+            @AuthenticationPrincipal UserDetails principal) {
+        dto.setPerformedBy(principal.getUsername());
         return ResponseEntity.ok(stockHistoryService.recordAdjustment(dto));
     }
 }

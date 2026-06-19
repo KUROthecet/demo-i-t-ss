@@ -37,16 +37,12 @@ export class OrderApiService {
     return this.http.get<Order[]>(`${this.baseUrl}/orders/by-email`, { params: { email } });
   }
 
-  approveOrder(id: number, performedBy: string): Observable<Order> {
-    return this.http.post<Order>(`${this.baseUrl}/orders/${id}/approve`, {}, {
-      headers: { 'X-Performed-By': performedBy }
-    });
+  approveOrder(id: number): Observable<Order> {
+    return this.http.post<Order>(`${this.baseUrl}/orders/${id}/approve`, {});
   }
 
-  rejectOrder(id: number, reason: string, performedBy: string): Observable<Order> {
-    return this.http.post<Order>(`${this.baseUrl}/orders/${id}/reject`, { reason }, {
-      headers: { 'X-Performed-By': performedBy }
-    });
+  rejectOrder(id: number, reason: string): Observable<Order> {
+    return this.http.post<Order>(`${this.baseUrl}/orders/${id}/reject`, { reason });
   }
 
   cancelOrder(id: number): Observable<Order> {

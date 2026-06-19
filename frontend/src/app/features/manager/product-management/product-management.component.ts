@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MediaApiService, ManagerStats } from '../../../core/services/media-api.service';
-import { AuthService } from '../../../core/services/auth.service';
 import { Media } from '../../../core/models/media.model';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 import { AppConstants } from '../../../core/config/app.constants';
@@ -25,7 +24,6 @@ export class ProductManagementComponent implements OnInit {
   protected deletingConfirm          = false;
   protected error                    = '';
   protected successMsg               = '';
-  protected readonly performedBy: string;
   protected readonly maxDailyDelete           = AppConstants.MAX_DAILY_DELETE;
   protected readonly deleteWarningThreshold   = AppConstants.DAILY_DELETE_WARNING_THRESHOLD;
   readonly skeletons = Array(8).fill(0);
@@ -38,12 +36,7 @@ export class ProductManagementComponent implements OnInit {
 
   private pendingDeleteIds: number[] = [];
 
-  constructor(
-    private readonly mediaApi: MediaApiService,
-    private readonly auth:     AuthService
-  ) {
-    this.performedBy = this.auth.getCurrentUser()?.username ?? 'Manager';
-  }
+  constructor(private readonly mediaApi: MediaApiService) {}
 
   ngOnInit(): void {
     this.loadStats();
@@ -130,7 +123,7 @@ export class ProductManagementComponent implements OnInit {
   }
 
   protected reactivateProduct(id: number): void {
-    this.mediaApi.reactivateMedia(id, this.performedBy).subscribe({
+    this.mediaApi.reactivateMedia(id).subscribe({
       next:  this.onReactivateSuccess.bind(this),
       error: (err: any) => { this.error = err.error?.message ?? 'Re-activation failed.'; }
     });
@@ -150,7 +143,7 @@ export class ProductManagementComponent implements OnInit {
       return;
     }
     this.pendingDeleteIds = Array.from(this.selectedIds);
-    this.mediaApi.deleteMedia(this.pendingDeleteIds, this.performedBy).subscribe({
+    this.mediaApi.deleteMedia(this.pendingDeleteIds).subscribe({
       next:  this.onDeleteSuccess.bind(this),
       error: this.onDeleteError.bind(this)
     });

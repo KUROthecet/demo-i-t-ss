@@ -12,5 +12,8 @@ public final class BusinessConstants {
     public static final double PRICE_MIN_RATIO         = 0.30;
     public static final double PRICE_MAX_RATIO         = 1.50;
 
+    public static final int MAX_BATCH_DELETE = 10;
+    public static final int MAX_DAILY_DELETE = 20;
+
     public static final List<String> RUSH_ELIGIBLE_PROVINCES = List.of("Hanoi", "Ho Chi Minh City");
 }

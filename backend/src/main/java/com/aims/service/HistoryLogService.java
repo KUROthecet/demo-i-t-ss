@@ -37,7 +37,7 @@ public class HistoryLogService {
     public int countDailyDeletions() {
         LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
         long count = historyLogRepository.countByActionTypeInAndCreatedAtAfter(
-                List.of("DELETE", "DEACTIVATE"), startOfDay);
+                List.of("DELETE"), startOfDay);
         return (int) count;
     }
 }

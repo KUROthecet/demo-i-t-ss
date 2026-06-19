@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -66,17 +68,17 @@ public class OrderController {
     @PostMapping("/{id}/approve")
     public ResponseEntity<OrderResponseDto> approveOrder(
             @PathVariable Long id,
-            @RequestHeader(value = "X-Performed-By", defaultValue = "System") String performedBy) {
-        return ResponseEntity.ok(OrderResponseDto.fromEntity(orderService.approveOrder(id, performedBy)));
+            @AuthenticationPrincipal UserDetails principal) {
+        return ResponseEntity.ok(OrderResponseDto.fromEntity(orderService.approveOrder(id, principal.getUsername())));
     }
 
     @PostMapping("/{id}/reject")
     public ResponseEntity<OrderResponseDto> rejectOrder(
             @PathVariable Long id,
             @RequestBody Map<String, String> body,
-            @RequestHeader(value = "X-Performed-By", defaultValue = "Manager") String performedBy) {
+            @AuthenticationPrincipal UserDetails principal) {
         String reason = body.getOrDefault("reason", "No reason provided");
-        return ResponseEntity.ok(OrderResponseDto.fromEntity(orderService.rejectOrder(id, reason, performedBy)));
+        return ResponseEntity.ok(OrderResponseDto.fromEntity(orderService.rejectOrder(id, reason, principal.getUsername())));
     }
 
     @PostMapping("/{id}/cancel")

@@ -17,7 +17,7 @@ export class StockApiService {
     return this.http.get<any[]>(`${this.baseUrl}/stock-history/media/${mediaId}`);
   }
 
-  adjustStock(data: { mediaId: number; quantityDelta: number; reason: string; performedBy: string }): Observable<any> {
+  adjustStock(data: { mediaId: number; quantityDelta: number; reason: string }): Observable<any> {
     return this.http.post(`${this.baseUrl}/stock-history/adjust`, data);
   }
 }

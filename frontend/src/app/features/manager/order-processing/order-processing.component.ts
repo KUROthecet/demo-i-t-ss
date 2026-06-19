@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { OrderApiService } from '../../../core/services/order-api.service';
 import { Order } from '../../../core/models/order.model';
-import { AuthService } from '../../../core/services/auth.service';
 import { AppConstants } from '../../../core/config/app.constants';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 
@@ -33,16 +32,10 @@ export class OrderProcessingComponent implements OnInit {
   protected error            = '';
   protected currentPage      = 0;
   protected totalPages       = 0;
-  protected readonly performedBy: string;
   readonly skeletons = Array(6).fill(0);
   readonly pageSize  = AppConstants.PAGE_SIZE_PENDING_ORDERS;
 
-  constructor(
-    private readonly orderApi: OrderApiService,
-    private readonly auth:     AuthService
-  ) {
-    this.performedBy = this.auth.getCurrentUser()?.username ?? 'Manager';
-  }
+  constructor(private readonly orderApi: OrderApiService) {}
 
   ngOnInit(): void { this.loadOrders(); }
 
@@ -77,7 +70,7 @@ export class OrderProcessingComponent implements OnInit {
 
   protected approve(id: number): void {
     this.processing = true;
-    this.orderApi.approveOrder(id, this.performedBy).subscribe({
+    this.orderApi.approveOrder(id).subscribe({
       next:  () =>  { this.loadOrders(); this.processing = false; },
       error: (e) => { this.error = e.error?.message ?? 'Failed to approve.'; this.processing = false; }
     });
@@ -92,7 +85,7 @@ export class OrderProcessingComponent implements OnInit {
   protected confirmReject(): void {
     if (!this.rejectionReason.trim()) { this.error = 'Please provide a rejection reason.'; return; }
     this.processing = true;
-    this.orderApi.rejectOrder(this.actionOrderId!, this.rejectionReason, this.performedBy).subscribe({
+    this.orderApi.rejectOrder(this.actionOrderId!, this.rejectionReason).subscribe({
       next:  () =>  { this.showRejectModal = false; this.loadOrders(); this.processing = false; },
       error: (e) => { this.error = e.error?.message ?? 'Failed to reject.'; this.processing = false; }
     });

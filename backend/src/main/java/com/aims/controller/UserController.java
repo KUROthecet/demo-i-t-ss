@@ -6,6 +6,8 @@ import com.aims.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,23 +50,23 @@ public class UserController {
     public ResponseEntity<UserResponseDto> blockUser(
             @PathVariable Long id,
             @RequestBody Map<String, String> body,
-            @RequestHeader(value = "X-Performed-By", defaultValue = "Admin") String performedBy) {
+            @AuthenticationPrincipal UserDetails principal) {
         String reason = body.getOrDefault("reason", "Blocked by admin");
-        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.blockUser(id, reason, performedBy)));
+        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.blockUser(id, reason, principal.getUsername())));
     }
 
     @PostMapping("/{id}/unblock")
     public ResponseEntity<UserResponseDto> unblockUser(
             @PathVariable Long id,
-            @RequestHeader(value = "X-Performed-By", defaultValue = "Admin") String performedBy) {
-        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.unblockUser(id, performedBy)));
+            @AuthenticationPrincipal UserDetails principal) {
+        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.unblockUser(id, principal.getUsername())));
     }
 
     @PostMapping("/{id}/deactivate")
     public ResponseEntity<UserResponseDto> deactivateUser(
             @PathVariable Long id,
-            @RequestHeader(value = "X-Performed-By", defaultValue = "Admin") String performedBy) {
-        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.deactivateUser(id, performedBy)));
+            @AuthenticationPrincipal UserDetails principal) {
+        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.deactivateUser(id, principal.getUsername())));
     }
 
     @PostMapping("/{id}/reset-password")
@@ -77,8 +79,8 @@ public class UserController {
     public ResponseEntity<UserResponseDto> updateRoles(
             @PathVariable Long id,
             @RequestBody Map<String, Set<String>> body,
-            @RequestHeader(value = "X-Performed-By", defaultValue = "Admin") String performedBy) {
+            @AuthenticationPrincipal UserDetails principal) {
         Set<String> roles = body.getOrDefault("roles", Set.of());
-        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.updateRoles(id, roles, performedBy)));
+        return ResponseEntity.ok(UserResponseDto.fromEntity(userService.updateRoles(id, roles, principal.getUsername())));
     }
 }
