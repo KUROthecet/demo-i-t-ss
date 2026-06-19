@@ -46,7 +46,13 @@ export class HistoryComponent implements OnInit {
   }
 
   protected get filteredLogs(): any[] {
-    return this.allLogs.filter(this.matchesFilter.bind(this));
+    const result: any[] = [];
+    for (const log of this.allLogs) {
+      if (this.matchesFilter(log)) {
+        result.push(log);
+      }
+    }
+    return result;
   }
 
   protected clearFilters(): void {

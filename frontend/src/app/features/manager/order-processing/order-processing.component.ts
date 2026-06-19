@@ -92,4 +92,13 @@ export class OrderProcessingComponent implements OnInit {
   }
 
   protected formatDate(d: string): string { return new Date(d).toLocaleString('vi-VN'); }
+
+  protected formatStatus(status: string): string {
+    if (!status) return '';
+    let result = '';
+    for (let i = 0; i < status.length; i++) {
+      result += status[i] === '_' ? ' ' : status[i];
+    }
+    return result;
+  }
 }

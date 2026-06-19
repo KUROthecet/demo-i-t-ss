@@ -47,7 +47,11 @@ export class ProductDetailComponent implements OnInit {
 
   get productAttributes(): [string, string][] {
     if (!this.product?.attributes) return [];
-    return Object.entries(this.product.attributes).filter(([, v]) => v != null && v !== '');
+    const result: [string, string][] = [];
+    for (const [k, v] of Object.entries(this.product.attributes)) {
+      if (v != null && v !== '') result.push([k, v]);
+    }
+    return result;
   }
 
   constructor(

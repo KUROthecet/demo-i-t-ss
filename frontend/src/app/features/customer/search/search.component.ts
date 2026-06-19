@@ -148,7 +148,11 @@ export class SearchComponent implements OnInit {
 
     this.mediaApi.getPriceHistogram().subscribe(prices => {
       if (prices?.length > 0) {
-        this.allPrices = prices.filter(p => p > 0);
+        const filtered: number[] = [];
+        for (const p of prices) {
+          if (p > 0) filtered.push(p);
+        }
+        this.allPrices = filtered;
         this.computePriceHistogram();
       }
     });
@@ -165,7 +169,11 @@ export class SearchComponent implements OnInit {
   }
 
   protected getTotalCount(): number {
-    return Object.values(this.categoryCounts).reduce((a, b) => a + b, 0);
+    let total = 0;
+    for (const count of Object.values(this.categoryCounts)) {
+      total += count;
+    }
+    return total;
   }
 
   protected toggleCategory(cat: string): void {

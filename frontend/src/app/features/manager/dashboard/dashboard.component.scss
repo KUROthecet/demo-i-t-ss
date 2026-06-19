@@ -179,24 +179,26 @@
 .donut-legend {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 
-  &__item { display: flex; align-items: center; gap: 10px; }
-  &__dot   { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  &__item  { display: flex; align-items: center; gap: 10px; }
+  &__dot   { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; transition: transform 0.2s; }
   &__text  { font-size: 13px; color: rgba(255,255,255,0.5); flex: 1; }
-  &__count { font-size: 13px; font-weight: 700; color: #fff; }
+  &__pct   { font-size: 12px; font-weight: 700; min-width: 32px; text-align: right; }
+  &__count { font-size: 13px; font-weight: 700; color: #fff; min-width: 24px; text-align: right; }
 }
 
 .bar-chart {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   padding-top: 4px;
 
-  &__row   { display: flex; align-items: center; gap: 12px; }
-  &__label { font-size: 13px; color: rgba(255,255,255,0.5); width: 80px; flex-shrink: 0; }
-  &__track { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 9999px; overflow: hidden; }
-  &__fill  { height: 100%; border-radius: 9999px; transition: width 0.8s cubic-bezier(0.16,1,0.3,1); }
+  &__row   { display: flex; align-items: center; gap: 10px; }
+  &__label { font-size: 13px; color: rgba(255,255,255,0.5); width: 76px; flex-shrink: 0; }
+  &__track { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: 9999px; overflow: hidden; }
+  &__fill  { height: 100%; border-radius: 9999px; transition: width 0.9s cubic-bezier(0.16,1,0.3,1); }
+  &__pct   { font-size: 11px; font-weight: 700; min-width: 30px; text-align: right; opacity: 0.9; }
   &__value { font-size: 13px; font-weight: 700; color: #fff; min-width: 28px; text-align: right; }
 }
 

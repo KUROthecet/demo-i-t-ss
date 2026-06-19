@@ -21,7 +21,13 @@ export class NotificationService implements OnDestroy {
   private _pollSub: Subscription | null = null;
 
   readonly items       = this._items.asReadonly();
-  readonly unreadCount = computed(() => this._items().filter(n => !n.read).length);
+  readonly unreadCount = computed(() => {
+    let count = 0;
+    for (const n of this._items()) {
+      if (!n.read) count++;
+    }
+    return count;
+  });
 
   constructor(private readonly orderApi: OrderApiService) {}
 
@@ -39,9 +45,16 @@ export class NotificationService implements OnDestroy {
   }
 
   markAllRead(): void {
-    const ids = this._items().map(n => String(n.id));
+    const ids: string[] = [];
+    for (const n of this._items()) {
+      ids.push(String(n.id));
+    }
     this.saveReadIds(new Set(ids));
-    this._items.update(list => list.map(n => ({ ...n, read: true })));
+    const updated: NotificationItem[] = [];
+    for (const n of this._items()) {
+      updated.push({ ...n, read: true });
+    }
+    this._items.set(updated);
   }
 
   ngOnDestroy(): void {
@@ -57,16 +70,18 @@ export class NotificationService implements OnDestroy {
   private handlePage(page: any): void {
     const readIds = this.loadReadIds();
     const orders: any[] = page?.content ?? page ?? [];
-    this._items.set(
-      orders.map(o => ({
+    const items: NotificationItem[] = [];
+    for (const o of orders) {
+      items.push({
         id:           o.id,
         orderCode:    o.orderCode,
         customerName: o.customerName,
         totalAmount:  o.totalAmount,
         createdAt:    o.createdAt ?? o.orderDate ?? '',
         read:         readIds.has(String(o.id))
-      }))
-    );
+      });
+    }
+    this._items.set(items);
   }
 
   private loadReadIds(): Set<string> {

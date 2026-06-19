@@ -116,12 +116,24 @@ export class NavbarComponent implements AfterViewInit {
     this.router.navigate(['/home']);
   }
 
+  getRolesDisplay(): string {
+    const roles: string[] = this.currentUser()?.roles ?? [];
+    let result = '';
+    for (const role of roles) {
+      if (result) result += ' · ';
+      result += role;
+    }
+    return result;
+  }
+
   goToDashboard(): void {
-    const roles = this.currentUser()?.roles ?? [];
-    const match = ROLE_PRIORITY.find(entry => roles.includes(entry.role));
+    const roles: string[] = this.currentUser()?.roles ?? [];
     this.showUserMenu = false;
-    if (match) {
-      this.router.navigate([match.dashboard]);
+    for (const entry of ROLE_PRIORITY) {
+      if (roles.includes(entry.role)) {
+        this.router.navigate([entry.dashboard]);
+        return;
+      }
     }
   }
 }

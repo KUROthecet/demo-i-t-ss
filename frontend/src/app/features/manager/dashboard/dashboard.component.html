@@ -65,13 +65,23 @@
       </div>
       <div class="donut-chart-wrap">
         <svg viewBox="0 0 100 100" class="donut-svg">
+          <defs>
+            <filter id="glow-green" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="glow-amber" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
           <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
           <circle cx="50" cy="50" r="38" fill="none" stroke="#1DB954" stroke-width="10"
                   [attr.stroke-dasharray]="processedDash"
-                  stroke-linecap="round" transform="rotate(-90 50 50)"/>
+                  stroke-linecap="round" transform="rotate(-90 50 50)" filter="url(#glow-green)"/>
           <circle cx="50" cy="50" r="38" fill="none" stroke="#f59e0b" stroke-width="10"
                   [attr.stroke-dasharray]="pendingDash"
-                  stroke-linecap="round" [attr.transform]="pendingRotation"/>
+                  stroke-linecap="round" [attr.transform]="pendingRotation" filter="url(#glow-amber)"/>
         </svg>
         <div class="donut-center">
           <span class="donut-center__value">{{ totalOrders }}</span>
@@ -80,13 +90,15 @@
       </div>
       <div class="donut-legend">
         <div class="donut-legend__item">
-          <span class="donut-legend__dot" style="background:#1DB954"></span>
+          <span class="donut-legend__dot" style="background:#1DB954;box-shadow:0 0 6px #1DB954"></span>
           <span class="donut-legend__text">Processed</span>
+          <span class="donut-legend__pct" style="color:#1DB954">{{ getPct(processedOrders) }}%</span>
           <span class="donut-legend__count">{{ processedOrders }}</span>
         </div>
         <div class="donut-legend__item">
-          <span class="donut-legend__dot" style="background:#f59e0b"></span>
+          <span class="donut-legend__dot" style="background:#f59e0b;box-shadow:0 0 6px #f59e0b"></span>
           <span class="donut-legend__text">Pending</span>
+          <span class="donut-legend__pct" style="color:#f59e0b">{{ getPct(pendingCount) }}%</span>
           <span class="donut-legend__count">{{ pendingCount }}</span>
         </div>
       </div>
@@ -101,8 +113,12 @@
           <div class="bar-chart__row">
             <span class="bar-chart__label">{{ item.label }}</span>
             <div class="bar-chart__track">
-              <div class="bar-chart__fill" [style.width.%]="item.pct" [style.background]="item.color"></div>
+              <div class="bar-chart__fill"
+                   [style.width.%]="item.pct"
+                   [style.background]="item.color"
+                   [style.box-shadow]="'0 0 10px ' + item.color + '70'"></div>
             </div>
+            <span class="bar-chart__pct" [style.color]="item.color">{{ item.totalPct }}%</span>
             <span class="bar-chart__value">{{ item.count }}</span>
           </div>
         }
@@ -162,7 +178,7 @@
         <div class="panel" style="animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1) 0.28s both">
       <div class="panel__header">
         <h2 class="panel__title">Recent Operations</h2>
-        <a class="panel__action" routerLink="/manager/stock-history">View All →</a>
+        <a class="panel__action" routerLink="/manager/history">View All →</a>
       </div>
 
       @if (loading) {

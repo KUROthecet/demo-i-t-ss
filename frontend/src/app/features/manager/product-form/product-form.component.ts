@@ -68,7 +68,10 @@ export class ProductFormComponent implements OnInit {
     this.mediaApi.getFieldSchema().subscribe({
       next: (schema) => {
         this.availableCategoryFields = schema;
-        this.categories = Object.keys(schema).map(k => this.buildCategoryDef(k));
+        this.categories = [];
+        for (const k of Object.keys(schema)) {
+          this.categories.push(this.buildCategoryDef(k));
+        }
         this.schemaLoading = false;
         if (id) {
           this.isEdit    = true;
@@ -146,7 +149,10 @@ export class ProductFormComponent implements OnInit {
   }
 
   protected getCategoryDef(): { id: string; label: string; icon: string; color: string; bg: string; glow: string } {
-    return this.categories.find(c => c.id === this.form.category) ?? this.buildCategoryDef(this.form.category);
+    for (const c of this.categories) {
+      if (c.id === this.form.category) return c;
+    }
+    return this.buildCategoryDef(this.form.category);
   }
 
   protected getStepLabel(s: number): string {

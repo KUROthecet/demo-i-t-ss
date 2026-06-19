@@ -22,14 +22,18 @@ export class CartService {
   total     = computed(this.computeTotal.bind(this));
 
   refreshStock(): Observable<void> {
-    const ids = this._items().map(i => i.id);
+    const ids: number[] = [];
+    for (const i of this._items()) {
+      ids.push(i.id);
+    }
     if (ids.length === 0) { return new Observable(obs => { obs.next(); obs.complete(); }); }
     return this.mediaApi.getStockBatch(ids).pipe(
       tap(stockMap => {
-        const updated = this._items().map(item => {
+        const updated: CartItem[] = [];
+        for (const item of this._items()) {
           const currentStock = stockMap[item.id];
-          return currentStock !== undefined ? { ...item, quantityInStock: currentStock } : item;
-        });
+          updated.push(currentStock !== undefined ? { ...item, quantityInStock: currentStock } : item);
+        }
         this._items.set(updated);
         this.persist();
       })

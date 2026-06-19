@@ -70,7 +70,7 @@
                         [class.order-status-pill--approved]="order.status === 'APPROVED'"
                         [class.order-status-pill--rejected]="order.status === 'REJECTED'"
                         [class.order-status-pill--cancelled]="order.status === 'CANCELLED'">
-                    {{ order.status.replace('_', ' ') }}
+                    {{ formatStatus(order.status) }}
                   </span>
                 </td>
                 <td>

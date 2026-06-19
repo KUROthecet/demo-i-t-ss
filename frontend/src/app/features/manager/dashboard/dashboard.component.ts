@@ -65,13 +65,21 @@ export class ManagerDashboardComponent implements OnInit {
   }
 
   private onHistoryLogsLoaded(res: any): void {
-    this.historyLogs = (res || []).slice(0, 8);
+    const all: any[] = res || [];
+    const result: any[] = [];
+    for (let i = 0; i < all.length && i < 8; i++) {
+      result.push(all[i]);
+    }
+    this.historyLogs = result;
   }
 
   private onCatalogStatsLoaded(res: any): void {
-    this.catalogStats  = res || {};
-    this.totalProducts = Object.values(this.catalogStats as Record<string, number>)
-      .reduce((sum, n) => sum + n, 0);
+    this.catalogStats = res || {};
+    let total = 0;
+    for (const count of Object.values(this.catalogStats)) {
+      total += count;
+    }
+    this.totalProducts = total;
   }
 
   private onPendingOrdersLoaded(res: any): void {
@@ -110,19 +118,25 @@ export class ManagerDashboardComponent implements OnInit {
     return max;
   }
 
-  private buildCatalogItem(label: string, max: number): { label: string; count: number; color: string; pct: number } {
-    const count = this.catalogStats[label] || 0;
-    const color = this.categoryColor(label);
-    return { label, count, color, pct: Math.round((count / max) * 100) };
+  private buildCatalogItem(label: string, max: number): { label: string; count: number; color: string; pct: number; totalPct: number } {
+    const count    = this.catalogStats[label] || 0;
+    const color    = this.categoryColor(label);
+    const totalPct = this.totalProducts > 0 ? Math.round((count / this.totalProducts) * 100) : 0;
+    return { label, count, color, pct: Math.round((count / max) * 100), totalPct };
   }
 
-  get catalogItems(): { label: string; count: number; color: string; pct: number }[] {
+  get catalogItems(): { label: string; count: number; color: string; pct: number; totalPct: number }[] {
     const max    = this.getMaxCatalogCount();
-    const result: { label: string; count: number; color: string; pct: number }[] = [];
+    const result: { label: string; count: number; color: string; pct: number; totalPct: number }[] = [];
     for (const label of Object.keys(this.catalogStats)) {
       result.push(this.buildCatalogItem(label, max));
     }
     return result;
+  }
+
+  getPct(count: number): string {
+    if (this.totalOrders === 0) return '0';
+    return Math.round((count / this.totalOrders) * 100).toString();
   }
 
   formatDate(d: string): string {

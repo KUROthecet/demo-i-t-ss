@@ -70,7 +70,7 @@
             <div class="navbar__dropdown">
               <div class="navbar__dropdown-header">
                 <span class="navbar__dropdown-name">{{ currentUser()!.fullName }}</span>
-                <span class="navbar__dropdown-role">{{ currentUser()!.roles?.join(' · ') }}</span>
+                <span class="navbar__dropdown-role">{{ getRolesDisplay() }}</span>
               </div>
               <div class="navbar__dropdown-divider"></div>
               <button class="navbar__dropdown-item" (click)="goToDashboard()">

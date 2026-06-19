@@ -104,6 +104,11 @@ export class AppComponent {
     if (!outlet?.isActivated) return undefined;
     const tabIndex = outlet.activatedRouteData['tabIndex'];
     if (tabIndex !== undefined) return tabIndex;
-    return outlet.activatedRoute.snapshot.url.map(s => s.path).join('/') || 'root';
+    let path = '';
+    for (const s of outlet.activatedRoute.snapshot.url) {
+      if (path) path += '/';
+      path += s.path;
+    }
+    return path || 'root';
   }
 }
