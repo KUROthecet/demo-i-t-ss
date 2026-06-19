@@ -1393,6 +1393,15 @@ ol {
   color: var(--color-text-muted);
   margin-bottom: var(--space-6);
 
+  &__home {
+    display: flex;
+    align-items: center;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    svg { width: 18px; height: 18px; display: block; }
+    &:hover { color: var(--color-accent); }
+  }
+
   &__item {
     display: flex;
     align-items: center;
@@ -1405,8 +1414,11 @@ ol {
   }
 
   &__sep {
+    display: flex;
+    align-items: center;
     color: var(--color-text-muted);
     opacity: 0.5;
+    svg { width: 16px; height: 16px; display: block; }
   }
 
   a:hover {
