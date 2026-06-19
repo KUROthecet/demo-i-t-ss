@@ -225,18 +225,6 @@
     }
   }
 
-  &__stock-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #1DB954;
-    animation: stockPulse 2s ease-in-out infinite;
-  }
-
-  @keyframes stockPulse {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.40; }
-  }
-
   &__title {
     font-family: 'Instrument Serif', Georgia, serif;
     font-size: clamp(40px, 6vw, 76px);

@@ -70,7 +70,6 @@
               {{ product.category | uppercase }}
             </span>
             <span class="detail-hero__pill detail-hero__pill--stock">
-              <span class="detail-hero__stock-dot"></span>
               @if (product.quantityInStock > 0) {
                 In Stock: {{ product.quantityInStock }}
               } @else {
