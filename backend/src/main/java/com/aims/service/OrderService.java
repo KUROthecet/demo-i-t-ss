@@ -1,5 +1,6 @@
 package com.aims.service;
 
+import com.aims.config.BusinessConstants;
 import com.aims.dto.request.OrderLineRequestDto;
 import com.aims.dto.request.OrderRequestDto;
 import com.aims.dto.response.OrderResponseDto;
@@ -35,7 +36,6 @@ public class OrderService {
     private final ShippingCalculatorService shippingCalculatorService;
     private final HistoryLogService         historyLogService;
 
-    private static final double VAT_RATE = 0.10;
 
     @Value("${app.manager.email}")
     private String managerEmail;
@@ -109,7 +109,7 @@ public class OrderService {
     }
 
     private int computeVat(int subtotal) {
-        return (int) Math.round(subtotal * VAT_RATE);
+        return (int) Math.round(subtotal * BusinessConstants.VAT_RATE);
     }
 
     private Order assembleOrder(OrderRequestDto dto, List<OrderLine> orderLines,

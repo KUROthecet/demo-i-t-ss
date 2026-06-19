@@ -1,7 +1,7 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { CartItem, Media } from '../models/media.model';
 import { MediaApiService } from './media-api.service';
-import { AppConstants } from '../config/app.constants';
+import { AppConfigService } from './app-config.service';
 import { Observable, tap } from 'rxjs';
 
 const CART_KEY = 'aims_cart';
@@ -10,7 +10,10 @@ const CART_KEY = 'aims_cart';
 export class CartService {
   private _items = signal<CartItem[]>(this.loadFromStorage());
 
-  constructor(private readonly mediaApi: MediaApiService) {}
+  constructor(
+    private readonly mediaApi:   MediaApiService,
+    private readonly appConfig:  AppConfigService
+  ) {}
 
   items     = this._items.asReadonly();
   itemCount = computed(this.computeItemCount.bind(this));
@@ -91,7 +94,7 @@ export class CartService {
   }
 
   private computeVat(): number {
-    return Math.round(this.subtotal() * AppConstants.VAT_RATE);
+    return Math.round(this.subtotal() * this.appConfig.vatRate);
   }
 
   private computeTotal(): number {

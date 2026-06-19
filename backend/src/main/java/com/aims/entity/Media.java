@@ -1,8 +1,8 @@
 package com.aims.entity;
 
+import com.aims.config.BusinessConstants;
 import com.aims.enums.MediaStatus;
 import com.aims.exception.BusinessException;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -19,12 +19,6 @@ import java.util.Map;
     property = "category",
     visible  = true
 )
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = Book.class,      name = "Book"),
-    @JsonSubTypes.Type(value = CD.class,        name = "CD"),
-    @JsonSubTypes.Type(value = DVD.class,       name = "DVD"),
-    @JsonSubTypes.Type(value = Newspaper.class, name = "Newspaper")
-})
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "media")
@@ -76,8 +70,8 @@ public abstract class Media {
     }
 
     public void updatePrice(int newPrice) {
-        double minPrice = originalPrice * 0.30;
-        double maxPrice = originalPrice * 1.50;
+        double minPrice = originalPrice * BusinessConstants.PRICE_MIN_RATIO;
+        double maxPrice = originalPrice * BusinessConstants.PRICE_MAX_RATIO;
         if (newPrice < minPrice || newPrice > maxPrice) {
             throw new BusinessException(
                 String.format(

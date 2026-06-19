@@ -2,11 +2,7 @@ package com.aims.controller;
 
 import com.aims.dto.FieldSchema;
 import com.aims.dto.response.MediaResponseDto;
-import com.aims.entity.Book;
-import com.aims.entity.CD;
-import com.aims.entity.DVD;
-import com.aims.entity.Media;
-import com.aims.entity.Newspaper;
+import com.aims.media.MediaTypeDefinition;
 import com.aims.service.MediaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.aims.entity.Media;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +22,7 @@ import java.util.stream.Collectors;
 public class MediaController {
 
     private final MediaService mediaService;
+    private final List<MediaTypeDefinition> mediaTypeDefinitions;
 
     @GetMapping("/api/products")
     public ResponseEntity<List<MediaResponseDto>> getProducts(@RequestParam(defaultValue = "20") int limit) {
@@ -75,6 +74,16 @@ public class MediaController {
     @GetMapping("/api/products/price-range")
     public ResponseEntity<Map<String, Integer>> getPriceRange() {
         return ResponseEntity.ok(mediaService.getPriceRange());
+    }
+
+    @GetMapping("/api/products/categories")
+    public ResponseEntity<List<String>> getCategories() {
+        return ResponseEntity.ok(
+            mediaTypeDefinitions.stream()
+                .map(MediaTypeDefinition::getCategory)
+                .sorted()
+                .collect(Collectors.toList())
+        );
     }
 
     @PostMapping("/api/products")
@@ -129,11 +138,8 @@ public class MediaController {
 
     @GetMapping("/api/media/schema")
     public ResponseEntity<Map<String, List<FieldSchema>>> getFormSchema() {
-        return ResponseEntity.ok(Map.of(
-            "Book",      Book.FORM_SCHEMA,
-            "CD",        CD.FORM_SCHEMA,
-            "DVD",       DVD.FORM_SCHEMA,
-            "Newspaper", Newspaper.FORM_SCHEMA
-        ));
+        Map<String, List<FieldSchema>> schema = mediaTypeDefinitions.stream()
+            .collect(Collectors.toMap(MediaTypeDefinition::getCategory, MediaTypeDefinition::getFormSchema));
+        return ResponseEntity.ok(schema);
     }
 }

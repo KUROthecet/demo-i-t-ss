@@ -15,10 +15,4 @@ export class AppConstants {
   static readonly MAX_BATCH_DELETE                = 10;
   static readonly MAX_DAILY_DELETE                = 20;
   static readonly DAILY_DELETE_WARNING_THRESHOLD  = 15;
-  static readonly VAT_RATE                        = 0.10;
-  static readonly PRICE_MIN_RATIO                 = 0.30;
-  static readonly PRICE_MAX_RATIO                 = 1.50;
-  static readonly FREE_SHIPPING_THRESHOLD         = 100_000;
-  static readonly FREE_SHIPPING_CAP               = 25_000;
-  static readonly RUSH_ELIGIBLE_PROVINCES: readonly string[] = ['Hanoi', 'Ho Chi Minh City'];
 }

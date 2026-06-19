@@ -4,9 +4,9 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MediaApiService, FieldSchema } from '../../../core/services/media-api.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AppConfigService } from '../../../core/services/app-config.service';
 import { ProductFormModel, createEmptyProductForm } from '../../../core/models/product-form.model';
 import { Media } from '../../../core/models/media.model';
-import { AppConstants } from '../../../core/config/app.constants';
 
 @Component({
   selector: 'app-product-form',
@@ -44,10 +44,11 @@ export class ProductFormComponent implements OnInit {
   protected readonly performedBy: string;
 
   constructor(
-    private readonly mediaApi: MediaApiService,
-    private readonly auth:     AuthService,
-    private readonly route:    ActivatedRoute,
-    private readonly router:   Router
+    private readonly mediaApi:   MediaApiService,
+    private readonly auth:       AuthService,
+    private readonly route:      ActivatedRoute,
+    private readonly router:     Router,
+    private readonly appConfig:  AppConfigService
   ) {
     this.performedBy = this.auth.getCurrentUser()?.username ?? 'Manager';
   }
@@ -158,8 +159,8 @@ export class ProductFormComponent implements OnInit {
     return s === 1 ? 'Category' : s === 2 ? 'General Info' : (this.form.category || 'Details');
   }
 
-  protected get priceMin(): number { return Math.round(this.form.originalPrice * AppConstants.PRICE_MIN_RATIO); }
-  protected get priceMax(): number { return Math.round(this.form.originalPrice * AppConstants.PRICE_MAX_RATIO); }
+  protected get priceMin(): number { return Math.round(this.form.originalPrice * this.appConfig.priceMinRatio); }
+  protected get priceMax(): number { return Math.round(this.form.originalPrice * this.appConfig.priceMaxRatio); }
 
   protected onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -180,7 +181,9 @@ export class ProductFormComponent implements OnInit {
     }
     if (this.form.originalPrice > 0) {
       if (this.form.currentPrice < this.priceMin || this.form.currentPrice > this.priceMax) {
-        this.error = `Price must be between ${this.priceMin.toLocaleString('vi-VN')} and ${this.priceMax.toLocaleString('vi-VN')} VND (30%–150% of original price).`;
+        const minPct = Math.round(this.appConfig.priceMinRatio * 100);
+        const maxPct = Math.round(this.appConfig.priceMaxRatio * 100);
+        this.error = `Price must be between ${this.priceMin.toLocaleString('vi-VN')} and ${this.priceMax.toLocaleString('vi-VN')} VND (${minPct}%–${maxPct}% of original price).`;
         return;
       }
     }

@@ -10,7 +10,8 @@ import { AmbientBackgroundComponent } from '../../../shared/ambient-background/a
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
 import { loadScript } from '@paypal/paypal-js';
 import { lastValueFrom } from 'rxjs';
-import { PAYPAL_CLIENT_ID, AppConstants } from '../../../core/config/app.constants';
+import { PAYPAL_CLIENT_ID } from '../../../core/config/app.constants';
+import { AppConfigService } from '../../../core/services/app-config.service';
 
 @Component({
   selector: 'app-checkout',
@@ -38,8 +39,8 @@ export class CheckoutComponent implements OnInit {
   private   pendingPaypalId   = '';
 
 
-  readonly freeShippingThreshold = AppConstants.FREE_SHIPPING_THRESHOLD;
-  readonly freeShippingCap       = AppConstants.FREE_SHIPPING_CAP;
+  get freeShippingThreshold(): number { return this.appConfig.freeShippingThreshold; }
+  get freeShippingCap(): number { return this.appConfig.freeShippingCap; }
 
   protected items    = computed(this.computeItems.bind(this));
   protected subtotal = computed(this.computeSubtotal.bind(this));
@@ -52,9 +53,10 @@ export class CheckoutComponent implements OnInit {
   ];
 
   constructor(
-    private readonly orderApi:     OrderApiService,
-    private readonly cartService:  CartService,
-    private readonly router:       Router
+    private readonly orderApi:    OrderApiService,
+    private readonly cartService: CartService,
+    private readonly router:      Router,
+    private readonly appConfig:   AppConfigService
   ) {}
 
   async ngOnInit() {
@@ -150,10 +152,7 @@ export class CheckoutComponent implements OnInit {
   }
 
   protected isRushEligibleProvince(): boolean {
-    for (const eligible of AppConstants.RUSH_ELIGIBLE_PROVINCES) {
-      if (eligible === this.province) return true;
-    }
-    return false;
+    return this.appConfig.rushEligibleProvinces.includes(this.province);
   }
 
   private validateForm(): boolean {

@@ -112,12 +112,10 @@ export class SearchComponent implements OnInit {
     this.priceBuckets = buckets;
   }
 
-  readonly categories = ['Book', 'CD', 'DVD', 'Newspaper'];
-  readonly skeletons  = Array(6).fill(0);
+  protected categories: string[]  = [];
+  readonly skeletons               = Array(6).fill(0);
 
-  private categoryCounts: Record<string, number> = {
-    Book: 0, CD: 0, DVD: 0, Newspaper: 0
-  };
+  private categoryCounts: Record<string, number> = {};
 
   constructor(
     private readonly route:        ActivatedRoute,
@@ -128,6 +126,10 @@ export class SearchComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.mediaApi.getCategories().subscribe(cats => {
+      this.categories = cats;
+    });
+
     this.mediaApi.getCatalogStats().subscribe(stats => {
       if (stats) this.categoryCounts = stats;
     });

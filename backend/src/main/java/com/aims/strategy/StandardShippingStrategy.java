@@ -1,5 +1,6 @@
 package com.aims.strategy;
 
+import com.aims.config.BusinessConstants;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +15,6 @@ public class StandardShippingStrategy implements ShippingStrategy {
     private static final double EXTRA_FEE_PER_HALF_KG    = 2_500.0;
     private static final double HANOI_HCM_BASE_WEIGHT_KG = 3.0;
     private static final double OTHER_BASE_WEIGHT_KG      = 0.5;
-    private static final double FREE_SHIPPING_THRESHOLD   = 100_000.0;
-    private static final double FREE_SHIPPING_DISCOUNT    = 25_000.0;
 
     private enum ShippingTier { TIER_1, TIER_2 }
 
@@ -50,8 +49,8 @@ public class StandardShippingStrategy implements ShippingStrategy {
             }
         }
 
-        if (orderTotal > FREE_SHIPPING_THRESHOLD) {
-            fee = Math.max(0.0, fee - FREE_SHIPPING_DISCOUNT);
+        if (orderTotal > BusinessConstants.FREE_SHIPPING_THRESHOLD) {
+            fee = Math.max(0.0, fee - BusinessConstants.FREE_SHIPPING_DISCOUNT);
         }
 
         return fee;
