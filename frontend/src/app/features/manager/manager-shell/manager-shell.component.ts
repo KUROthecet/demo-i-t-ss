@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +19,7 @@ export class ManagerShellComponent implements OnInit {
   mobileOpen       = false;
   currentUrl       = '';
   user: any        = null;
+  userMenuOpen     = false;
 
   showChangePw = false;
   cpCurrentPw  = '';
@@ -94,6 +95,22 @@ export class ManagerShellComponent implements OnInit {
         this.cpLoading = false;
       }
     });
+  }
+
+  toggleUserMenu(): void {
+    this.userMenuOpen = !this.userMenuOpen;
+  }
+
+  closeUserMenu(): void {
+    this.userMenuOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const el = event.target as HTMLElement;
+    if (!el.closest('.topbar__user-menu')) {
+      this.userMenuOpen = false;
+    }
   }
 
   logout() {
