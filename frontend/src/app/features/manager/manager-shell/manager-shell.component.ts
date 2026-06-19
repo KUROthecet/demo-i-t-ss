@@ -57,8 +57,9 @@ export class ManagerShellComponent implements OnInit {
   }
 
   isActive(item: any): boolean {
-    if (item.exact) return this.currentUrl === item.path;
-    return this.currentUrl.startsWith(item.path);
+    const url = this.router.url.split('?')[0];
+    if (item.exact) return url === item.path;
+    return url.startsWith(item.path);
   }
 
   openChangePw(): void {
@@ -97,7 +98,8 @@ export class ManagerShellComponent implements OnInit {
     });
   }
 
-  toggleUserMenu(): void {
+  toggleUserMenu(event: MouseEvent): void {
+    event.stopPropagation();
     this.userMenuOpen = !this.userMenuOpen;
   }
 
@@ -105,12 +107,9 @@ export class ManagerShellComponent implements OnInit {
     this.userMenuOpen = false;
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const el = event.target as HTMLElement;
-    if (!el.closest('.topbar__user-menu')) {
-      this.userMenuOpen = false;
-    }
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.userMenuOpen = false;
   }
 
   logout() {

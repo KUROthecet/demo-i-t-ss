@@ -63,12 +63,13 @@ export const slideInAnimation = trigger('routeAnimations', [
     @if (isCustomerLayout) {
       <app-ambient-background />
       <app-navbar />
-      <div [@routeAnimations]="getRouteAnimationData(outlet)" class="customer-layout-wrapper">
-        <router-outlet #outlet="outlet" />
-      </div>
+    }
+    <div [@routeAnimations]="isCustomerLayout ? getRouteAnimationData(outlet) : undefined"
+         [class.customer-layout-wrapper]="isCustomerLayout">
+      <router-outlet #outlet="outlet" />
+    </div>
+    @if (isCustomerLayout) {
       <app-footer />
-    } @else {
-      <router-outlet />
     }
     <app-scroll-to-top />
   `,
