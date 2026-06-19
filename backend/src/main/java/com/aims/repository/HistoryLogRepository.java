@@ -12,6 +12,8 @@ public interface HistoryLogRepository extends JpaRepository<HistoryLog, Long> {
 
     List<HistoryLog> findAllByOrderByCreatedAtDesc();
 
+    List<HistoryLog> findByActionTypeInOrderByCreatedAtDesc(List<String> actionTypes);
+
     List<HistoryLog> findByActionTypeOrderByCreatedAtDesc(String actionType);
 
     long countByActionTypeInAndCreatedAtAfter(List<String> actionType, LocalDateTime after);

@@ -19,8 +19,10 @@ export class OrderApiService {
     );
   }
 
-  getOrders(page = 0, size = 30): Observable<PaginatedResponse<Order>> {
-    return this.http.get<PaginatedResponse<Order>>(`${this.baseUrl}/orders`, { params: { page, size } });
+  getOrders(page = 0, size = 30, status?: string): Observable<PaginatedResponse<Order>> {
+    const params: Record<string, any> = { page, size };
+    if (status) params['status'] = status;
+    return this.http.get<PaginatedResponse<Order>>(`${this.baseUrl}/orders`, { params });
   }
 
   getPendingOrders(page = 0, size = 30): Observable<PaginatedResponse<Order>> {

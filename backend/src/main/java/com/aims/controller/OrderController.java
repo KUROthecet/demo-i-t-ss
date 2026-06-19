@@ -3,6 +3,7 @@ package com.aims.controller;
 import com.aims.dto.request.OrderRequestDto;
 import com.aims.dto.response.OrderResponseDto;
 import com.aims.entity.Order;
+import com.aims.enums.OrderStatus;
 import com.aims.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,11 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<org.springframework.data.domain.Page<Order>> getAllOrders(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "30") int size) {
+            @RequestParam(defaultValue = "30") int size,
+            @RequestParam(required = false) OrderStatus status) {
+        if (status != null) {
+            return ResponseEntity.ok(orderService.getOrdersByStatus(status, page, size));
+        }
         return ResponseEntity.ok(orderService.getAllOrders(page, size));
     }
 

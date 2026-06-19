@@ -68,21 +68,11 @@ export class OrderProcessingComponent implements OnInit {
 
   protected loadOrders(): void {
     this.loading = true;
-    if (this.filter === 'PENDING_PROCESSING') {
-      this.orderApi.getPendingOrders(this.currentPage, this.pageSize).subscribe({
-        next:  (data) => { this.orders = data.content; this.totalPages = data.totalPages; this.loading = false; },
-        error: ()     => { this.loading = false; }
-      });
-    } else {
-      this.orderApi.getOrders(this.currentPage, this.pageSize).subscribe({
-        next: (data) => {
-          this.orders     = this.filter === 'ALL' ? data.content : data.content.filter(o => o.status === this.filter);
-          this.totalPages = data.totalPages;
-          this.loading    = false;
-        },
-        error: () => { this.loading = false; }
-      });
-    }
+    const status = this.filter === 'ALL' ? undefined : this.filter;
+    this.orderApi.getOrders(this.currentPage, this.pageSize, status).subscribe({
+      next:  (data) => { this.orders = data.content; this.totalPages = data.totalPages; this.loading = false; },
+      error: ()     => { this.loading = false; }
+    });
   }
 
   protected approve(id: number): void {

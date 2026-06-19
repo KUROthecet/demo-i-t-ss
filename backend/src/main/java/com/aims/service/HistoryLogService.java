@@ -25,9 +25,12 @@ public class HistoryLogService {
         historyLogRepository.save(entry);
     }
 
+    private static final List<String> PRODUCT_ACTION_TYPES =
+            List.of("ADD", "UPDATE", "DELETE", "DEACTIVATE", "ACTIVATE");
+
     @Transactional(readOnly = true)
     public List<HistoryLog> getLogs() {
-        return historyLogRepository.findAllByOrderByCreatedAtDesc();
+        return historyLogRepository.findByActionTypeInOrderByCreatedAtDesc(PRODUCT_ACTION_TYPES);
     }
 
     @Transactional(readOnly = true)
