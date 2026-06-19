@@ -30,6 +30,8 @@ export class CheckoutComponent implements OnInit {
   protected rushDelivery    = false;
   protected preferredTime   = '';
   protected paymentMethod: 'VIETQR' | 'PAYPAL' = 'VIETQR';
+  private   paypalInstance: any = null;
+  private   paypalRendered = false;
   protected deliveryFee     = 0;
   protected rushFee         = 0;
   protected calculating     = false;
@@ -68,22 +70,29 @@ export class CheckoutComponent implements OnInit {
     this.cartService.refreshStock().subscribe();
 
     try {
-      const paypal = await loadScript({
+      this.paypalInstance = await loadScript({
         clientId: PAYPAL_CLIENT_ID,
         currency: 'USD',
         locale:   'en_US'
       });
-
-      if (paypal && paypal.Buttons) {
-        paypal.Buttons({
-          createOrder: this.onPaypalCreateOrder.bind(this),
-          onApprove:   this.onPaypalApprove.bind(this),
-          onCancel:    this.onPaypalCancel.bind(this),
-          onError:     this.onPaypalError.bind(this)
-        }).render('#paypal-button-container');
-      }
     } catch {
       this.error = 'Failed to load payment gateway.';
+    }
+  }
+
+  protected selectPaymentMethod(method: 'VIETQR' | 'PAYPAL'): void {
+    this.paymentMethod = method;
+    if (method === 'PAYPAL' && this.paypalInstance?.Buttons && !this.paypalRendered) {
+      this.paypalRendered = true;
+      this.paypalInstance.Buttons({
+        createOrder: this.onPaypalCreateOrder.bind(this),
+        onApprove:   this.onPaypalApprove.bind(this),
+        onCancel:    this.onPaypalCancel.bind(this),
+        onError:     this.onPaypalError.bind(this)
+      }).render('#paypal-button-container').catch(() => {
+        this.error = 'Failed to initialize PayPal buttons.';
+        this.paypalRendered = false;
+      });
     }
   }
 

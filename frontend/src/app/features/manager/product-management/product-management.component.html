@@ -65,7 +65,7 @@
     </button>
     <button class="status-tab" [class.status-tab--active]="statusFilter === 'DEACTIVATED'" (click)="setStatusFilter('DEACTIVATED')">
       Deactivated
-      <span class="status-tab__badge status-tab__badge--inactive">{{ stats.DEACTIVATED ?? 0 }}</span>
+      <span class="status-tab__badge status-tab__badge--inactive">{{ stats.DEACTIVATED }}</span>
     </button>
   </div>
 

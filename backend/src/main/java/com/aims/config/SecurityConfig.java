@@ -45,9 +45,9 @@ public class SecurityConfig {
             .headers(h -> h
                 .frameOptions(fo -> fo.deny())
                 .contentSecurityPolicy(csp -> csp.policyDirectives(
-                    "default-src 'self'; script-src 'self' https://www.paypal.com https://www.paypalobjects.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+                    "default-src 'self'; script-src 'self' https://www.paypal.com https://*.paypal.com https://www.paypalobjects.com https://*.paypalobjects.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
                     "img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; " +
-                    "connect-src 'self' https:; frame-src https://www.paypal.com; frame-ancestors 'none'; " +
+                    "connect-src 'self' https:; frame-src https://www.paypal.com https://*.paypal.com; frame-ancestors 'none'; " +
                     "object-src 'none'; base-uri 'self'; form-action 'self'"))
                 .referrerPolicy(rp -> rp.policy(
                     ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))

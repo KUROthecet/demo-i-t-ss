@@ -1,11 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { ScrollToTopComponent } from './shared/scroll-to-top/scroll-to-top.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { AmbientBackgroundComponent } from './shared/ambient-background/ambient-background.component';
 import { trigger, transition, style, query, group, animate } from '@angular/animations';
-import { filter } from 'rxjs';
 
 export const slideInAnimation = trigger('routeAnimations', [
   transition(':increment', [
@@ -82,22 +81,25 @@ export const slideInAnimation = trigger('routeAnimations', [
   `]
 })
 export class AppComponent {
-  isCustomerLayout = true;
+  isCustomerLayout: boolean;
   router = inject(Router);
 
   constructor() {
-    this.router.events.pipe(
-      filter(this.isNavigationEnd.bind(this))
-    ).subscribe(this.onNavigationEnd.bind(this));
+    this.isCustomerLayout = this.isCustomerPath(window.location.pathname);
+
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        if (!this.isCustomerPath(event.url)) {
+          this.isCustomerLayout = false;
+        }
+      } else if (event instanceof NavigationEnd) {
+        this.isCustomerLayout = this.isCustomerPath(event.urlAfterRedirects);
+      }
+    });
   }
 
-  private isNavigationEnd(event: any): boolean {
-    return event instanceof NavigationEnd;
-  }
-
-  private onNavigationEnd(event: any): void {
-    const url = event.urlAfterRedirects;
-    this.isCustomerLayout = !url.startsWith('/admin') && !url.startsWith('/manager') && !url.startsWith('/login');
+  private isCustomerPath(url: string): boolean {
+    return !url.startsWith('/admin') && !url.startsWith('/manager') && !url.startsWith('/login');
   }
 
   getRouteAnimationData(outlet: RouterOutlet) {

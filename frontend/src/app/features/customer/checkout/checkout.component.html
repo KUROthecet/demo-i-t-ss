@@ -158,7 +158,7 @@
           </div>
           <div class="payment-options">
             <label class="payment-option" [class.payment-option--active]="paymentMethod === 'VIETQR'">
-              <input type="radio" name="pm" value="VIETQR" [(ngModel)]="paymentMethod" hidden />
+              <input type="radio" name="pm" value="VIETQR" [(ngModel)]="paymentMethod" (change)="selectPaymentMethod('VIETQR')" hidden />
               <div class="payment-option__radio" [class.payment-option__radio--on]="paymentMethod === 'VIETQR'">
                 @if (paymentMethod === 'VIETQR') {
                   <div class="payment-option__radio-dot"></div>
@@ -179,7 +179,7 @@
             </label>
 
             <label class="payment-option" [class.payment-option--active]="paymentMethod === 'PAYPAL'">
-              <input type="radio" name="pm" value="PAYPAL" [(ngModel)]="paymentMethod" hidden />
+              <input type="radio" name="pm" value="PAYPAL" [(ngModel)]="paymentMethod" (change)="selectPaymentMethod('PAYPAL')" hidden />
               <div class="payment-option__radio" [class.payment-option__radio--on]="paymentMethod === 'PAYPAL'">
                 @if (paymentMethod === 'PAYPAL') {
                   <div class="payment-option__radio-dot"></div>
