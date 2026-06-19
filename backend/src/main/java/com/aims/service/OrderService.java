@@ -187,7 +187,22 @@ public class OrderService {
     public Order approveOrder(Long id, String performedBy) {
         Order order = getOrderById(id);
         order.approve();
+
+        boolean vietQrPaymentConfirmed = order.getPaymentMethod() == PaymentMethod.VIETQR
+                && order.getPaymentStatus() == PaymentStatus.PENDING;
+        if (vietQrPaymentConfirmed) {
+            order.markAsPaid(order.getPaymentTransactionId(), null);
+        }
+
         Order saved = orderRepository.save(order);
+
+        if (vietQrPaymentConfirmed) {
+            String paidAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+            notificationService.sendPaymentConfirmation(
+                    order.getCustomerEmail(), order.getCustomerName(), order.getOrderCode(),
+                    order.getTotalAmount(), order.getPaymentTransactionId(), null, paidAt);
+        }
+
         notificationService.sendOrderApproved(order.getCustomerEmail(), order.getCustomerName(), order.getOrderCode());
         historyLogService.log("ORDER_APPROVED", order.getOrderCode(), performedBy,
                 "Order " + order.getOrderCode() + " approved");

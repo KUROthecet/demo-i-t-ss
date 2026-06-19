@@ -32,7 +32,7 @@ public class EmailNotificationChannel implements NotificationChannel {
             mailSender.send(message);
             log.info("[EMAIL] Sent '{}' to {}", subject, recipient);
         } catch (Exception e) {
-            log.error("[EMAIL] Failed to send '{}' to {}: {}", subject, recipient, e.getMessage());
+            log.error("[EMAIL] Failed to send '{}' to {}", subject, recipient, e);
         }
     }
 }
