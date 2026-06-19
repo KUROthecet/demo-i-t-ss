@@ -78,7 +78,7 @@ public class EmailTemplateBuilder {
             "Standard delivery takes 2–4 business days. Rush orders in Hanoi and Ho Chi Minh City " +
             "are dispatched same-day or next morning." +
             "</p>" +
-            ctaButton("View order", frontendUrl + "/orders", "#1DB954", "#000");
+            ctaButton("View order", frontendUrl + "/order/" + orderCode, "#1DB954", "#000");
         return layout("#1DB954", "Order Approved", "Your order is confirmed and being prepared.", body);
     }
 

@@ -14,7 +14,7 @@ public class EmailNotificationService implements NotificationService {
     private final List<NotificationChannel> channels;
     private final EmailTemplateBuilder      templateBuilder;
 
-    @Value("${spring.mail.username:aims.noreply@gmail.com}")
+    @Value("${app.mail.from-address:aims.noreply@gmail.com}")
     private String fromAddress;
 
     @Override

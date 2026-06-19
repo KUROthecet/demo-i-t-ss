@@ -16,7 +16,7 @@ public class EmailNotificationChannel implements NotificationChannel {
 
     private final JavaMailSender mailSender;
 
-    @Value("${spring.mail.username:aims.noreply@gmail.com}")
+    @Value("${app.mail.from-address:aims.noreply@gmail.com}")
     private String fromAddress;
 
     @Async

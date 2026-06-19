@@ -222,19 +222,21 @@ public class OrderService {
 
     public void markOrderPaidByPaypalId(String paypalOrderId, String captureId) {
         Optional<Order> found = orderRepository.findByPaymentTransactionId(paypalOrderId);
-        if (found.isPresent()) {
-            Order order = found.get();
-            order.markAsPaid(paypalOrderId, captureId);
-            orderRepository.save(order);
-            invoiceService.generateInvoiceFromOrder(order.getId());
-            String paidAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
-            notificationService.sendPaymentConfirmation(
-                    order.getCustomerEmail(), order.getCustomerName(),
-                    order.getOrderCode(), order.getTotalAmount(),
-                    paypalOrderId, captureId, paidAt);
-            historyLogService.log("PAYPAL_CAPTURED", order.getOrderCode(), "SYSTEM",
-                    "PayPal capture " + captureId + " confirmed for order " + order.getOrderCode());
-        }
+        if (found.isEmpty()) return;
+
+        Order order = found.get();
+        if (order.getPaymentStatus() == PaymentStatus.PAID) return;
+
+        order.markAsPaid(paypalOrderId, captureId);
+        orderRepository.save(order);
+        invoiceService.generateInvoiceFromOrder(order.getId());
+        String paidAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        notificationService.sendPaymentConfirmation(
+                order.getCustomerEmail(), order.getCustomerName(),
+                order.getOrderCode(), order.getTotalAmount(),
+                paypalOrderId, captureId, paidAt);
+        historyLogService.log("PAYPAL_CAPTURED", order.getOrderCode(), "SYSTEM",
+                "PayPal capture " + captureId + " confirmed for order " + order.getOrderCode());
     }
 
     private void restoreInventory(Order order) {

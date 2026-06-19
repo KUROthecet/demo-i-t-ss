@@ -58,6 +58,8 @@ app:
     password: ${ADMIN_PASSWORD:admin123}
   manager-account:
     password: ${MANAGER_PASSWORD:manager123}
+  mail:
+    from-address: ${MAIL_FROM_ADDRESS:aims.noreply@gmail.com}
 
 logging:
   level:
