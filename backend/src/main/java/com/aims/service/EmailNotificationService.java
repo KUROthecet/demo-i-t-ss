@@ -9,7 +9,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class EmailNotificationService implements NotificationService {
+public class EmailNotificationService implements OrderNotificationService, UserNotificationService {
 
     private final List<NotificationChannel> channels;
     private final EmailTemplateBuilder      templateBuilder;

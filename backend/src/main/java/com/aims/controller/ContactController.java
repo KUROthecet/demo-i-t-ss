@@ -3,7 +3,7 @@ package com.aims.controller;
 import com.aims.dto.request.ContactRequestDto;
 import com.aims.entity.ContactSubmission;
 import com.aims.repository.ContactSubmissionRepository;
-import com.aims.service.NotificationService;
+import com.aims.service.UserNotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ContactController {
 
-    private final NotificationService notificationService;
+    private final UserNotificationService notificationService;
     private final ContactSubmissionRepository submissionRepository;
 
     @PostMapping

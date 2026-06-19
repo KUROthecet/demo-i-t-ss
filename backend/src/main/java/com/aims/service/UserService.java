@@ -23,7 +23,7 @@ public class UserService {
 
     private final UserRepository    userRepository;
     private final PasswordEncoder   passwordEncoder;
-    private final NotificationService notificationService;
+    private final UserNotificationService notificationService;
     private final HistoryLogService historyLogService;
 
     @Transactional(readOnly = true)

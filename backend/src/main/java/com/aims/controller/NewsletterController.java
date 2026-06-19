@@ -2,7 +2,7 @@ package com.aims.controller;
 
 import com.aims.entity.NewsletterSubscriber;
 import com.aims.repository.NewsletterSubscriberRepository;
-import com.aims.service.NotificationService;
+import com.aims.service.UserNotificationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class NewsletterController {
 
-    private final NotificationService notificationService;
+    private final UserNotificationService notificationService;
     private final NewsletterSubscriberRepository subscriberRepository;
 
     @PostMapping("/subscribe")

@@ -30,7 +30,7 @@ public class OrderService {
 
     private final OrderRepository           orderRepository;
     private final MediaService              mediaService;
-    private final NotificationService       notificationService;
+    private final OrderNotificationService  notificationService;
     private final PaymentService            paymentService;
     private final InvoiceService            invoiceService;
     private final ShippingCalculatorService shippingCalculatorService;

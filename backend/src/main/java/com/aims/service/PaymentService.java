@@ -22,12 +22,12 @@ public class PaymentService {
 
     private final Map<PaymentMethod, Payable> handlers;
     private final PaymentTransactionRepository paymentTransactionRepository;
-    private final NotificationService          notificationService;
+    private final OrderNotificationService          notificationService;
 
     public PaymentService(
             List<Payable> handlerList,
             PaymentTransactionRepository paymentTransactionRepository,
-            NotificationService notificationService) {
+            OrderNotificationService notificationService) {
         this.handlers = handlerList.stream()
                 .collect(Collectors.toMap(Payable::supportedMethod, Function.identity()));
         this.paymentTransactionRepository = paymentTransactionRepository;

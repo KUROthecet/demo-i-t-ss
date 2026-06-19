@@ -63,6 +63,17 @@ app:
     password: ${MANAGER_PASSWORD:manager123}
   mail:
     from-address: ${MAIL_FROM_ADDRESS:aims.noreply@gmail.com}
+  shipping:
+    tier1-provinces:
+      - "hanoi"
+      - "ha noi"
+      - "hà nội"
+      - "ho chi minh"
+      - "hồ chí minh"
+      - "hcm"
+      - "hn"
+      - "tp.hcm"
+      - "tp hcm"
 
 logging:
   level:

@@ -1,10 +1,13 @@
 package com.aims.strategy;
 
 import com.aims.config.BusinessConstants;
+import com.aims.config.ShippingProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @Qualifier("standardShippingStrategy")
@@ -16,24 +19,21 @@ public class StandardShippingStrategy implements ShippingStrategy {
     private static final double HANOI_HCM_BASE_WEIGHT_KG = 3.0;
     private static final double OTHER_BASE_WEIGHT_KG      = 0.5;
 
-    private enum ShippingTier { TIER_1, TIER_2 }
+    private final Set<String> tier1Keys;
 
-    private static final Map<String, ShippingTier> PROVINCE_TIERS;
-    static {
-        java.util.Map<String, ShippingTier> m = new java.util.HashMap<>();
-        for (String key : java.util.List.of(
-                "hanoi", "ha noi", "hà nội",
-                "ho chi minh", "hồ chí minh", "hcm", "hn", "tp.hcm", "tp hcm")) {
-            m.put(key, ShippingTier.TIER_1);
+    public StandardShippingStrategy(ShippingProperties shippingProperties) {
+        Set<String> keys = new HashSet<>();
+        for (String province : shippingProperties.getTier1Provinces()) {
+            keys.add(province.toLowerCase());
         }
-        PROVINCE_TIERS = java.util.Collections.unmodifiableMap(m);
+        this.tier1Keys = Collections.unmodifiableSet(keys);
     }
 
     @Override
     public double calculate(double weightKg, String province, double orderTotal) {
         double fee;
 
-        if (getTier(province) == ShippingTier.TIER_1) {
+        if (isTier1(province)) {
             fee = HANOI_HCM_BASE_FEE;
             if (weightKg > HANOI_HCM_BASE_WEIGHT_KG) {
                 double extraWeight = weightKg - HANOI_HCM_BASE_WEIGHT_KG;
@@ -56,8 +56,8 @@ public class StandardShippingStrategy implements ShippingStrategy {
         return fee;
     }
 
-    private ShippingTier getTier(String province) {
-        if (province == null) return ShippingTier.TIER_2;
-        return PROVINCE_TIERS.getOrDefault(province.trim().toLowerCase(), ShippingTier.TIER_2);
+    private boolean isTier1(String province) {
+        if (province == null) return false;
+        return tier1Keys.contains(province.trim().toLowerCase());
     }
 }
