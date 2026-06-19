@@ -31,7 +31,7 @@
           </div>
         }
         @for (item of notifService.items(); track item.id) {
-          <a class="notif-item" [class.notif-item--unread]="!item.read" [routerLink]="['/order', item.id]" (click)="open = false">
+          <a class="notif-item" [class.notif-item--unread]="!item.read" routerLink="/manager/orders" (click)="open = false">
             <div class="notif-item__dot" [class.notif-item__dot--active]="!item.read"></div>
             <div class="notif-item__body">
               <div class="notif-item__top">

@@ -16,7 +16,6 @@
             <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
           </svg>
         </div>
-        <div class="kpi-card__change kpi-card__change--positive">+12%</div>
       </div>
       <div class="kpi-card__label">Total Users</div>
       <div class="kpi-card__value tabular-nums">{{ totalUsers > 0 ? totalUsers : 0 }}</div>
@@ -29,7 +28,6 @@
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
           </svg>
         </div>
-        <div class="kpi-card__change kpi-card__change--positive">Active</div>
       </div>
       <div class="kpi-card__label">Active Users</div>
       <div class="kpi-card__value tabular-nums">{{ activeUsers > 0 ? activeUsers : 0 }}</div>
@@ -43,7 +41,6 @@
             <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
           </svg>
         </div>
-        <div class="kpi-card__change kpi-card__change--negative">Blocked</div>
       </div>
       <div class="kpi-card__label">Blocked</div>
       <div class="kpi-card__value tabular-nums">{{ blockedUsers > 0 ? blockedUsers : 0 }}</div>
@@ -53,12 +50,12 @@
       <div class="kpi-card__header">
         <div class="kpi-card__icon" style="background:rgba(192,132,252,0.12);color:#c084fc">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            <path d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/>
           </svg>
         </div>
       </div>
-      <div class="kpi-card__label">System Load</div>
-      <div class="kpi-card__value tabular-nums">24%</div>
+      <div class="kpi-card__label">Deactivated</div>
+      <div class="kpi-card__value tabular-nums">{{ deactivatedUsers }}</div>
     </div>
   </div>
 

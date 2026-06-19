@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 interface TeamMember {
   name: string;
@@ -10,7 +9,7 @@ interface TeamMember {
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './about.component.html',
   styleUrl: './about.component.scss'
 })

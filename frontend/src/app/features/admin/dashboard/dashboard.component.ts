@@ -14,9 +14,10 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './dashboard.component.scss'
 })
 export class AdminDashboardComponent implements OnInit {
-  totalUsers    = 0;
-  activeUsers   = 0;
-  blockedUsers  = 0;
+  totalUsers       = 0;
+  activeUsers      = 0;
+  blockedUsers     = 0;
+  deactivatedUsers = 0;
   totalOrders   = 0;
   pendingOrders = 0;
   recentUsers: any[] = [];
@@ -46,9 +47,10 @@ export class AdminDashboardComponent implements OnInit {
     const orders  = results[1] as any;
     const pending = results[2] as any;
 
-    this.totalUsers    = users?.length   || 0;
-    this.activeUsers   = this.countUsersByStatus(users, 'ACTIVE');
-    this.blockedUsers  = this.countUsersByStatus(users, 'BLOCKED');
+    this.totalUsers       = users?.length   || 0;
+    this.activeUsers      = this.countUsersByStatus(users, 'ACTIVE');
+    this.blockedUsers     = this.countUsersByStatus(users, 'BLOCKED');
+    this.deactivatedUsers = this.countUsersByStatus(users, 'DEACTIVATED');
     this.recentUsers   = (users || []).slice(0, 8);
     this.totalOrders   = orders?.totalElements  || 0;
     this.pendingOrders = pending?.totalElements || 0;
