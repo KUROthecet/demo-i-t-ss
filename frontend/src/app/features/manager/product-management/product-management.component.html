@@ -2,9 +2,7 @@
     <div class="admin-main__header">
     <div>
       <h1 class="admin-main__title">Product Management</h1>
-      <p class="admin-main__subtitle">
-        {{ products.length }}{{ statusFilter !== 'ALL' ? ' of ' + allProducts.length : '' }} products in catalog
-      </p>
+      <p class="admin-main__subtitle">{{ subtitleText }}</p>
     </div>
     <a class="btn btn--primary btn--liquid" routerLink="/manager/product-form">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px; height: 20px;">
@@ -38,8 +36,8 @@
       </svg>
       <input class="prod-toolbar__search-input" type="text"
              [(ngModel)]="searchQuery" placeholder="Search products..."
-             (keydown.enter)="loadProducts()" />
-      <button class="btn btn--primary btn--liquid" (click)="loadProducts()">Search</button>
+             (keydown.enter)="currentPage = 0; loadProducts()" />
+      <button class="btn btn--primary btn--liquid" (click)="currentPage = 0; loadProducts()">Search</button>
     </div>
 
     <div class="prod-toolbar__quota">
@@ -59,15 +57,15 @@
   <div class="status-tabs">
     <button class="status-tab" [class.status-tab--active]="statusFilter === 'ALL'" (click)="setStatusFilter('ALL')">
       All
-      <span class="status-tab__badge">{{ allProducts.length }}</span>
+      <span class="status-tab__badge">{{ stats.TOTAL }}</span>
     </button>
     <button class="status-tab" [class.status-tab--active]="statusFilter === 'ACTIVE'" (click)="setStatusFilter('ACTIVE')">
       Active
-      <span class="status-tab__badge status-tab__badge--active">{{ activeCount }}</span>
+      <span class="status-tab__badge status-tab__badge--active">{{ stats.ACTIVE }}</span>
     </button>
     <button class="status-tab" [class.status-tab--active]="statusFilter === 'DEACTIVATED'" (click)="setStatusFilter('DEACTIVATED')">
       Deactivated
-      <span class="status-tab__badge status-tab__badge--inactive">{{ deactivatedCount }}</span>
+      <span class="status-tab__badge status-tab__badge--inactive">{{ stats.DEACTIVATED ?? 0 }}</span>
     </button>
   </div>
 
@@ -85,11 +83,11 @@
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
           </svg>
-          Delete Selected
+          Delete / Deactivate
         </button>
       } @else {
-        <span class="bulk-bar__confirm-text">Are you sure? This cannot be undone.</span>
-        <button class="btn btn--danger" (click)="deleteSelected()">Confirm Delete</button>
+        <span class="bulk-bar__confirm-text">Stock = 0 → deleted permanently. Stock &gt; 0 → deactivated.</span>
+        <button class="btn btn--danger" (click)="deleteSelected()">Confirm</button>
         <button class="btn btn--ghost" (click)="deletingConfirm = false">Cancel</button>
       }
     </div>
@@ -187,6 +185,19 @@
         </tbody>
       </table>
     </div>
+
+    @if (totalPages > 1) {
+      <div class="pagination" style="display:flex;align-items:center;gap:12px;padding:16px 0;justify-content:center">
+        <button class="btn btn--secondary btn--sm" [disabled]="currentPage === 0" (click)="changePage(currentPage - 1)">
+          Previous
+        </button>
+        <span style="color:var(--text-secondary);font-size:13px">
+          Page {{ currentPage + 1 }} of {{ totalPages }}
+        </span>
+        <button class="btn btn--secondary btn--sm" [disabled]="currentPage >= totalPages - 1" (click)="changePage(currentPage + 1)">
+          Next
+        </button>
+      </div>
+    }
   }
 </div>
-

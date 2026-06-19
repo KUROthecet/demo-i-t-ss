@@ -52,6 +52,11 @@ public class MediaController {
         );
     }
 
+    @GetMapping("/api/products/price-histogram")
+    public ResponseEntity<List<Integer>> getPriceHistogram() {
+        return ResponseEntity.ok(mediaService.getAllPricesForHistogram());
+    }
+
     @GetMapping("/api/manager/products")
     public ResponseEntity<Page<MediaResponseDto>> getManagerProducts(
             @RequestParam(defaultValue = "") String query,
@@ -59,11 +64,17 @@ public class MediaController {
             @RequestParam(defaultValue = "0") int minPrice,
             @RequestParam(defaultValue = "2147483647") int maxPrice,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String status) {
         return ResponseEntity.ok(
-            mediaService.getManagerProducts(query, category, minPrice, maxPrice, PageRequest.of(page, size))
+            mediaService.getManagerProducts(query, category, minPrice, maxPrice, status, PageRequest.of(page, size))
                 .map(MediaResponseDto::fromEntity)
         );
+    }
+
+    @GetMapping("/api/manager/products/stats")
+    public ResponseEntity<Map<String, Long>> getManagerStats() {
+        return ResponseEntity.ok(mediaService.getManagerStats());
     }
 
     @GetMapping("/api/products/stats")

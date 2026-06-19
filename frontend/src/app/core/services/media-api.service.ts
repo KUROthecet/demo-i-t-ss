@@ -13,6 +13,12 @@ export interface FieldSchema {
   readonly required: boolean;
 }
 
+export interface ManagerStats {
+  readonly TOTAL: number;
+  readonly ACTIVE: number;
+  readonly DEACTIVATED: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class MediaApiService {
   private readonly baseUrl = environment.apiUrl;
@@ -49,13 +55,18 @@ export class MediaApiService {
     return this.http.get<PaginatedResponse<Media>>(`${this.baseUrl}/products/search`, { params });
   }
 
+  getPriceHistogram(): Observable<number[]> {
+    return this.http.get<number[]>(`${this.baseUrl}/products/price-histogram`);
+  }
+
   getManagerProducts(
     query: string,
     categories: string[],
     minPrice = 0,
     maxPrice = 2147483647,
     page = 0,
-    size = 20
+    size = 20,
+    status: 'ALL' | 'ACTIVE' | 'DEACTIVATED' = 'ALL'
   ): Observable<PaginatedResponse<Media>> {
     let params = new HttpParams()
       .set('query', query)
@@ -63,12 +74,19 @@ export class MediaApiService {
       .set('maxPrice', maxPrice)
       .set('page', page)
       .set('size', size);
+    if (status !== 'ALL') {
+      params = params.set('status', status);
+    }
     if (categories && categories.length > 0) {
       for (const cat of categories) {
         params = params.append('category', cat);
       }
     }
     return this.http.get<PaginatedResponse<Media>>(`${this.baseUrl}/manager/products`, { params });
+  }
+
+  getManagerStats(): Observable<ManagerStats> {
+    return this.http.get<ManagerStats>(`${this.baseUrl}/manager/products/stats`);
   }
 
   getCatalogStats(): Observable<Record<string, number>> {

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MediaApiService } from '../../../core/services/media-api.service';
+import { MediaApiService, ManagerStats } from '../../../core/services/media-api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Media } from '../../../core/models/media.model';
 import { VndCurrencyPipe } from '../../../shared/pipes/vnd-currency.pipe';
@@ -17,7 +17,6 @@ import { AppConstants } from '../../../core/config/app.constants';
 })
 export class ProductManagementComponent implements OnInit {
   protected products: Media[]        = [];
-  protected allProducts: Media[]     = [];
   protected statusFilter: 'ALL' | 'ACTIVE' | 'DEACTIVATED' = 'ALL';
   protected loading                  = true;
   protected searchQuery              = '';
@@ -31,6 +30,12 @@ export class ProductManagementComponent implements OnInit {
   protected readonly deleteWarningThreshold   = AppConstants.DAILY_DELETE_WARNING_THRESHOLD;
   readonly skeletons = Array(8).fill(0);
 
+  protected stats: ManagerStats = { TOTAL: 0, ACTIVE: 0, DEACTIVATED: 0 };
+  protected currentPage   = 0;
+  protected pageSize      = 20;
+  protected totalPages    = 0;
+  protected totalElements = 0;
+
   private pendingDeleteIds: number[] = [];
 
   constructor(
@@ -41,8 +46,13 @@ export class ProductManagementComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadStats();
     this.loadProducts();
     this.mediaApi.getDailyDeleteCount().subscribe(this.onDailyDeleteCountLoaded.bind(this));
+  }
+
+  private loadStats(): void {
+    this.mediaApi.getManagerStats().subscribe(s => { this.stats = s; });
   }
 
   private onDailyDeleteCountLoaded(d: any): void {
@@ -51,42 +61,38 @@ export class ProductManagementComponent implements OnInit {
 
   protected loadProducts(): void {
     this.loading = true;
-    this.mediaApi.getManagerProducts(this.searchQuery, [], 0, 2147483647, 0, 1000).subscribe({
+    this.selectedIds.clear();
+    this.mediaApi.getManagerProducts(
+      this.searchQuery, [], 0, 2147483647,
+      this.currentPage, this.pageSize, this.statusFilter
+    ).subscribe({
       next:  this.onProductsLoaded.bind(this),
       error: this.onProductsError.bind(this)
     });
   }
 
   private onProductsLoaded(data: any): void {
-    this.allProducts = data.content;
-    this.applyStatusFilter();
-    this.loading = false;
+    this.products      = data.content;
+    this.totalPages    = data.totalPages;
+    this.totalElements = data.totalElements;
+    this.loading       = false;
   }
 
   private onProductsError(): void {
     this.loading = false;
   }
 
-  protected applyStatusFilter(): void {
-    if (this.statusFilter === 'ALL') {
-      this.products = [...this.allProducts];
-    } else {
-      this.products = this.allProducts.filter(p => p.status === this.statusFilter);
-    }
-  }
-
-  protected get activeCount(): number {
-    return this.allProducts.filter(p => p.status === 'ACTIVE').length;
-  }
-
-  protected get deactivatedCount(): number {
-    return this.allProducts.filter(p => p.status === 'DEACTIVATED').length;
-  }
-
   protected setStatusFilter(f: 'ALL' | 'ACTIVE' | 'DEACTIVATED'): void {
     this.statusFilter = f;
-    this.selectedIds.clear();
-    this.applyStatusFilter();
+    this.currentPage  = 0;
+    this.loadProducts();
+  }
+
+  protected changePage(page: number): void {
+    if (page >= 0 && page < this.totalPages) {
+      this.currentPage = page;
+      this.loadProducts();
+    }
   }
 
   protected toggleSelect(id: number): void {
@@ -108,13 +114,15 @@ export class ProductManagementComponent implements OnInit {
     this.successMsg = `${this.pendingDeleteIds.length} product(s) processed successfully.`;
     this.selectedIds.clear();
     this.pendingDeleteIds = [];
+    this.currentPage = 0;
+    this.loadStats();
     this.loadProducts();
     this.mediaApi.getDailyDeleteCount().subscribe(this.onDailyDeleteCountLoaded.bind(this));
     setTimeout(this.clearSuccessMsg.bind(this), 5000);
   }
 
   private onDeleteError(err: any): void {
-    this.error = err.error?.message ?? 'Delete failed.';
+    this.error = err.error?.message ?? 'Operation failed.';
   }
 
   private clearSuccessMsg(): void {
@@ -130,6 +138,7 @@ export class ProductManagementComponent implements OnInit {
 
   private onReactivateSuccess(): void {
     this.successMsg = 'Product re-activated successfully.';
+    this.loadStats();
     this.loadProducts();
     setTimeout(this.clearSuccessMsg.bind(this), 5000);
   }
@@ -137,7 +146,7 @@ export class ProductManagementComponent implements OnInit {
   protected deleteSelected(): void {
     if (this.selectedIds.size === 0) return;
     if (this.selectedIds.size > AppConstants.MAX_BATCH_DELETE) {
-      this.error = `Cannot delete more than ${AppConstants.MAX_BATCH_DELETE} products at once. Please deselect some items.`;
+      this.error = `Cannot process more than ${AppConstants.MAX_BATCH_DELETE} products at once. Please deselect some items.`;
       return;
     }
     this.pendingDeleteIds = Array.from(this.selectedIds);
@@ -146,5 +155,11 @@ export class ProductManagementComponent implements OnInit {
       error: this.onDeleteError.bind(this)
     });
     this.deletingConfirm = false;
+  }
+
+  protected get subtitleText(): string {
+    if (this.statusFilter === 'ALL')         return `${this.stats.TOTAL ?? this.totalElements} products in catalog`;
+    if (this.statusFilter === 'ACTIVE')      return `${this.stats.ACTIVE ?? 0} active products`;
+    return `${this.stats.DEACTIVATED ?? 0} deactivated products`;
   }
 }

@@ -146,9 +146,9 @@ export class SearchComponent implements OnInit {
       }
     });
 
-    this.mediaApi.getProducts(300).subscribe(products => {
-      if (products?.length > 0) {
-        this.allPrices = products.map(p => p.currentPrice || 0).filter(p => p > 0);
+    this.mediaApi.getPriceHistogram().subscribe(prices => {
+      if (prices?.length > 0) {
+        this.allPrices = prices.filter(p => p > 0);
         this.computePriceHistogram();
       }
     });
