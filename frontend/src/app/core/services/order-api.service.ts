@@ -12,11 +12,7 @@ export class OrderApiService {
   constructor(private readonly http: HttpClient) {}
 
   placeOrder(orderReq: any): Observable<any> {
-    return this.http.post<any>(
-      `${this.baseUrl}/orders`,
-      orderReq,
-      { responseType: 'text' as 'json' }
-    );
+    return this.http.post<any>(`${this.baseUrl}/orders`, orderReq);
   }
 
   getOrders(page = 0, size = 30, status?: string): Observable<PaginatedResponse<Order>> {

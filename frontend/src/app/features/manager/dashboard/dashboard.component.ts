@@ -55,7 +55,6 @@ export class ManagerDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.mediaApi.getDailyDeleteCount().subscribe(this.onDailyDeleteCountLoaded.bind(this));
     this.mediaApi.getHistoryLogs().subscribe(this.onHistoryLogsLoaded.bind(this));
-    this.mediaApi.getProducts().subscribe(this.onProductsLoaded.bind(this));
     this.mediaApi.getCatalogStats().subscribe(this.onCatalogStatsLoaded.bind(this));
     this.orderApi.getPendingOrders().subscribe(this.onPendingOrdersLoaded.bind(this));
     this.orderApi.getOrders().subscribe(this.onAllOrdersLoaded.bind(this));
@@ -69,12 +68,10 @@ export class ManagerDashboardComponent implements OnInit {
     this.historyLogs = (res || []).slice(0, 8);
   }
 
-  private onProductsLoaded(res: any): void {
-    this.totalProducts = res?.length || 0;
-  }
-
   private onCatalogStatsLoaded(res: any): void {
-    this.catalogStats = res || {};
+    this.catalogStats  = res || {};
+    this.totalProducts = Object.values(this.catalogStats as Record<string, number>)
+      .reduce((sum, n) => sum + n, 0);
   }
 
   private onPendingOrdersLoaded(res: any): void {

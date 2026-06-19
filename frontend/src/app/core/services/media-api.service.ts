@@ -42,7 +42,9 @@ export class MediaApiService {
       .set('page', page)
       .set('size', size);
     if (categories && categories.length > 0) {
-      params = params.set('category', categories.join(','));
+      for (const cat of categories) {
+        params = params.append('category', cat);
+      }
     }
     return this.http.get<PaginatedResponse<Media>>(`${this.baseUrl}/products/search`, { params });
   }
