@@ -29,21 +29,6 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-  mail:
-    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
-
 server:
   port: ${PORT:8080}
   servlet:
@@ -63,6 +48,8 @@ app:
     password: ${MANAGER_PASSWORD:manager123}
   mail:
     from-address: ${MAIL_FROM_ADDRESS:aims.noreply@gmail.com}
+    api-token: ${MAILTRAP_API_TOKEN:}
+    inbox-id: ${MAILTRAP_INBOX_ID:}
   shipping:
     tier1-provinces:
       - "hanoi"
@@ -79,7 +66,6 @@ logging:
   level:
     com.aims: INFO
     org.springframework.security: WARN
-    org.springframework.mail: DEBUG
 
 paypal:
   client:
