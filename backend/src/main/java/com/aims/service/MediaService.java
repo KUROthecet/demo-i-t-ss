@@ -18,10 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -102,12 +102,14 @@ public class MediaService {
 
         if (ids.isEmpty()) return new PageImpl<>(List.of(), pageable, total);
 
-        List<Media> entities = new ArrayList<>(mediaRepository.findAllById(ids));
-        Map<Long, Integer> orderMap = new HashMap<>();
-        for (int i = 0; i < ids.size(); i++) orderMap.put(ids.get(i), i);
-        entities.sort(Comparator.comparingInt(m -> orderMap.getOrDefault(m.getId(), Integer.MAX_VALUE)));
+        Map<Long, Media> byId = mediaRepository.findAllById(ids).stream()
+                .collect(Collectors.toMap(Media::getId, m -> m));
+        List<Media> sorted = ids.stream()
+                .map(id -> byId.get(((Number) id).longValue()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
-        return new PageImpl<>(entities, pageable, total);
+        return new PageImpl<>(sorted, pageable, total);
     }
 
     private List<Long> resolveSort(String sort, String query, int catAll, List<String> cats,
