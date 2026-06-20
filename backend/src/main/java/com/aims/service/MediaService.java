@@ -104,7 +104,7 @@ public class MediaService {
 
         Map<Long, Media> byId = mediaRepository.findAllById(ids).stream()
                 .collect(Collectors.toMap(Media::getId, m -> m));
-        List<Media> sorted = ids.stream()
+        List<Media> sorted = ((List<?>) ids).stream()
                 .map(id -> byId.get(((Number) id).longValue()))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
