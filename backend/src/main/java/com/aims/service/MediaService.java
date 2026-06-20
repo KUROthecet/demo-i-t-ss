@@ -97,9 +97,15 @@ public class MediaService {
         int catAll        = allCats ? 1 : 0;
 
         long total = mediaRepository.countActiveByCreator(safeQuery, catAll, cats, minPrice, maxPrice);
-        List<Long> ids = mediaRepository.findActiveIdsByCreator(
-                safeQuery, catAll, cats, minPrice, maxPrice, safeSort,
-                pageable.getPageSize(), pageable.getOffset());
+        int lim = pageable.getPageSize();
+        long off = pageable.getOffset();
+        List<Long> ids = switch (safeSort) {
+            case "price_asc"  -> mediaRepository.findActiveIdsOrderByPriceAsc(safeQuery, catAll, cats, minPrice, maxPrice, lim, off);
+            case "price_desc" -> mediaRepository.findActiveIdsOrderByPriceDesc(safeQuery, catAll, cats, minPrice, maxPrice, lim, off);
+            case "title_asc"  -> mediaRepository.findActiveIdsOrderByTitleAsc(safeQuery, catAll, cats, minPrice, maxPrice, lim, off);
+            case "title_desc" -> mediaRepository.findActiveIdsOrderByTitleDesc(safeQuery, catAll, cats, minPrice, maxPrice, lim, off);
+            default           -> mediaRepository.findActiveIdsOrderByRelevance(safeQuery, catAll, cats, minPrice, maxPrice, lim, off);
+        };
 
         if (ids.isEmpty()) return new PageImpl<>(List.of(), pageable, total);
 
