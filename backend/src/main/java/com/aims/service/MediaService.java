@@ -88,15 +88,17 @@ public class MediaService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Media> searchMedia(String query, List<String> categories, int minPrice, int maxPrice, Pageable pageable) {
-        String safeQuery   = query == null ? "" : query;
-        boolean allCats    = categories == null || categories.isEmpty();
-        List<String> cats  = allCats ? List.of("__NEVER__") : categories;
-        int catAll         = allCats ? 1 : 0;
+    public Page<Media> searchMedia(String query, List<String> categories, int minPrice, int maxPrice,
+                                   String sortBy, Pageable pageable) {
+        String safeQuery  = query == null ? "" : query;
+        String safeSort   = (sortBy == null || sortBy.isBlank()) ? "relevance" : sortBy;
+        boolean allCats   = categories == null || categories.isEmpty();
+        List<String> cats = allCats ? List.of("__NEVER__") : categories;
+        int catAll        = allCats ? 1 : 0;
 
         long total = mediaRepository.countActiveByCreator(safeQuery, catAll, cats, minPrice, maxPrice);
         List<Long> ids = mediaRepository.findActiveIdsByCreator(
-                safeQuery, catAll, cats, minPrice, maxPrice,
+                safeQuery, catAll, cats, minPrice, maxPrice, safeSort,
                 pageable.getPageSize(), pageable.getOffset());
 
         if (ids.isEmpty()) return new PageImpl<>(List.of(), pageable, total);

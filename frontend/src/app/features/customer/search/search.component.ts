@@ -200,7 +200,6 @@ export class SearchComponent implements OnInit {
         this.results               = res.content;
         this.totalFilteredElements = res.totalElements;
         this.totalPages            = res.totalPages;
-        this.sortResults();
         this.searched = true;
         this.loading  = false;
 
@@ -223,11 +222,6 @@ export class SearchComponent implements OnInit {
       this.doSearch();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }
-
-  protected sortResults(): void {
-    if (this.sortOrder === 'asc')  this.results.sort((a, b) => a.currentPrice - b.currentPrice);
-    if (this.sortOrder === 'desc') this.results.sort((a, b) => b.currentPrice - a.currentPrice);
   }
 
   protected clearQuery(): void {

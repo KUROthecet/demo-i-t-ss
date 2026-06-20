@@ -27,15 +27,21 @@ public interface MediaRepository extends JpaRepository<Media, Long> {
         AND (:query = '' OR
              LOWER(m.title)             LIKE LOWER(CONCAT('%',:query,'%'))
              OR LOWER(m.category)       LIKE LOWER(CONCAT('%',:query,'%'))
-             OR LOWER(COALESCE(b.author,''))        LIKE LOWER(CONCAT('%',:query,'%'))
-             OR LOWER(COALESCE(c.artist,''))        LIKE LOWER(CONCAT('%',:query,'%'))
-             OR LOWER(COALESCE(d.director,''))      LIKE LOWER(CONCAT('%',:query,'%'))
+             OR LOWER(COALESCE(b.author,''))          LIKE LOWER(CONCAT('%',:query,'%'))
+             OR LOWER(COALESCE(c.artist,''))          LIKE LOWER(CONCAT('%',:query,'%'))
+             OR LOWER(COALESCE(d.director,''))        LIKE LOWER(CONCAT('%',:query,'%'))
              OR LOWER(COALESCE(n.editor_in_chief,'')) LIKE LOWER(CONCAT('%',:query,'%')))
         ORDER BY
-             CASE WHEN LOWER(m.title) = LOWER(:query)                        THEN 0
-                  WHEN LOWER(m.title) LIKE LOWER(CONCAT(:query,'%'))          THEN 1
-                  WHEN LOWER(m.title) LIKE LOWER(CONCAT('%',:query,'%'))      THEN 2
-                  ELSE 3 END,
+             CASE WHEN :sort = 'price_asc'  THEN m.current_price END ASC,
+             CASE WHEN :sort = 'price_desc' THEN m.current_price END DESC,
+             CASE WHEN :sort = 'title_asc'  THEN m.title         END ASC,
+             CASE WHEN :sort = 'title_desc' THEN m.title         END DESC,
+             CASE WHEN :sort NOT IN ('price_asc','price_desc','title_asc','title_desc')
+                  THEN CASE WHEN LOWER(m.title) = LOWER(:query)                        THEN 0
+                            WHEN LOWER(m.title) LIKE LOWER(CONCAT(:query,'%'))          THEN 1
+                            WHEN LOWER(m.title) LIKE LOWER(CONCAT('%',:query,'%'))      THEN 2
+                            ELSE 3 END
+             END ASC,
              m.title ASC
         LIMIT :lim OFFSET :off
         """, nativeQuery = true)
@@ -45,6 +51,7 @@ public interface MediaRepository extends JpaRepository<Media, Long> {
         @Param("cats") List<String> cats,
         @Param("minPrice") int minPrice,
         @Param("maxPrice") int maxPrice,
+        @Param("sort") String sort,
         @Param("lim") int lim,
         @Param("off") long off
     );

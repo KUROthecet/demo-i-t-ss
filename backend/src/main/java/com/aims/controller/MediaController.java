@@ -48,9 +48,10 @@ public class MediaController {
             @RequestParam(defaultValue = "0") int minPrice,
             @RequestParam(defaultValue = "2147483647") int maxPrice,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "relevance") String sortBy) {
         return ResponseEntity.ok(
-            mediaService.searchMedia(query, category, minPrice, maxPrice, PageRequest.of(page, size))
+            mediaService.searchMedia(query, category, minPrice, maxPrice, sortBy, PageRequest.of(page, size))
                 .map(MediaResponseDto::fromEntity)
         );
     }

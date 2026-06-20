@@ -42,15 +42,14 @@ export class MediaApiService {
     size = 20,
     sort: 'asc' | 'desc' | '' = ''
   ): Observable<PaginatedResponse<Media>> {
+    const sortBy = sort === 'asc' ? 'price_asc' : sort === 'desc' ? 'price_desc' : 'relevance';
     let params = new HttpParams()
       .set('query', query)
       .set('minPrice', minPrice)
       .set('maxPrice', maxPrice)
       .set('page', page)
-      .set('size', size);
-    if (sort) {
-      params = params.set('sort', `currentPrice,${sort}`);
-    }
+      .set('size', size)
+      .set('sortBy', sortBy);
     if (categories && categories.length > 0) {
       for (const cat of categories) {
         params = params.append('category', cat);

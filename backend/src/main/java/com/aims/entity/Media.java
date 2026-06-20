@@ -21,7 +21,11 @@ import java.util.Map;
 )
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "media")
+@Table(name = "media", indexes = {
+    @Index(name = "idx_media_status_price",    columnList = "status, current_price"),
+    @Index(name = "idx_media_status_title",    columnList = "status, title"),
+    @Index(name = "idx_media_status_category", columnList = "status, category")
+})
 @Data
 @NoArgsConstructor
 public abstract class Media {
