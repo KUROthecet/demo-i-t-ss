@@ -97,8 +97,7 @@ public class MediaService {
         int catAll        = allCats ? 1 : 0;
 
         long total = mediaRepository.countActiveByCreator(safeQuery, catAll, cats, minPrice, maxPrice);
-        List<Long> ids = mediaRepository.findActiveIdsSorted(
-                safeQuery, catAll, cats, minPrice, maxPrice, safeSort,
+        List<Long> ids = resolveSort(safeSort, safeQuery, catAll, cats, minPrice, maxPrice,
                 pageable.getPageSize(), pageable.getOffset());
 
         if (ids.isEmpty()) return new PageImpl<>(List.of(), pageable, total);
@@ -109,6 +108,17 @@ public class MediaService {
         entities.sort(Comparator.comparingInt(m -> orderMap.getOrDefault(m.getId(), Integer.MAX_VALUE)));
 
         return new PageImpl<>(entities, pageable, total);
+    }
+
+    private List<Long> resolveSort(String sort, String query, int catAll, List<String> cats,
+                                   int minPrice, int maxPrice, int lim, long off) {
+        return switch (sort) {
+            case "price_asc"  -> mediaRepository.findActiveIdsOrderByPriceAsc(query, catAll, cats, minPrice, maxPrice, lim, off);
+            case "price_desc" -> mediaRepository.findActiveIdsOrderByPriceDesc(query, catAll, cats, minPrice, maxPrice, lim, off);
+            case "title_asc"  -> mediaRepository.findActiveIdsOrderByTitleAsc(query, catAll, cats, minPrice, maxPrice, lim, off);
+            case "title_desc" -> mediaRepository.findActiveIdsOrderByTitleDesc(query, catAll, cats, minPrice, maxPrice, lim, off);
+            default           -> mediaRepository.findActiveIdsOrderByRelevance(query, catAll, cats, minPrice, maxPrice, lim, off);
+        };
     }
 
     @Transactional(readOnly = true)

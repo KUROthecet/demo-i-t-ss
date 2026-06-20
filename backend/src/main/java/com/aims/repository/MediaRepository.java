@@ -140,17 +140,6 @@ public interface MediaRepository extends JpaRepository<Media, Long> {
         @Param("minPrice") int minPrice, @Param("maxPrice") int maxPrice,
         @Param("lim") int lim, @Param("off") long off);
 
-    default List<Long> findActiveIdsSorted(String query, int catAll, List<String> cats,
-                                           int minPrice, int maxPrice, String sort, int lim, long off) {
-        return switch (sort) {
-            case "price_asc"  -> findActiveIdsOrderByPriceAsc(query, catAll, cats, minPrice, maxPrice, lim, off);
-            case "price_desc" -> findActiveIdsOrderByPriceDesc(query, catAll, cats, minPrice, maxPrice, lim, off);
-            case "title_asc"  -> findActiveIdsOrderByTitleAsc(query, catAll, cats, minPrice, maxPrice, lim, off);
-            case "title_desc" -> findActiveIdsOrderByTitleDesc(query, catAll, cats, minPrice, maxPrice, lim, off);
-            default           -> findActiveIdsOrderByRelevance(query, catAll, cats, minPrice, maxPrice, lim, off);
-        };
-    }
-
     @Query(value = """
         SELECT COUNT(*) FROM media m
         LEFT JOIN book b ON m.id = b.id
